@@ -1,5 +1,0 @@
-group Server
-    Bolero.Server
-    Bolero.HotReload.Server
-    Microsoft.AspNetCore.Components.WebAssembly.Server
-    FSharp.Core
