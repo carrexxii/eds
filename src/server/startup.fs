@@ -25,7 +25,7 @@ type Startup () =
                 // .AddBoleroRemoting<>()
                 .AddBoleroHost()
 #if DEBUG
-                .AddHotReload(templateDir = __SOURCE_DIRECTORY__ + "/../client")
+                .AddHotReload(templateDir = "../client/wwwroot")
 #endif
         |> ignore
 

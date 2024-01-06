@@ -23,6 +23,10 @@ restore:
 css:
 	tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWWROOT)/styles.css
 
+.PHONY: css-watch
+css-watch:
+	tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWWROOT)/styles.css --watch
+
 .PHONY: clean
 clean:
 	dotnet clean $(SERVER_DIR)

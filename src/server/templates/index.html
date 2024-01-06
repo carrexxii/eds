@@ -5,21 +5,28 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="../../client/wwwroot/styles.css" />
 
         <title> Page Title </title>
     </head>
     <body>
-        <div id="header" class="bg-orange-800">
-            Header
-        </div>
-        <div id="sidebar" class="bg-green-300">
-            sidebar
-        </div>
-        <div id="main" class="bg-blue-500">
-            main
-        </div>
-        <div id="footer" class="bg-sky-700">
-            footer
+        <div class="flex flex-wrap">
+            <div id="header" class="flex flex-row w-screen h-16 p-2 bg-white">
+                Header
+            </div>
+            <div id="sidebar" class="flex flex-col basis-64 w-64 min-h-96
+                                     p-2 rounded-r-xl
+                                     bg-white drop-shadow-2xl shadow-slate-800
+                                     items-center transition-all">
+                <button name="sidebar_exp" class="w-32 bg-slate-100"> sbb </button>
+                sidebar
+            </div>
+            <div id="main" class="flex flex-col grow p-8 bg-white">
+                main
+            </div>
+            <div id="footer" class="flex flex-row w-screen h-32 p-6 bg-white">
+                footer
+            </div>
         </div>
         ${Scripts}
     </body>
