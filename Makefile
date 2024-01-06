@@ -1,5 +1,6 @@
 SERVER_DIR = "src/server/"
 CLIENT_DIR = "src/client/"
+WWWROOT    = $(CLIENT_DIR)/"wwwroot"
 
 all: run
 
@@ -8,7 +9,7 @@ run:
 	dotnet run --project $(SERVER_DIR)
 
 .PHONY: build
-build:
+build: css
 	dotnet build $(SERVER_DIR)
 	dotnet build $(CLIENT_DIR)
 
@@ -18,10 +19,15 @@ restore:
 	dotnet restore $(SERVER_DIR)
 	dotnet restore $(CLIENT_DIR)
 
+.PHONY: css
+css:
+	npx --global tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWWROOT)/styles.css
+
 .PHONY: clean
 clean:
 	dotnet clean $(SERVER_DIR)
 	dotnet clean $(CLIENT_DIR)
+	rm $(WWWROOT)/styles.css
 
 .PHONY: remove
 remove: clean
