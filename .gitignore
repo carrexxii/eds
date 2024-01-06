@@ -1,0 +1,7 @@
+.paket/
+.vscode/
+packages/
+paket-files/
+obj/
+bin/
+data/

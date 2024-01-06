@@ -1,0 +1,6 @@
+group Client
+    Bolero
+    Bolero.Build
+    Bolero.HotReload
+    Microsoft.AspNetCore.Components.WebAssembly.DevServer
+    FSharp.Core
