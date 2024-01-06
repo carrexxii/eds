@@ -2,7 +2,7 @@ SERVER_DIR = "src/server/"
 CLIENT_DIR = "src/client/"
 WWWROOT    = $(CLIENT_DIR)/"wwwroot"
 
-all: run
+all: css run
 
 .PHONY: run
 run:
@@ -21,7 +21,7 @@ restore:
 
 .PHONY: css
 css:
-	npx --global tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWWROOT)/styles.css
+	tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWWROOT)/styles.css
 
 .PHONY: clean
 clean:

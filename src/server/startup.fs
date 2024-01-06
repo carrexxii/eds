@@ -10,6 +10,8 @@ open Bolero.Remoting.Server
 open Bolero.Server
 open Bolero.Templating.Server
 
+open Templates
+
 type Startup () =
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -42,7 +44,7 @@ type Startup () =
 #endif
                 endpoints.MapBoleroRemoting () |> ignore
                 endpoints.MapBlazorHub () |> ignore
-                endpoints.MapFallbackToBolero Index.page |> ignore)
+                endpoints.MapFallbackToBolero (buildIndex ()) |> ignore)
         |> ignore
 
 module Program =
