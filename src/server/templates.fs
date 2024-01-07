@@ -18,6 +18,7 @@ module Templates =
         Index.SbButtons()
             .Name(fst btn)
             .Link(snd btn)
+            .Icon("≡")
             .Elt()
 
     let buildIndex () =
