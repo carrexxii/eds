@@ -15,4 +15,10 @@
     <PackageReference Include="Bolero.HotReload.Server" Version="0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.*" />
   </ItemGroup>
+  <PropertyGroup>
+    <BlazorLinkOnBuild  Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <Watch Include="templates/*.html" />
+  </ItemGroup>
 </Project>
