@@ -3,18 +3,20 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <base href="/" />
 
         <link rel="stylesheet" href="styles.css" />
 
-        <title> PPPage Title </title>
+        <title> Page Title </title>
     </head>
     <body>
         <div class="flex flex-wrap">
             <div id="header" class="flex flex-row w-screen h-16
                                     p-2
-                                    bg-indigo-200
-                                    items-center">
-                <h1> Page Header </h1>
+                                    bg-indigo-200">
+                <h1 class="flex flex-col text-ellipsis text-nowrap mx-16 text-2xl bg-indigo-700">
+                    Page Header
+                </h1>
             </div>
 
             <button id="sbToggle" class="peer absolute left-0 top-0 w-16 h-16
@@ -42,7 +44,7 @@
             </div>
 
             <div id="main" class="flex flex-col grow p-8 bg-white">
-                main
+                Loading...
             </div>
 
             <div id="footer" class="flex flex-row w-screen h-32 p-6 bg-white">

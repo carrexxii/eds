@@ -1,5 +1,8 @@
 namespace Server
 
+open Microsoft.AspNetCore.Components
+open Microsoft.AspNetCore.Components.Web
+
 open Bolero
 open Bolero.Html
 open Bolero.Server.Html
@@ -26,3 +29,13 @@ module Templates =
             .Sidebar(forEach sbButtons showButton)
             .Scripts(span { boleroScript })
             .Elt()
+
+open Templates
+
+module Pages =
+    [<Route "/">]
+    type Index() =
+        inherit Bolero.Component()
+
+        override this.Render () =
+            buildIndex ()
