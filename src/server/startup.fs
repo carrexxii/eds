@@ -18,14 +18,16 @@ type Startup () =
     member this.ConfigureServices (services: IServiceCollection) =
         services.AddMvc () |> ignore
         services.AddServerSideBlazor () |> ignore
-        services.AddAuthorization()
-                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        services
+            .AddAuthorization()
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie()
                 .Services
-                // .AddBoleroRemoting<>()
-                .AddBoleroHost()
+            .AddBoleroRemoting<UserService>()
+            .AddBoleroHost()
 #if DEBUG
-                .AddHotReload(templateDir = "templates/")
+            .AddHotReload(templateDir = "templates/")
+            .AddHotReload(templateDir = "../client/wwwroot/")
 #endif
         |> ignore
 
@@ -33,12 +35,13 @@ type Startup () =
     member this.Configure (app: IApplicationBuilder, env: IWebHostEnvironment) =
         if env.IsDevelopment () then
             app.UseWebAssemblyDebugging ()
-        app.UseAuthentication()
-           .UseStaticFiles()
-           .UseRouting()
-           .UseAuthorization()
-           .UseBlazorFrameworkFiles()
-           .UseEndpoints(fun endpoints ->
+        app
+            .UseAuthentication()
+            .UseStaticFiles()
+            .UseRouting()
+            .UseAuthorization()
+            .UseBlazorFrameworkFiles()
+            .UseEndpoints(fun endpoints ->
 #if DEBUG
                 endpoints.UseHotReload ()
 #endif
@@ -50,9 +53,10 @@ type Startup () =
 module Program =
     [<EntryPoint>]
     let main args =
-        WebHost.CreateDefaultBuilder(args)
-               .UseStaticWebAssets()
-               .UseStartup<Startup>()
-               .Build()
-               .Run()
+        WebHost
+            .CreateDefaultBuilder(args)
+            .UseStaticWebAssets()
+            .UseStartup<Startup>()
+            .Build()
+            .Run()
         0

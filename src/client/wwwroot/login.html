@@ -1,13 +1,13 @@
-<form method="POST">
+<form onsubmit="${Login}">
     <label class="block">
         <input type="text" name="username" placeholder="Username" bind-onchange="${Username}"
                class="border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-black" />
     </label>
     <label class="block">
-        <input type="password" name="password" placeholder="Password" bind="${Password}"
+        <input type="password" name="password" placeholder="Password" bind-onchange="${Password}"
                class="border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-black" />
     </label>
-    <button onClick="${Login}" class="m-2 p-2 block rounded-lg border-2 bg-indigo-500 border-indigo-300 hover:bg-indigo-300">
+    <button class="m-2 p-2 block rounded-lg border-2 bg-indigo-500 border-indigo-300 hover:bg-indigo-300">
         Login
     </button>
 </form>

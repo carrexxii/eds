@@ -29,13 +29,3 @@ module Templates =
             .Sidebar(forEach sbButtons showButton)
             .Scripts(span { boleroScript })
             .Elt()
-
-open Templates
-
-module Pages =
-    [<Route "/">]
-    type Index() =
-        inherit Bolero.Component()
-
-        override this.Render () =
-            buildIndex ()

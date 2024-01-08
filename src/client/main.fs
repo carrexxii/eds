@@ -64,9 +64,9 @@ module Main =
 
     let update remote msg model =
         match msg with
-        | SetPage page -> { model with page = page }, Cmd.none
+        | SetPage page     -> { model with page = page }, Cmd.none
         | SetUsername name -> { model with username = name }, Cmd.none
-        | SetPassword pw -> { model with password = pw }, Cmd.none
+        | SetPassword pw   -> { model with password = pw }, Cmd.none
 
         | SubmitLogin -> model, Cmd.OfAsync.either remote.signIn (model.username, model.password) LoginResult ErrorExn
         | LoginResult r ->
@@ -80,8 +80,7 @@ module Main =
         | GetSignedInAs -> model, Cmd.OfAuthorized.either remote.getUsername () RecvSignedInAs ErrorExn
         | RecvSignedInAs name -> { model with username = Option.defaultValue "" name }, Cmd.none
 
-        | DisplayError err -> printfn "!! Error on client side: \"%s\"" err
-                              { model with error = Some err }, Cmd.none
+        | DisplayError err -> { model with error = Some err }, Cmd.none
         | ErrorExn err -> { model with error = Some (err.ToString ()) }, Cmd.none
         | ClearError -> { model with error = None }, Cmd.none
 
@@ -94,7 +93,7 @@ module Main =
         Login()
             .Username(model.username, (fun name -> SetUsername name |> dispatch))
             .Password(model.password, (fun pw -> SetPassword pw |> dispatch))
-            .Login(fun btn -> SubmitLogin |> dispatch)
+            .Login(fun btn -> dispatch SubmitLogin)
             .Elt()
 
     type ErrorPage = Template<"wwwroot/error.html">
@@ -106,12 +105,12 @@ module Main =
 
     let view model dispatch =
         match model.page with
-        | Home  -> p { "Hello, world!" }
+        | Home  -> p { $"Username: {model.signedInAs}" }
         | Login -> loginPage model dispatch 
         | Page404 -> errorPage "404" "Page not found"
 
     type EDS () =
-        inherit ProgramComponent<Model, Message>()
+        inherit ProgramComponent<Model, Message> ()
 
         override this.Program =
             Program.mkProgram (fun _ -> initModel, Cmd.ofMsg GetSignedInAs)

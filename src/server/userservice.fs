@@ -19,7 +19,6 @@ type UserService (ctx: IRemoteContext, env: IWebHostEnvironment) =
                 match name, pw with
                 | "name", "pw" ->
                     do! ctx.HttpContext.AsyncSignIn (name, TimeSpan.FromDays 1)
-                    printfn "Login success\n\n\n\n"
                     return None
                 | "name", _ -> return Some "Incorrect password"
                 | _, _ -> return Some "Incorrect username"
