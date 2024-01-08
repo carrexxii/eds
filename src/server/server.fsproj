@@ -5,15 +5,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="templates.fs" />
+    <Compile Include="userservice.fs" />
     <Compile Include="startup.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../client/client.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.*" />
     <PackageReference Include="Bolero.Server" Version="0.*" />
     <PackageReference Include="Bolero.HotReload.Server" Version="0.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.*" />
   </ItemGroup>
   <PropertyGroup>
     <BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>

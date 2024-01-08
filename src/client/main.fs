@@ -20,14 +20,14 @@ module Main =
     type Model =
         { page        : Page
           error       : option<string>
-          userName    : string
+          username    : string
           password    : string
           signedInAs  : option<string>
           signInFailed: bool }
     let initModel =
         { page         = Home
           error        = None
-          userName     = ""
+          username     = ""
           password     = ""
           signedInAs   = None
           signInFailed = false }
@@ -41,27 +41,38 @@ module Main =
 
     type UserService =
         { signIn: string * string -> Async<option<string>> }
+
         interface IRemoteService with
             member this.BasePath = "/profile"
 
     type Message =
         | SetPage     of Page
-        | SetUserName of string
+        | SetUsername of string
         | SetPassword of string
+        | SubmitLogin
+        | LoginResult of option<string>
         | ClearLoginForm
-        | Error of exn
+        | DisplayError of string
+        | ErrorMsg of exn
         | ClearError
 
     let update remote msg model =
-        let onSignIn = function
-            | Some _ -> Cmd.ofMsg ClearLoginForm
-            | None   -> Cmd.none
         match msg with
         | SetPage page -> { model with page = page }, Cmd.none
-        | SetUserName name -> { model with userName = name }, Cmd.none
+        | SetUsername name -> { model with username = name }, Cmd.none
         | SetPassword pw -> { model with password = pw }, Cmd.none
-        | ClearLoginForm -> { model with userName = ""; password = "" }, Cmd.none
-        | Error e -> { model with error = Some (e.ToString ()) }, Cmd.none
+
+        | SubmitLogin -> model, Cmd.OfAsync.either remote.signIn (model.username, model.password) LoginResult ErrorMsg
+        | LoginResult r ->
+            (match r with
+            | None -> { model with signedInAs = Some model.username },
+                      SetPage Home |> Cmd.ofMsg
+            | Some err -> model,
+                          DisplayError err |> Cmd.ofMsg)
+        | ClearLoginForm -> { model with username = ""; password = "" }, Cmd.none
+
+        | DisplayError err -> { model with error = Some err }, Cmd.none
+        | ErrorMsg err -> { model with error = Some (err.ToString ()) }, Cmd.none
         | ClearError -> { model with error = None }, Cmd.none
 
     let router = Router.infer SetPage (fun model -> model.page)
@@ -69,12 +80,15 @@ module Main =
     type Login = Template<"wwwroot/login.html">
     let loginPage model dispatch =
         Login()
+            .Username(model.username, (fun name -> SetUsername name |> dispatch))
+            .Password(model.password, (fun pw -> SetPassword pw |> dispatch))
+            .Login(fun btn -> SubmitLogin |> dispatch)
             .Elt()
 
     let view model dispatch =
         match model.page with
         | Home  -> p { "Hello, world!" }
-        | Login -> loginPage model dispatch
+        | Login -> loginPage model dispatch 
         | _ -> p { "404" }
 
     type EDS () =

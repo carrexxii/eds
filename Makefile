@@ -9,13 +9,16 @@ run:
 
 .PHONY: watch
 watch:
-	npx tailwindcss -i $(SERVER_DIR)/templates/styles.css -o $(CLIENT_DIR)/wwwroot/styles.css --watch &
 	dotnet watch run --project $(SERVER_DIR)
 
 .PHONY: build
 build: css
 	dotnet build $(SERVER_DIR)
 	dotnet build $(CLIENT_DIR)
+
+.PHONY: watch-css
+watch-css:
+	npx tailwindcss -i $(SERVER_DIR)/templates/styles.css -o $(CLIENT_DIR)/wwwroot/styles.css --watch
 
 .PHONY: restore
 restore:
