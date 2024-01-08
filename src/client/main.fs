@@ -14,8 +14,9 @@ open Bolero.Remoting.Client
 
 module Main =
     type Page =
-        | [<EndPoint "/"       >] Home
-        | [<EndPoint "/login"  >] Login
+        | [<EndPoint "/"     >] Home
+        | [<EndPoint "/login">] Login
+        | [<EndPoint "/404"  >] Page404
 
     type Model =
         { page        : Page
@@ -40,7 +41,10 @@ module Main =
           name = "" }
 
     type UserService =
-        { signIn: string * string -> Async<option<string>> }
+        {
+            signIn     : string * string -> Async<option<string>>
+            getUsername: unit -> Async<string>
+        }
 
         interface IRemoteService with
             member this.BasePath = "/profile"
@@ -51,9 +55,11 @@ module Main =
         | SetPassword of string
         | SubmitLogin
         | LoginResult of option<string>
+        | GetSignedInAs
+        | RecvSignedInAs of option<string>
         | ClearLoginForm
         | DisplayError of string
-        | ErrorMsg of exn
+        | ErrorExn of exn
         | ClearError
 
     let update remote msg model =
@@ -62,7 +68,7 @@ module Main =
         | SetUsername name -> { model with username = name }, Cmd.none
         | SetPassword pw -> { model with password = pw }, Cmd.none
 
-        | SubmitLogin -> model, Cmd.OfAsync.either remote.signIn (model.username, model.password) LoginResult ErrorMsg
+        | SubmitLogin -> model, Cmd.OfAsync.either remote.signIn (model.username, model.password) LoginResult ErrorExn
         | LoginResult r ->
             (match r with
             | None -> { model with signedInAs = Some model.username },
@@ -71,11 +77,17 @@ module Main =
                           DisplayError err |> Cmd.ofMsg)
         | ClearLoginForm -> { model with username = ""; password = "" }, Cmd.none
 
-        | DisplayError err -> { model with error = Some err }, Cmd.none
-        | ErrorMsg err -> { model with error = Some (err.ToString ()) }, Cmd.none
+        | GetSignedInAs -> model, Cmd.OfAuthorized.either remote.getUsername () RecvSignedInAs ErrorExn
+        | RecvSignedInAs name -> { model with username = Option.defaultValue "" name }, Cmd.none
+
+        | DisplayError err -> printfn "!! Error on client side: \"%s\"" err
+                              { model with error = Some err }, Cmd.none
+        | ErrorExn err -> { model with error = Some (err.ToString ()) }, Cmd.none
         | ClearError -> { model with error = None }, Cmd.none
 
-    let router = Router.infer SetPage (fun model -> model.page)
+    let router =
+        Router.infer SetPage (fun model -> model.page)
+        |> Router.withNotFound Page404
 
     type Login = Template<"wwwroot/login.html">
     let loginPage model dispatch =
@@ -85,17 +97,24 @@ module Main =
             .Login(fun btn -> SubmitLogin |> dispatch)
             .Elt()
 
+    type ErrorPage = Template<"wwwroot/error.html">
+    let errorPage (code: string) (msg: string) =
+        ErrorPage()
+            .ErrorCode(code)
+            .ErrorMsg(msg)
+            .Elt()
+
     let view model dispatch =
         match model.page with
         | Home  -> p { "Hello, world!" }
         | Login -> loginPage model dispatch 
-        | _ -> p { "404" }
+        | Page404 -> errorPage "404" "Page not found"
 
     type EDS () =
         inherit ProgramComponent<Model, Message>()
 
         override this.Program =
-            Program.mkProgram (fun _ -> initModel, Cmd.ofMsg ClearLoginForm)
+            Program.mkProgram (fun _ -> initModel, Cmd.ofMsg GetSignedInAs)
                               (update <| this.Remote<UserService> ())
                               view
             |> Program.withRouter router
