@@ -1,5 +1,6 @@
 .paket/
 .vscode/
+.config/
 packages/
 paket-files/
 node_modules/

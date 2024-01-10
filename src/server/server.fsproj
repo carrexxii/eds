@@ -5,7 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="templates.fs" />
+    <Compile Include="services.fs" />
     <Compile Include="userservice.fs" />
+    <Compile Include="studentservice.fs" />
     <Compile Include="startup.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -15,6 +17,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.*" />
     <PackageReference Include="Bolero.Server" Version="0.*" />
     <PackageReference Include="Bolero.HotReload.Server" Version="0.*" />
+    <PackageReference Include="Mondocks.Net" Version="0.6.*" />
+    <PackageReference Include="MongoDB.Driver" Version="2.23.*" />
   </ItemGroup>
   <PropertyGroup>
     <BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>

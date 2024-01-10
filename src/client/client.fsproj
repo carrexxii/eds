@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="students.fs" />
     <Compile Include="main.fs" />
     <Compile Include="startup.fs" />
   </ItemGroup>

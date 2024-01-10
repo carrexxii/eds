@@ -62,13 +62,13 @@ module Main =
     let update remote msg model =
         printfn $"{msg} -> {model}"
         match msg with
-        | SetPage page     -> { model with page = page }, Cmd.none
-        | SetUsername name -> { model with username = name }, Cmd.none
-        | SetPassword pw   -> { model with password = pw }, Cmd.none
+        | SetPage page'     -> { model with page = page' }, Cmd.none
+        | SetUsername name' -> { model with username = name' }, Cmd.none
+        | SetPassword pw'   -> { model with password = pw' }, Cmd.none
 
         | SubmitLogin -> model, Cmd.OfAsync.either remote.signIn (model.username, model.password) LoginResult ErrorExn
-        | LoginResult r ->
-            (match r with
+        | LoginResult result ->
+            (match result with
             | None -> { model with signedInAs = Some model.username },
                       SetPage Home |> Cmd.ofMsg
             | Some err -> model,
@@ -76,14 +76,14 @@ module Main =
         | ClearLoginForm -> { model with username = ""; password = "" }, Cmd.none
 
         | GetSignedInAs -> model, Cmd.OfAuthorized.either remote.getUsername () RecvSignedInAs ErrorExn
-        | RecvSignedInAs name ->
+        | RecvSignedInAs name' ->
             { model with
-                username   = Option.defaultValue "" name
-                signedInAs = name },
+                username   = Option.defaultValue "" name'
+                signedInAs = name' },
             Cmd.none
 
         | DisplayError err -> { model with error = Some err }, Cmd.none
-        | ErrorExn err -> { model with error = Some (err.ToString ()) }, Cmd.none
+        | ErrorExn exn -> { model with error = Some (exn.ToString ()) }, Cmd.none
         | ClearError -> { model with error = None }, Cmd.none
 
     let router =
