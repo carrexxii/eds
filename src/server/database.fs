@@ -1,7 +1,25 @@
 namespace Server
 
-open MongoDB.Driver
+open Npgsql
+open Npgsql.FSharp
 
 module Database =
-    let client = MongoClient @"mongodb://127.0.0.1:27017"
-    let db     = client.GetDatabase "eds"
+    let connStr =
+        Sql.host "localhost"
+        |> Sql.database "test"
+        |> Sql.username "postgres"
+        |> Sql.password "postgres"
+        |> Sql.port 5432
+        |> Sql.formatConnectionString
+
+    let query str reader =
+        connStr
+        |> Sql.connect
+        |> Sql.query str
+        |> Sql.execute reader
+
+    let exec str =
+        connStr
+        |> Sql.connect
+        |> Sql.query str
+        |> Sql.executeNonQuery

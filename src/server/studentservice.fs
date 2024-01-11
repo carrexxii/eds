@@ -1,37 +1,33 @@
 namespace Server
 
-open System.Collections.Generic
-open Microsoft.AspNetCore.Hosting
+open System
+
 open Bolero.Remoting
-open Bolero.Remoting.Server
-open MongoDB.Bson
-open MongoDB.Driver
-open Mondocks.Queries
+open Npgsql
+open Npgsql.FSharp
+
+open Database
 
 module StudentService =
     type Model = Client.Types.Student.Model
-    let students  = Database.db.GetCollection<Model> "testing"
-    let queryable = students.AsQueryable<Model> ()
 
-    let get id = 
-        query {
-            for student in queryable do
-            where (student.id = id)
-            select student
-        }
-        |> Seq.tryHead
+    let add name surname dob =
+        exec
+        <| $"INSERT INTO \"Students\"
+             (name, surname, dob) VALUES
+             ('{name}', '{surname}', '{dob}')"
+        |> ignore
 
-    // get       : StudentID -> Async<Student.Model>
-    let add name =
-        let model =
-            { id      = ObjectId.GenerateNewId ()
-              name    = name
-              surname = ""
-              dob     = System.DateTime.Now }: Model
-        students.InsertOne model
-        model
-
-    // add       : Student.Model -> Async<Result<StudentID, string>>
-    // setName   : StudentID -> string -> Async<option<string>>
-    // setSurname: StudentID -> string -> Async<option<string>>
-    // setDoB    : StudentID -> DateOnly -> Async<option<string>>
+    let get id =
+        query
+        <| $"SELECT * FROM \"Students\"
+             WHERE id = {id}"
+        <| (fun read -> { id      = read.int64    "id"
+                          name    = read.string   "name"
+                          surname = read.string   "surname"
+                          dob     = read.dateOnly "dob" }: Model)
+        |> List.tryHead
+        
+        // setStudentName   : StudentID -> string -> Async<string option>
+        // setStudentSurname: StudentID -> string -> Async<string option>
+        // setStudentDoB    : StudentID -> DateOnly -> Async<string option>

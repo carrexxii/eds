@@ -7,24 +7,24 @@ open Bolero.Remoting
 
 [<AutoOpen>]
 module Types =
-    type StudentID = MongoDB.Bson.ObjectId
+    type StudentID = int64
     module Student =
         type Model =
             { id     : StudentID
               name   : string
               surname: string
-              dob    : DateTime }
+              dob    : DateOnly }
 
         type Message =
             | SetName    of string
             | SetSurname of string
-            | SetDoB     of DateTime
+            | SetDoB     of DateOnly
 
             | GetStudent of StudentID
             | GotStudent of Model option
 
             | AddStudent   of string
-            | AddedStudent of Model
+            | AddedStudent
 
             | ErrorExn      of exn
 
@@ -90,10 +90,10 @@ module Types =
             getUsername: unit -> Async<string>
 
             getStudent       : StudentID -> Async<Student.Model option>
-            addStudent       : string -> Async<Student.Model>
-            // setStudentName   : StudentID -> string -> Async<string option>
-            // setStudentSurname: StudentID -> string -> Async<string option>
-            // setStudentDoB    : StudentID -> DateOnly -> Async<string option>
+            addStudent       : string * string * DateTime -> Async<unit>
+        //     // setStudentName   : StudentID -> string -> Async<string option>
+        //     // setStudentSurname: StudentID -> string -> Async<string option>
+        //     // setStudentDoB    : StudentID -> DateOnly -> Async<string option>
         }
 
         interface IRemoteService with
