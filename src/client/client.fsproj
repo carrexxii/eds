@@ -4,7 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="students.fs" />
+    <Compile Include="types.fs" />
+    <Compile Include="student.fs" />
     <Compile Include="main.fs" />
     <Compile Include="startup.fs" />
   </ItemGroup>
@@ -13,6 +14,7 @@
     <PackageReference Include="Bolero.Build" Version="0.*" />
     <PackageReference Include="Bolero.HotReload" Version="0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.*" />
+    <PackageReference Include="Mondocks.Net" Version="0.6.*" />
   </ItemGroup>
   <PropertyGroup>
     <BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>

@@ -7,62 +7,17 @@ open Bolero.Templating.Client
 open Bolero.Remoting
 open Bolero.Remoting.Client
 
+open Main
+
 module Main =
-    type Page =
-        | [<EndPoint "/"       >] Home
-        | [<EndPoint "/profile">] Profile
-        | [<EndPoint "/db"     >] DBTest
-        | [<EndPoint "/login"  >] Login
-        | [<EndPoint "/404"    >] Page404
-
-    type Model =
-        { page        : Page
-          error       : option<string>
-          username    : string
-          password    : string
-          signedInAs  : option<string>
-          signInFailed: bool }
-        static member Default =
-            { page         = Home
-              error        = None
-              username     = ""
-              password     = ""
-              signedInAs   = None
-              signInFailed = false }
-
-    type LoginModel =
-        { id  : int64
-          name: string }
-        static member Default =
-            { id   = -1
-              name = "" }
-
-    type UserService =
-        {
-            signIn     : string * string -> Async<option<string>>
-            getUsername: unit -> Async<string>
-        }
-
-        interface IRemoteService with
-            member this.BasePath = "/profile"
-
-    type Message =
-        | SetPage     of Page
-        | SetUsername of string
-        | SetPassword of string
-        | SubmitLogin
-        | LoginResult of option<string>
-        | GetSignedInAs
-        | RecvSignedInAs of option<string>
-        | ClearLoginForm
-        | DisplayError of string
-        | ErrorExn of exn
-        | ClearError
+    let init () =
+        ()
 
     let update remote msg model =
-        printfn $"{msg} -> {model}"
+        // printfn $"{msg} -> {model}"
         match msg with
-        | SetPage page'     -> { model with page = page' }, Cmd.none
+        | SetPage page'     -> { model with page = page' },
+                               Cmd.ofMsg (StudentMsg <| Student.AddStudent "test")
         | SetUsername name' -> { model with username = name' }, Cmd.none
         | SetPassword pw'   -> { model with password = pw' }, Cmd.none
 
@@ -86,6 +41,16 @@ module Main =
         | ErrorExn exn -> { model with error = Some (exn.ToString ()) }, Cmd.none
         | ClearError -> { model with error = None }, Cmd.none
 
+        | StudentMsg msg ->
+            match model.userData with
+            // | Student studentModel ->
+                // let data, msg = Student.update remote msg studentModel
+                // { model with userData = Student data }, Cmd.map StudentMsg msg
+            | Anonymous ->
+                let msg = Student.update remote msg
+                model, Cmd.map StudentMsg msg
+            | _ -> model, Cmd.none
+
     let router =
         Router.infer SetPage (fun model -> model.page)
         |> Router.withNotFound Page404
@@ -100,7 +65,6 @@ module Main =
 
     type ProfileTmpl = Template<"wwwroot/profile.html">
     let profileView model dispatch =
-        printfn $"---> {model.signedInAs}" 
         match model.signedInAs with
         | None ->
             // SetPage Login |> dispatch
@@ -133,7 +97,7 @@ module Main =
 
         override this.Program =
             Program.mkProgram (fun _ -> Model.Default, Cmd.ofMsg GetSignedInAs)
-                              (update <| this.Remote<UserService> ())
+                              (update <| this.Remote<Services> ())
                               view
             |> Program.withRouter router
 #if DEBUG

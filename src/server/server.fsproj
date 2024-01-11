@@ -4,14 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="templates.fs" />
-    <Compile Include="services.fs" />
-    <Compile Include="userservice.fs" />
-    <Compile Include="studentservice.fs" />
-    <Compile Include="startup.fs" />
+    <ProjectReference Include="../client/client.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../client/client.fsproj" />
+    <Compile Include="templates.fs" />
+    <Compile Include="database.fs" />
+    <Compile Include="studentservice.fs" />
+    <Compile Include="services.fs" />
+    <Compile Include="startup.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.*" />

@@ -23,7 +23,7 @@ type Startup () =
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie()
                 .Services
-            .AddBoleroRemoting<UserService>()
+            .AddBoleroRemoting<Services>()
             .AddBoleroHost()
 #if DEBUG
             .AddHotReload(templateDir = "templates/")
