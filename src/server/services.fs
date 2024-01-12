@@ -14,8 +14,9 @@ type Services (ctx: IRemoteContext, env: IWebHostEnvironment) =
 
     override this.Handler =
         {
-            getStudent = fun id -> async { return StudentService.get id }
-            addStudent = fun (name, surname, dob) -> async { return StudentService.add name surname dob }
+            getStudent    = fun id -> async { return StudentService.get id }
+            addStudent    = fun model -> async { return StudentService.add model }
+            updateStudent = fun (id, model) -> async { return StudentService.update id model }
 
             signIn = fun (name, pw) -> async {
                 match name, pw with

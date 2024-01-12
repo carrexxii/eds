@@ -17,7 +17,7 @@ module Student =
         // | GetStudent id -> model, Cmd.OfAsync.either remote.getStudent id GotStudent ErrorExn
         // | GotStudent model -> failwith "succcceeeessss"
 
-        | AddStudent name -> Cmd.OfAsync.either remote.addStudent (name, "SD", DateTime.Now) (fun _ -> AddedStudent) ErrorExn
+        | AddStudent name -> Cmd.OfAsync.either remote.updateStudent (4, {Model.Default with name = "qwe"; surname = "poi"}) (fun _ -> AddedStudent) ErrorExn
         | AddedStudent    -> Cmd.none
 
         // | Add model ->

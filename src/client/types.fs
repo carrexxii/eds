@@ -14,6 +14,11 @@ module Types =
               name   : string
               surname: string
               dob    : DateOnly }
+            static member Default =
+                { id      = -1
+                  name    = ""
+                  surname = ""
+                  dob     = DateOnly.MinValue }
 
         type Message =
             | SetName    of string
@@ -89,11 +94,9 @@ module Types =
             signIn     : string * string -> Async<string option>
             getUsername: unit -> Async<string>
 
-            getStudent       : StudentID -> Async<Student.Model option>
-            addStudent       : string * string * DateTime -> Async<unit>
-        //     // setStudentName   : StudentID -> string -> Async<string option>
-        //     // setStudentSurname: StudentID -> string -> Async<string option>
-        //     // setStudentDoB    : StudentID -> DateOnly -> Async<string option>
+            getStudent   : StudentID -> Async<Student.Model option>
+            addStudent   : Student.Model -> Async<unit>
+            updateStudent: StudentID * Student.Model -> Async<string option>
         }
 
         interface IRemoteService with
