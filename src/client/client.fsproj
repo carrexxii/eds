@@ -7,6 +7,7 @@
     <Compile Include="types.fs" />
     <Compile Include="components.fs" />
     <Compile Include="student.fs" />
+    <Compile Include="user.fs" />
     <Compile Include="main.fs" />
     <Compile Include="startup.fs" />
   </ItemGroup>

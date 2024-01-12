@@ -36,6 +36,32 @@ module Types =
             // | Add    of Model
             // | Delete of StudentID
 
+    type UserID = int64
+    module User =
+        type Model =
+            { id  : UserID
+              name: string
+              form: string * string
+              kind: Kind }
+            static member Default =
+                { id   = -1
+                  name = ""
+                  form = ("", "")
+                  kind = Anonymous }
+        and Kind =
+            | Anonymous
+            // | Admin of Admin.Model
+            | Student of Student.Model
+            // | Teacher of Teacher.Model
+        
+        type Message =
+            | SetUsername of string
+            | SetPassword of string
+            | SubmitLogin
+            | RecvLogin   of Result<string, string>
+            | ErrorMsg    of exn
+            | Completed   of Result<Model, string>
+
     module Main =
         type Page =
             | [<EndPoint "/"       >] Home
@@ -45,33 +71,13 @@ module Types =
             | [<EndPoint "/404"    >] Page404
 
         type Model =
-            { page        : Page
-              error       : string option
-              username    : string
-              password    : string
-              signedInAs  : string option
-              signInFailed: bool
-              userData    : UserData }
+            { page    : Page
+              user    : User.Model option
+              error   : string option }
             static member Default =
-                { page         = Home
-                  error        = None
-                  username     = ""
-                  password     = ""
-                  signedInAs   = None
-                  signInFailed = false
-                  userData     = Anonymous }
-        and UserData =
-            | Anonymous
-            | Student of Student.Model
-            // | Teacher of Teacher.Model
-            // | Admin   of Admin.Model
-
-        type LoginModel =
-            { id  : int64
-              name: string }
-            static member Default =
-                { id   = -1
-                  name = "" }
+                { page     = Home
+                  user     = None
+                  error    = None }
 
         type Message =
             | SetPage     of Page
@@ -82,16 +88,17 @@ module Types =
             | GetSignedInAs
             | RecvSignedInAs of option<string>
             | ClearLoginForm
-            | DisplayError of string
+            | ErrorMsg of string
             | ErrorExn of exn
             | ClearError
 
+            | UserMsg    of User.Message
             | StudentMsg of Student.Message
             // | UserMsg    of User.Message
 
     type Services =
         {
-            signIn     : string * string -> Async<string option>
+            signIn     : string * string -> Async<Result<string, string>>
             getUsername: unit -> Async<string>
 
             getStudent   : StudentID -> Async<Student.Model option>
