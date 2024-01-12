@@ -8,6 +8,7 @@ open Bolero.Remoting
 open Bolero.Remoting.Client
 
 open Main
+open Components
 
 module Main =
     let init () =
@@ -16,8 +17,7 @@ module Main =
     let update remote msg model =
         // printfn $"{msg} -> {model}"
         match msg with
-        | SetPage page'     -> { model with page = page' },
-                               Cmd.ofMsg (StudentMsg <| Student.AddStudent "test")
+        | SetPage page'     -> { model with page = page' }, Cmd.none
         | SetUsername name' -> { model with username = name' }, Cmd.none
         | SetPassword pw'   -> { model with password = pw' }, Cmd.none
 
@@ -57,11 +57,21 @@ module Main =
 
     type LoginTmpl = Template<"wwwroot/login.html">
     let loginView model dispatch =
-        LoginTmpl()
-            .Username(model.username, (fun name -> SetUsername name |> dispatch))
-            .Password(model.password, (fun pw -> SetPassword pw |> dispatch))
-            .Login(fun btn -> dispatch SubmitLogin)
-            .Elt()
+        form {
+            on.submit (fun _ -> SubmitLogin |> dispatch)
+            ecomp<Input, _, _>
+                { label = "Username: "; value = model.username }
+                (fun name -> SetUsername name |> dispatch)
+                { attr.empty () }
+            ecomp<Input, _, _>
+                { label = "Password: "; value = model.password }
+                (fun pw -> SetPassword pw |> dispatch)
+                { attr.empty () }
+            ecomp<Button, _, _>
+                "Login"
+                (fun _ -> SubmitLogin |> dispatch)
+                { attr.empty () }
+        }
 
     type ProfileTmpl = Template<"wwwroot/profile.html">
     let profileView model dispatch =

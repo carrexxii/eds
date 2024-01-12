@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .text-input {
+        @apply border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-black;
+    }
+    .label {
+        @apply block
+    }
+    .button {
+        @apply m-2 p-2 block rounded-lg border-2 bg-indigo-500 border-indigo-300 hover:bg-indigo-300
+    }
+}
