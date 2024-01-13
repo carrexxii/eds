@@ -10,7 +10,7 @@ open Student
 module Student =
     let update (remote: Services) msg =
         match msg with
-        // | SetName name'       -> { model with name = name' },       Cmd.none
+        // | SetName name'       -> { mosdel with name = name' },       Cmd.none
         // | SetSurname surname' -> { model with surname = surname' }, Cmd.none
         // | SetDoB dob'         -> { model with dob = dob' },         Cmd.none
 

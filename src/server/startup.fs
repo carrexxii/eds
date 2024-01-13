@@ -8,7 +8,6 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Bolero.Remoting.Server
 open Bolero.Server
-open Bolero.Templating.Server
 
 open Templates
 
@@ -25,10 +24,6 @@ type Startup () =
                 .Services
             .AddBoleroRemoting<Services>()
             .AddBoleroHost()
-#if DEBUG
-            .AddHotReload(templateDir = "templates/")
-            .AddHotReload(templateDir = "../client/wwwroot/")
-#endif
         |> ignore
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,9 +37,6 @@ type Startup () =
             .UseAuthorization()
             .UseBlazorFrameworkFiles()
             .UseEndpoints(fun endpoints ->
-#if DEBUG
-                endpoints.UseHotReload ()
-#endif
                 endpoints.MapBoleroRemoting () |> ignore
                 endpoints.MapBlazorHub () |> ignore
                 endpoints.MapFallbackToBolero (buildIndex ()) |> ignore)

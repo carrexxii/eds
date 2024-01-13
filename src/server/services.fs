@@ -6,6 +6,8 @@ open Microsoft.AspNetCore.Hosting
 open Bolero.Remoting
 open Bolero.Remoting.Server
 
+type UserModel = Client.Types.User.Model
+
 type Service =
     | Students
 
@@ -22,12 +24,15 @@ type Services (ctx: IRemoteContext, env: IWebHostEnvironment) =
                 match name, pw with
                 | "name", "pw" ->
                     do! ctx.HttpContext.AsyncSignIn (name, TimeSpan.FromDays 1)
-                    return None
-                | "name", _ -> return Some "Incorrect password"
-                | _, _ -> return Some "Incorrect username"
+                    return Ok { UserModel.Default
+                                with name = name }
+                | "name", _ -> return Error "Incorrect password"
+                | _, _ -> return Error "Incorrect username"
             }
 
-            getUsername = ctx.Authorize <| fun () -> async {
-                return ctx.HttpContext.User.Identity.Name
+            getUser = ctx.Authorize <| fun () -> async {
+                let name = ctx.HttpContext.User.Identity.Name
+                return { UserModel.Default
+                         with name = name }
             }
         }

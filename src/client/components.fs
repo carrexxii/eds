@@ -29,3 +29,11 @@ module Components =
                 attr.``class`` "button"
                 text
             }
+    
+    type Profile () =
+        inherit ElmishComponent<User.Model, string> ()
+
+        override this.View user dispatch =
+            div {
+                p { user.name }
+            }

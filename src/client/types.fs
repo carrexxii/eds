@@ -53,14 +53,18 @@ module Types =
             // | Admin of Admin.Model
             | Student of Student.Model
             // | Teacher of Teacher.Model
-        
+
         type Message =
             | SetUsername of string
             | SetPassword of string
             | SubmitLogin
-            | RecvLogin   of Result<string, string>
-            | ErrorMsg    of exn
-            | Completed   of Result<Model, string>
+            | ClearForm
+            | GetSession
+            | RecvLogin   of Result<Model, string>
+            | RecvUser    of Model option
+            | ErrorMsg    of string
+            | ErrorExn    of exn
+            | Completed
 
     module Main =
         type Page =
@@ -71,35 +75,27 @@ module Types =
             | [<EndPoint "/404"    >] Page404
 
         type Model =
-            { page    : Page
-              user    : User.Model option
-              error   : string option }
+            { page : Page
+              user : User.Model
+              error: string option }
             static member Default =
-                { page     = Home
-                  user     = None
-                  error    = None }
+                { page  = Home
+                  user  = User.Model.Default
+                  error = None }
 
         type Message =
-            | SetPage     of Page
-            | SetUsername of string
-            | SetPassword of string
-            | SubmitLogin
-            | LoginResult of option<string>
-            | GetSignedInAs
-            | RecvSignedInAs of option<string>
-            | ClearLoginForm
+            | SetPage  of Page
             | ErrorMsg of string
             | ErrorExn of exn
             | ClearError
 
             | UserMsg    of User.Message
             | StudentMsg of Student.Message
-            // | UserMsg    of User.Message
 
     type Services =
         {
-            signIn     : string * string -> Async<Result<string, string>>
-            getUsername: unit -> Async<string>
+            signIn : string * string -> Async<Result<User.Model, string>>
+            getUser: unit -> Async<User.Model>
 
             getStudent   : StudentID -> Async<Student.Model option>
             addStudent   : Student.Model -> Async<unit>
@@ -107,4 +103,4 @@ module Types =
         }
 
         interface IRemoteService with
-            member this.BasePath = "/serverRequest"
+            member this.BasePath = "/server"
