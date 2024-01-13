@@ -81,7 +81,7 @@ module Types =
             static member Default =
                 { page  = Home
                   user  = User.Model.Default
-                  error = None }
+                  error = Some "error message" }
 
         type Message =
             | SetPage  of Page

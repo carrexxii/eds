@@ -17,7 +17,7 @@ module Components =
                 input {
                     attr.``class`` "text-input"
                     attr.value model.value
-                    on.change (fun e -> unbox e.Value |> dispatch)
+                    on.change (fun e -> dispatch (unbox e.Value))
                 }
             }
 
@@ -36,4 +36,20 @@ module Components =
         override this.View user dispatch =
             div {
                 p { user.name }
+            }
+
+    type ErrorCard () =
+        inherit ElmishComponent<string, unit> ()
+
+        // override this.View err onClose =
+        override this.View err dispatch =
+            div {
+                attr.``class`` "card-error"
+                button {
+                    attr.``class`` "card-button"
+                    on.click (fun e -> dispatch ())
+                    // on.click (fun e -> onClose ())
+                    "X"
+                }
+                err
             }

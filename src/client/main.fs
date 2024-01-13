@@ -60,12 +60,27 @@ module Main =
             { attr.empty () }
 
     let view state dispatch =
-        match state.page with
-        | Home    -> homeView state dispatch
-        | Profile -> profileView state dispatch
-        | DBTest  -> dbTestView state dispatch
-        | Page404 -> errorView "404" "Page not found"
-        | Login   -> User.view (UserMsg >> dispatch)
+        let page = 
+            match state.page with
+            | Home    -> homeView state dispatch
+            | Profile -> profileView state dispatch
+            | DBTest  -> dbTestView state dispatch
+            | Page404 -> errorView "404" "Page not found"
+            | Login   -> User.view (UserMsg >> dispatch)
+        match state.error with
+        | None -> page
+        | Some err ->
+            concat {
+                page
+                div {
+                    attr.``class`` "card-container"
+                    ecomp<ErrorCard, _, _>
+                        err
+                        // (fun () -> dispatch ClearError)
+                        (fun _ -> dispatch ClearError)
+                        { attr.empty () }
+                }
+            }
 
     type EDS () =
         inherit ProgramComponent<Model, Message> ()

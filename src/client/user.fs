@@ -42,7 +42,7 @@ module User =
                 { label = "Password: "; value = "" }
                 (fun pw -> dispatch (SetPassword pw))
                 { attr.empty () }
-            ecomp<Button, _, _>
+            ecomp<Button, _, _> 
                 "Login"
                 (fun _ -> dispatch SubmitLogin)
                 { attr.empty () }
