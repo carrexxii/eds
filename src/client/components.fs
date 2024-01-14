@@ -5,6 +5,7 @@ open Option
 open Bolero
 open Bolero.Html
 
+[<AutoOpen>]
 module Components =
     type InputModel =
         { label: string

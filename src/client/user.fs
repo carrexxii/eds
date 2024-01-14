@@ -5,9 +5,11 @@ open Bolero.Html
 open Bolero.Remoting.Client
 
 open User
-open Components
 
 module User =
+    let init () =
+        Model.Default
+
     let update remote user msg =
         match msg with
         | SetUsername name' -> { user with form = (name', snd user.form) }, Cmd.none
@@ -26,7 +28,7 @@ module User =
             | Error err ->
                 { user with 
                     nameError = err = IncorrectUsername
-                    pwError   = err = IncorrectPassword},
+                    pwError   = err = IncorrectPassword },
                 Cmd.none
         | RecvUser opt ->
             match opt with
@@ -36,7 +38,7 @@ module User =
         | ErrorExn err -> failwith $"Encountered exception: {err}"
         | Completed -> failwith "Should be caught by parent"
 
-    let loginView user dispatch =
+    let view user dispatch =
         let ifErrorOpt err msg =
             if err then Some msg else None
         form {
@@ -56,16 +58,3 @@ module User =
                 (fun _ -> dispatch SubmitLogin)
                 { attr.empty () }
         }
-
-    let profileView user dispatch =
-        ecomp<ListTable, _, _>
-            { headers = None
-              elems = [ "Name: ", user.name
-                        "ID: ", $"{user.id}" ] }
-            (fun _ -> ())
-            { attr.empty () }
-
-    let view user dispatch =
-        match user.page with
-        | Page.Login   -> loginView user dispatch
-        | Page.Profile -> profileView user dispatch

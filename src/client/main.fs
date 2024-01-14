@@ -8,9 +8,14 @@ open Bolero.Remoting
 open Bolero.Remoting.Client
 
 open Main
-open Components
 
 module Main =
+    let init () =
+        let user = User.init ()
+        { Model.Default with
+            user = user
+            dash = Dashboard.init user } 
+
     let update remote msg state =
         printfn $"{msg} -> {state}"
         match msg with
@@ -27,6 +32,13 @@ module Main =
                 let user', msg' = User.update remote state.user msg
                 { state with user = user' }, Cmd.map UserMsg msg'
         
+        | DashboardMsg msg ->
+            match msg with
+            | Dashboard.Message.Completed -> state, Cmd.none
+            | _ ->
+                let dash', msg' = Dashboard.update remote state.dash msg
+                { state with dash = dash' }, Cmd.map DashboardMsg msg'
+
         // | StudentMsg msg ->
         //     match msg with
         //     | Student.Message.Completed -> state, Cmd.ofMsg (SetPage Page.Home)
@@ -38,11 +50,11 @@ module Main =
         Router.infer SetPage (fun model -> model.page)
         |> Router.withNotFound Page.Error
 
-    type ProfileTmpl = Template<"wwwroot/profile.html">
-    let profileView model dispatch =
-        ProfileTmpl()
-            .Username(model.user.name)
-            .Elt()
+    // type ProfileTmpl = Template<"wwwroot/profile.html">
+    // let profileView model dispatch =
+    //     ProfileTmpl()
+    //         .Username(model.user.name)
+    //         .Elt()
 
     type ErrorTmpl = Template<"wwwroot/error.html">
     let errorView (code: string) (msg: string) =
@@ -50,9 +62,6 @@ module Main =
             .Code(code)
             .Msg(msg)
             .Elt()
-
-    let dbTestView state dispatch = 
-        p { "asd" }
 
     let homeView state dispatch =
         ecomp<Profile, _, _>
@@ -63,14 +72,15 @@ module Main =
     let view state dispatch =
         let page = 
             match state.page with
-            | Page.Home    -> homeView state dispatch
-            | Page.Profile -> profileView state dispatch
-            | Page.DBTest  -> dbTestView state dispatch
-            | Page.Error   -> errorView "404" "Not found"
+            | Page.Home      -> homeView state dispatch
+            | Page.Dashboard -> Dashboard.view state.dash dispatch
+            | Page.Error     -> errorView "404" "Not found"
             | Page.Login ->
+                let dispatch = (UserMsg >> dispatch)
                 match state.user.kind with 
-                | User.Kind.Anonymous -> User.view state.user (UserMsg >> dispatch)
-                | _ -> User.profileView state.user dispatch
+                | User.Kind.Anonymous -> User.view state.user dispatch
+                | _ -> User.view state.user dispatch
+            // | Page.Logout ->
         match state.error with
         | None -> page
         | Some err ->
@@ -89,7 +99,7 @@ module Main =
         inherit ProgramComponent<Model, Message> ()
 
         override this.Program =
-            Program.mkProgram (fun _ -> Model.Default, Cmd.ofMsg (UserMsg User.GetSession))
+            Program.mkProgram (fun _ -> init (), Cmd.ofMsg (UserMsg User.GetSession))
                               (update <| this.Remote<Services> ())
                               view
             |> Program.withRouter router

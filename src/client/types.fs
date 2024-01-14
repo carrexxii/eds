@@ -23,6 +23,8 @@ module Types =
             | Fatal str         -> $"Fatal Error: {str}"
             | Exception e       -> $"Exception: {e}"
 
+///////////////////////////////////////////////////////////////////////////////
+
     type StudentID = int64
     module Student =
         type Model =
@@ -48,24 +50,19 @@ module Types =
             | ErrorExn    of exn
             | Completed
 
+///////////////////////////////////////////////////////////////////////////////
+
     type UserID = int64
     module User =
-        [<RequireQualifiedAccess>]
-        type Page =
-            | [<EndPoint "/login"  >] Login
-            | [<EndPoint "/profile">] Profile
-
         type Model =
-            { page: Page
-              id  : UserID
+            { id  : UserID
               name: string
               kind: Kind
               form: string * string
               nameError: bool
               pwError  : bool }
             static member Default =
-                { page = Page.Login
-                  id   = -1
+                { id   = -1
                   name = ""
                   kind = Anonymous
                   form = ("", "")
@@ -81,29 +78,51 @@ module Types =
             | SetUsername of string
             | SetPassword of string
             | SubmitLogin
-            | ClearForm
             | GetSession
             | RecvLogin   of Result<Model, Error>
             | RecvUser    of Model option
             | ErrorExn    of exn
             | Completed
 
+///////////////////////////////////////////////////////////////////////////////
+
+    module Dashboard =
+        [<RequireQualifiedAccess>]
+        type Page =
+            | [<EndPoint "/profile" >] Profile
+            | [<EndPoint "/students">] Students
+
+        type Model =
+            { page: Page
+              user: User.Model }
+            static member Default =
+                { page = Page.Profile
+                  user = User.Model.Default }
+        
+        type Message =
+            | SetPage of Page
+            | Completed
+
+///////////////////////////////////////////////////////////////////////////////
+
     module Main =
         [<RequireQualifiedAccess>]
         type Page =
-            | [<EndPoint "/"     >] Home
-            | [<EndPoint "/user" >] Profile
-            | [<EndPoint "/db"   >] DBTest
-            | [<EndPoint "/login">] Login
-            | [<EndPoint "/error">] Error
+            | [<EndPoint "/"          >] Home
+            | [<EndPoint "/dashboard" >] Dashboard
+            | [<EndPoint "/login"     >] Login
+            | [<EndPoint "/logout"    >] Logout
+            | [<EndPoint "/error"     >] Error
 
         type Model =
             { page : Page
               user : User.Model
+              dash : Dashboard.Model
               error: Error option }
             static member Default =
                 { page  = Page.Home
                   user  = User.Model.Default
+                  dash  = Dashboard.Model.Default
                   error = None }
 
         type Message =
@@ -112,8 +131,11 @@ module Types =
             | ErrorExn of exn
             | ClearError
 
-            | UserMsg    of User.Message
-            | StudentMsg of Student.Message
+            | UserMsg      of User.Message
+            | DashboardMsg of Dashboard.Message
+            // | StudentMsg of Student.Message
+
+///////////////////////////////////////////////////////////////////////////////
 
     type Services =
         {

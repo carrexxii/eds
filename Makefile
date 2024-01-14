@@ -40,3 +40,7 @@ clean:
 remove: clean
 	rm -rf $(SERVER_DIR)/bin $(SERVER_DIR)/obj
 	rm -rf $(CLIENT_DIR)/bin $(CLIENT_DIR)/obj
+
+.PHONY: cloc
+cloc:
+	cloc src/server src/client --include-lang F#
