@@ -59,3 +59,24 @@ module Components =
                 }
                 err
             }
+
+    type ListTableModel =
+        { headers: string list option
+          elems  : (string * string) list }
+    type ListTable () =
+        inherit ElmishComponent<ListTableModel, unit> ()
+
+        override this.View model _ =
+            table {
+                attr.``class`` "list-table"
+                if isSome model.headers then
+                    tr {
+                        forEach (get model.headers) <| (fun header ->
+                            th { attr.``class`` "list-table-t"; header })
+                    }
+                forEach model.elems <| (fun elem ->
+                    tr {
+                        td { attr.``class`` "list-table-l"; fst elem }
+                        td { attr.``class`` "list-table-r"; snd elem }
+                    })
+            }

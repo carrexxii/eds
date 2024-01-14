@@ -18,7 +18,7 @@ type Services (ctx: IRemoteContext, env: IWebHostEnvironment) =
         {
             getStudent    = fun id -> async { return StudentService.get id }
             addStudent    = fun model -> async { return StudentService.add model }
-            updateStudent = fun (id, model) -> async { return StudentService.update id model }
+            updateStudent = fun model -> async { return StudentService.update model }
 
             signIn = fun (name, pw) -> async {
                 printfn $"Attempting to sign in: {name} | {pw}"

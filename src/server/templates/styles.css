@@ -13,4 +13,9 @@
     .card-error     { @apply m-4 p-2 max-w-64 border-2 bg-red-400 border-black rounded-md text-justify text-sm }
     .card-warning   { @apply m-4 p-2 max-w-64 border-2 bg-orange-400 border-black rounded-md text-justify text-sm }
     .card-button    { @apply float-right p-2 ml-1 mb-1 bg-inherit hover:brightness-75 rounded-full }
+
+    .list-table   { @apply m-4 }
+    .list-table-t { @apply p-2 bg-slate-200 }
+    .list-table-l { @apply pr-4 text-right text-gray-700 }
+    .list-table-r { @apply pl-4 text-left }
 }

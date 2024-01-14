@@ -10,6 +10,7 @@ module Types =
     type Error =
         | IncorrectUsername
         | IncorrectPassword
+        | PageNotFound
         | Warning   of string
         | Fatal     of string
         | Exception of exn
@@ -36,32 +37,35 @@ module Types =
                   dob     = DateOnly.MinValue }
 
         type Message =
-            | SetName    of string
-            | SetSurname of string
-            | SetDoB     of DateOnly
-
-            | GetStudent of StudentID
-            | GotStudent of Model option
-
-            | AddStudent   of string
-            | AddedStudent
-
-            | ErrorExn      of exn
-
-            // | Add    of Model
-            // | Delete of StudentID
+            | SetID       of StudentID
+            | SetName     of string
+            | SetSurname  of string
+            | SetDoB      of DateOnly
+            | GetStudent  of StudentID
+            | RecvStudent of Model option
+            | AddStudent
+            | UpdateStudent
+            | ErrorExn    of exn
+            | Completed
 
     type UserID = int64
     module User =
+        [<RequireQualifiedAccess>]
+        type Page =
+            | [<EndPoint "/login"  >] Login
+            | [<EndPoint "/profile">] Profile
+
         type Model =
-            { id  : UserID
+            { page: Page
+              id  : UserID
               name: string
               kind: Kind
               form: string * string
               nameError: bool
               pwError  : bool }
             static member Default =
-                { id   = -1
+                { page = Page.Login
+                  id   = -1
                   name = ""
                   kind = Anonymous
                   form = ("", "")
@@ -85,19 +89,20 @@ module Types =
             | Completed
 
     module Main =
+        [<RequireQualifiedAccess>]
         type Page =
-            | [<EndPoint "/"       >] Home
-            | [<EndPoint "/profile">] Profile
-            | [<EndPoint "/db"     >] DBTest
-            | [<EndPoint "/login"  >] Login
-            | [<EndPoint "/404"    >] Page404
+            | [<EndPoint "/"     >] Home
+            | [<EndPoint "/user" >] Profile
+            | [<EndPoint "/db"   >] DBTest
+            | [<EndPoint "/login">] Login
+            | [<EndPoint "/error">] Error
 
         type Model =
             { page : Page
               user : User.Model
               error: Error option }
             static member Default =
-                { page  = Home
+                { page  = Page.Home
                   user  = User.Model.Default
                   error = None }
 
@@ -117,7 +122,7 @@ module Types =
 
             getStudent   : StudentID -> Async<Student.Model option>
             addStudent   : Student.Model -> Async<unit>
-            updateStudent: StudentID * Student.Model -> Async<string option>
+            updateStudent: Student.Model -> Async<string option>
         }
 
         interface IRemoteService with

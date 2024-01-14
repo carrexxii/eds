@@ -36,7 +36,7 @@ module User =
         | ErrorExn err -> failwith $"Encountered exception: {err}"
         | Completed -> failwith "Should be caught by parent"
 
-    let view user dispatch =
+    let loginView user dispatch =
         let ifErrorOpt err msg =
             if err then Some msg else None
         form {
@@ -56,3 +56,16 @@ module User =
                 (fun _ -> dispatch SubmitLogin)
                 { attr.empty () }
         }
+
+    let profileView user dispatch =
+        ecomp<ListTable, _, _>
+            { headers = None
+              elems = [ "Name: ", user.name
+                        "ID: ", $"{user.id}" ] }
+            (fun _ -> ())
+            { attr.empty () }
+
+    let view user dispatch =
+        match user.page with
+        | Page.Login   -> loginView user dispatch
+        | Page.Profile -> profileView user dispatch
