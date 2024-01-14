@@ -14,34 +14,43 @@ module User =
         | SetPassword pw'   -> { user with form = (fst user.form, pw')   }, Cmd.none
         | SubmitLogin ->
             match user.form with
-            | "", _
-            | _, "" -> user, Cmd.ofMsg (ErrorMsg $"Both fields need to be filled in, got: name: {fst user.form}; pw: {snd user.form}")
+            | "", "" | "", _  | _ , "" ->
+                { user with
+                    nameError = (fst user.form = "")
+                    pwError   = (snd user.form = "") },
+                Cmd.none
             | _, _ -> user, Cmd.OfAsync.either remote.signIn user.form RecvLogin ErrorExn
-        | ClearForm -> { user with form = ("", "") }, Cmd.none
         | RecvLogin res ->
             match res with
-            | Ok user' -> user', Cmd.none
-            | Error err -> user, Cmd.ofMsg (ErrorMsg err)
+            | Ok user'  -> user', Cmd.ofMsg Completed
+            | Error err ->
+                { user with 
+                    nameError = err = IncorrectUsername
+                    pwError   = err = IncorrectPassword},
+                Cmd.none
         | RecvUser opt ->
             match opt with
             | Some user' -> user', Cmd.ofMsg Completed
             | None -> Model.Default, Cmd.ofMsg Completed
         | GetSession -> printfn "Getting session..."; user, Cmd.OfAuthorized.either remote.getUser () RecvUser ErrorExn
-        | ErrorMsg err -> failwith $"Error message: {err}"
         | ErrorExn err -> failwith $"Encountered exception: {err}"
         | Completed -> failwith "Should be caught by parent"
 
-    let view dispatch =
+    let view user dispatch =
+        let ifErrorOpt err msg =
+            if err then Some msg else None
         form {
             on.submit (fun _ -> dispatch SubmitLogin)
             ecomp<Input, _, _>
-                { label = "Username: "; value = "" }
+                { label = "Username: "; value = ""; error = ifErrorOpt user.nameError "Invalid username" }
                 (fun name -> dispatch (SetUsername name))
                 { attr.empty () }
+            br
             ecomp<Input, _, _>
-                { label = "Password: "; value = "" }
+                { label = "Password: "; value = ""; error = ifErrorOpt user.pwError "Invalid password" }
                 (fun pw -> dispatch (SetPassword pw))
                 { attr.empty () }
+            br
             ecomp<Button, _, _> 
                 "Login"
                 (fun _ -> dispatch SubmitLogin)

@@ -1,23 +1,30 @@
 namespace Client
 
+open Option
+
 open Bolero
 open Bolero.Html
 
 module Components =
     type InputModel =
         { label: string
-          value: string }
+          value: string
+          error: string option }
     type Input () =
         inherit ElmishComponent<InputModel, string> ()
 
         override this.View model dispatch =
             label {
-                attr.``class`` "label"
+                attr.``class`` "label inline-block"
                 model.label
                 input {
-                    attr.``class`` "text-input"
+                    attr.``class`` (if isNone model.error then "text-input" else "text-input-error")
                     attr.value model.value
                     on.change (fun e -> dispatch (unbox e.Value))
+                }
+                p {
+                    attr.``class`` "input-error-text"
+                    defaultValue "" model.error
                 }
             }
 
@@ -48,7 +55,6 @@ module Components =
                 button {
                     attr.``class`` "card-button"
                     on.click (fun e -> dispatch ())
-                    // on.click (fun e -> onClose ())
                     "X"
                 }
                 err

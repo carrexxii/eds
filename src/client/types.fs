@@ -7,6 +7,21 @@ open Bolero.Remoting
 
 [<AutoOpen>]
 module Types =
+    type Error =
+        | IncorrectUsername
+        | IncorrectPassword
+        | Warning   of string
+        | Fatal     of string
+        | Exception of exn
+        with
+        override this.ToString () =
+            match this with
+            | IncorrectUsername -> "Incorrect Username"
+            | IncorrectPassword -> "Incorrect Password"
+            | Warning str       -> $"Warning: {str}"
+            | Fatal str         -> $"Fatal Error: {str}"
+            | Exception e       -> $"Exception: {e}"
+
     type StudentID = int64
     module Student =
         type Model =
@@ -41,13 +56,17 @@ module Types =
         type Model =
             { id  : UserID
               name: string
+              kind: Kind
               form: string * string
-              kind: Kind }
+              nameError: bool
+              pwError  : bool }
             static member Default =
                 { id   = -1
                   name = ""
+                  kind = Anonymous
                   form = ("", "")
-                  kind = Anonymous }
+                  nameError = false
+                  pwError   = false }
         and Kind =
             | Anonymous
             // | Admin of Admin.Model
@@ -60,9 +79,8 @@ module Types =
             | SubmitLogin
             | ClearForm
             | GetSession
-            | RecvLogin   of Result<Model, string>
+            | RecvLogin   of Result<Model, Error>
             | RecvUser    of Model option
-            | ErrorMsg    of string
             | ErrorExn    of exn
             | Completed
 
@@ -77,15 +95,15 @@ module Types =
         type Model =
             { page : Page
               user : User.Model
-              error: string option }
+              error: Error option }
             static member Default =
                 { page  = Home
                   user  = User.Model.Default
-                  error = Some "error message" }
+                  error = None }
 
         type Message =
             | SetPage  of Page
-            | ErrorMsg of string
+            | ErrorMsg of Error
             | ErrorExn of exn
             | ClearError
 
@@ -94,7 +112,7 @@ module Types =
 
     type Services =
         {
-            signIn : string * string -> Async<Result<User.Model, string>>
+            signIn : string * string -> Async<Result<User.Model, Error>>
             getUser: unit -> Async<User.Model>
 
             getStudent   : StudentID -> Async<Student.Model option>

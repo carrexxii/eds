@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 @layer components {
-    .text-input { @apply border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-black; }
-    .label      { @apply block }
-    .button     { @apply m-2 p-2 block rounded-lg border-2 bg-indigo-500 border-indigo-300 hover:bg-indigo-300 }
+    .text-input       { @apply border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-black; }
+    .text-input-error { @apply border-0 border-b-4 border-red-500 focus:ring-0 focus:border-black; }
+    .input-error-text { @apply text-sm text-center text-red-700 }
+    .label  { @apply block }
+    .button { @apply m-2 p-2 block rounded-lg border-2 bg-indigo-500 border-indigo-300 hover:bg-indigo-300 }
 
     .card-container { @apply flex flex-col float-right absolute top-0 right-0 }
     .card-error     { @apply m-4 p-2 max-w-64 border-2 bg-red-400 border-black rounded-md text-justify text-sm }

@@ -11,16 +11,13 @@ open Main
 open Components
 
 module Main =
-    let init () =
-        ()
-
     let update remote msg state =
-        printfn $"{msg} -> {state}"
+        // printfn $"{msg} -> {state}"
         match msg with
         | SetPage page'     -> { state with page = page' }, Cmd.none
 
         | ErrorMsg err -> { state with error = Some err }, Cmd.none
-        | ErrorExn exn -> { state with error = Some (exn.ToString ()) }, Cmd.none
+        | ErrorExn exn -> { state with error = Some (Exception exn) }, Cmd.none
         | ClearError -> { state with error = None }, Cmd.none
 
         | UserMsg msg ->
@@ -66,7 +63,10 @@ module Main =
             | Profile -> profileView state dispatch
             | DBTest  -> dbTestView state dispatch
             | Page404 -> errorView "404" "Page not found"
-            | Login   -> User.view (UserMsg >> dispatch)
+            | Login   ->
+                match state.user.kind with 
+                | User.Kind.Anonymous -> User.view state.user (UserMsg >> dispatch)
+                | _ -> homeView state dispatch
         match state.error with
         | None -> page
         | Some err ->
@@ -75,8 +75,7 @@ module Main =
                 div {
                     attr.``class`` "card-container"
                     ecomp<ErrorCard, _, _>
-                        err
-                        // (fun () -> dispatch ClearError)
+                        (err.ToString ())
                         (fun _ -> dispatch ClearError)
                         { attr.empty () }
                 }
