@@ -27,10 +27,10 @@ module Main =
 
         | UserMsg msg ->
             match msg with
-            | User.Message.Completed -> state, Cmd.none
+            | User.Message.Completed user' -> { state with user = user' }, Cmd.none
             | _ ->
-                let user', msg' = User.update remote state.user msg
-                { state with user = user' }, Cmd.map UserMsg msg'
+                let login', msg' = User.update remote state.login msg
+                { state with login = login' }, Cmd.map UserMsg msg'
         
         | DashboardMsg msg ->
             match msg with
@@ -72,14 +72,17 @@ module Main =
     let view state dispatch =
         let page = 
             match state.page with
-            | Page.Home      -> homeView state dispatch
-            | Page.Dashboard -> Dashboard.view state.dash dispatch
-            | Page.Error     -> errorView "404" "Not found"
+            | Page.Home -> homeView state dispatch
+            | Page.Dashboard page ->
+                match state.user.kind with
+                | User.Anonymous -> errorView "501" "Access denied"
+                | _ -> Dashboard.view page state.dash dispatch
+            | Page.Error -> errorView "404" "Not found"
             | Page.Login ->
                 let dispatch = (UserMsg >> dispatch)
                 match state.user.kind with 
-                | User.Kind.Anonymous -> User.view state.user dispatch
-                | _ -> User.view state.user dispatch
+                | User.Kind.Anonymous -> User.view state.login dispatch
+                | _ -> User.view state.login dispatch
             // | Page.Logout ->
         match state.error with
         | None -> page

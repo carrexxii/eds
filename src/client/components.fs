@@ -81,3 +81,23 @@ module Components =
                         td { attr.``class`` "list-table-r"; snd elem }
                     })
             }
+
+    type TableModel =
+        { headers: string list
+          records: string list list }
+    type Table () =
+        inherit ElmishComponent<TableModel, unit> ()
+
+        override this.View model _ =
+            table {
+                attr.``class`` "table"
+                tr {
+                    forEach model.headers <| (fun header ->
+                            th { attr.``class`` "table-h"; header })
+                }
+                forEach model.records <| (fun record ->
+                    tr {
+                        forEach record <| (fun cell ->
+                            td { cell })
+                    })
+            }

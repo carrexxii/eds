@@ -1,5 +1,7 @@
 namespace Client
 
+open Option
+
 open Elmish
 open Bolero.Html
 open Bolero.Remoting.Client
@@ -10,33 +12,33 @@ module User =
     let init () =
         Model.Default
 
-    let update remote user msg =
+    let update remote login msg =
         match msg with
-        | SetUsername name' -> { user with form = (name', snd user.form) }, Cmd.none
-        | SetPassword pw'   -> { user with form = (fst user.form, pw')   }, Cmd.none
+        | SetPassword pw'   -> { login with password = pw'   }, Cmd.none
+        | SetUsername name' -> { login with name     = name' }, Cmd.none
         | SubmitLogin ->
-            match user.form with
+            match login.name, login.password with
             | "", "" | "", _  | _ , "" ->
-                { user with
-                    nameError = (fst user.form = "")
-                    pwError   = (snd user.form = "") },
+                { login with
+                    nameError = (login.name     = "")
+                    pwError   = (login.password = "") },
                 Cmd.none
-            | _, _ -> user, Cmd.OfAsync.either remote.signIn user.form RecvLogin ErrorExn
-        | RecvLogin res ->
-            match res with
-            | Ok user'  -> user', Cmd.ofMsg Completed
+            | _, _ -> login, Cmd.OfAsync.either remote.signIn login RecvLogin ErrorExn
+        | RecvLogin resp ->
+            match resp with
+            | Ok user   -> login, Cmd.ofMsg (Completed user)
             | Error err ->
-                { user with 
+                { login with 
                     nameError = err = IncorrectUsername
                     pwError   = err = IncorrectPassword },
                 Cmd.none
-        | RecvUser opt ->
-            match opt with
-            | Some user' -> user', Cmd.ofMsg Completed
-            | None -> Model.Default, Cmd.ofMsg Completed
-        | GetSession -> printfn "Getting session..."; user, Cmd.OfAuthorized.either remote.getUser () RecvUser ErrorExn
+        | RecvUser login' -> login, Cmd.ofMsg (Completed (defaultValue Model.Default login'))
+            // match opt with
+            // | Some login' -> { login with login = Some login' }, Cmd.ofMsg Completed
+            // | None -> LoginModel.Default, Cmd.ofMsg Completed
+        | GetSession -> printfn "Getting session..."; login, Cmd.OfAuthorized.either remote.getUser () RecvUser ErrorExn
         | ErrorExn err -> failwith $"Encountered exception: {err}"
-        | Completed -> failwith "Should be caught by parent"
+        | Completed _ -> failwith "Should be caught by parent"
 
     let view user dispatch =
         let ifErrorOpt err msg =
