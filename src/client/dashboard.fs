@@ -28,7 +28,8 @@ module Dashboard =
             { headers = [ "ID"; "Name"; "Surname" ]
               records = [ [ "1"; "Name1"; "Surname1" ]
                           [ "2"; "Name2"; "Surname2" ]
-                          [ "3"; "Name3"; "Surname3" ] ] }
+                          [ "3"; "Name3"; "Surname3" ] ]
+              sortBy = Some (1, Ascending) }
             (fun _ -> ())
             { attr.empty () }
 

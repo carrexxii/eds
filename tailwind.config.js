@@ -5,6 +5,11 @@ module.exports = {
     "./src/client/wwwroot/*.html"
   ],
   theme: {
+    fontFamily: {
+      'sans' : ['inter-regular', 'sans-serif'],
+      'serif': ['serif'],
+      'mono' : ['"IBM Plex Mono"', 'mono'],
+    },
     extend: {},
   },
   plugins: [

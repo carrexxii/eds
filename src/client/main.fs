@@ -17,7 +17,7 @@ module Main =
             dash = Dashboard.init user } 
 
     let update remote msg state =
-        printfn $"{msg} -> {state}"
+        // printfn $"{msg} -> {state}"
         match msg with
         | SetPage page' -> { state with page = page' }, Cmd.none
 

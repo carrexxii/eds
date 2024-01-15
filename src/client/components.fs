@@ -6,6 +6,14 @@ open Bolero
 open Bolero.Html
 
 [<AutoOpen>]
+type SortDirection =
+    | Ascending
+    | Descending
+    static member opposite = function
+        | Ascending  -> Descending
+        | Descending -> Ascending
+
+[<AutoOpen>]
 module Components =
     type InputModel =
         { label: string
@@ -84,20 +92,43 @@ module Components =
 
     type TableModel =
         { headers: string list
-          records: string list list }
+          records: string list list
+          mutable sortBy: (int * SortDirection) option }
     type Table () =
         inherit ElmishComponent<TableModel, unit> ()
 
-        override this.View model _ =
-            table {
-                attr.``class`` "table"
-                tr {
-                    forEach model.headers <| (fun header ->
-                            th { attr.``class`` "table-h"; header })
-                }
-                forEach model.records <| (fun record ->
-                    tr {
-                        forEach record <| (fun cell ->
-                            td { cell })
+        override this.ShouldRender (model, model') =
+            true // TODO: Might need to do this properly later
+
+        override this.View model _ = table {
+            attr.``class`` "table"
+            tr {
+                attr.``class`` "table-row"
+                forEach (List.mapi (fun i header -> i, header ) model.headers)
+                    (fun (i, header) -> th {
+                        attr.``class`` "table-header"
+                        on.click (fun _ ->
+                            let dir = snd (defaultValue (-1, Descending) model.sortBy)
+                            model.sortBy <- Some (i, opposite dir))
+
+                        header
+                        match model.sortBy with
+                        | Some (si, dir) when si = i -> span {
+                            attr.``class``
+                                (match dir with
+                                 | Ascending  -> "chevron-up"
+                                 | Descending -> "chevron-down")
+                            "_"
+                            }
+                        | _ -> empty ()
                     })
             }
+            forEach model.records <| (fun record -> tr {
+                attr.``class`` "table-row"
+                attr.tabindex "0"
+                forEach record <| (fun cell -> td {
+                    attr.``class`` "table-cell"
+                    cell
+                })
+            })
+        }

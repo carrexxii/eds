@@ -9,3 +9,4 @@ bin/
 data/
 src/client/wwwroot/*.css
 *lock*
+*.ttf

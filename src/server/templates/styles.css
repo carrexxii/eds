@@ -14,8 +14,18 @@
     .card-warning   { @apply m-4 p-2 max-w-64 border-2 bg-orange-400 border-black rounded-md text-justify text-sm }
     .card-button    { @apply float-right p-2 ml-1 mb-1 bg-inherit hover:brightness-75 rounded-full }
 
+    .table         { @apply m-4 border-2 border-slate-400 }
+    .table-row     { @apply even:bg-slate-200 odd:bg-slate-300 [&:not(:first-child)]:hover:bg-slate-100 focus:bg-slate-100 }
+    .table-header  { @apply px-4 py-1.5 border-b-2 border-gray-600 hover:bg-slate-100 }
+    .table-cell    { @apply p-2 border-r-2 border-slate-400 font-light }
+    .table-cell-em { @apply p-2 border-r-2 border-slate-400 bg-inherit brightness-105 }
+
     .list-table   { @apply m-4 }
     .list-table-t { @apply p-2 bg-slate-200 }
     .list-table-l { @apply pr-4 text-right text-gray-700 }
     .list-table-r { @apply pl-4 text-left }
+
+    .svg-icon { @apply bg-no-repeat bg-cover bg-center text-transparent }
+    .chevron-down   { @apply svg-icon px-1; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>') }
+    .chevron-up     { @apply svg-icon px-1; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" /></svg>') }
 }
