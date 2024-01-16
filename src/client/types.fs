@@ -38,6 +38,16 @@ module Types =
                   name    = ""
                   surname = ""
                   dob     = DateOnly.MinValue }
+            static member FieldList =
+                [ "ID"
+                  "Name"
+                  "Surname"
+                  "DoB" ]
+            member this.toStringList () =
+                [ this.id.ToString ()
+                  this.name
+                  this.surname
+                  this.dob.ToString () ]
 
         type Message =
             | SetID       of StudentID
@@ -99,11 +109,18 @@ module Types =
             | [<EndPoint "/students">] Students
 
         type Model =
-            { user: User.Model }
+            { user: User.Model
+              studentRecords: Student.Model list option
+              gettingRecords: bool }
             static member Default =
-                { user = User.Model.Default }
+                { user = User.Model.Default
+                  studentRecords = None
+                  gettingRecords = false }
         
         type Message =
+            | GetStudentList
+            | RecvStudentList of Student.Model list option
+            | ErrorExn        of exn
             | Completed
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,9 +153,8 @@ module Types =
             | ErrorExn of exn
             | ClearError
 
-            | UserMsg      of User.Message
-            | DashboardMsg of Dashboard.Message
-            // | StudentMsg of Student.Message
+            | UserMsg of User.Message
+            | DashMsg of Dashboard.Message
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -148,9 +164,10 @@ module Types =
             signOut: unit -> Async<unit>
             getUser: unit -> Async<User.Model>
 
-            getStudent   : StudentID -> Async<Student.Model option>
-            addStudent   : Student.Model -> Async<unit>
-            updateStudent: Student.Model -> Async<string option>
+            getStudent    : StudentID -> Async<Student.Model option>
+            getStudentList: unit -> Async<Student.Model list option>
+            addStudent    : Student.Model -> Async<unit>
+            updateStudent : Student.Model -> Async<string option>
         }
 
         interface IRemoteService with

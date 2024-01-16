@@ -32,12 +32,12 @@ module Main =
                 let login', msg' = User.update remote state.login msg
                 { state with login = login' }, Cmd.map UserMsg msg'
         
-        | DashboardMsg msg ->
+        | DashMsg msg ->
             match msg with
             | Dashboard.Message.Completed -> state, Cmd.none
             | _ ->
                 let dash', msg' = Dashboard.update remote state.dash msg
-                { state with dash = dash' }, Cmd.map DashboardMsg msg'
+                { state with dash = dash' }, Cmd.map DashMsg msg'
 
         // | StudentMsg msg ->
         //     match msg with
@@ -76,7 +76,7 @@ module Main =
             | Page.Dashboard page ->
                 match state.user.kind with
                 | User.Anonymous -> errorView "501" "Access denied"
-                | _ -> Dashboard.view page state.dash dispatch
+                | _ -> Dashboard.view page state.dash (DashMsg >> dispatch)
             | Page.Error -> errorView "404" "Not found"
             | Page.Login ->
                 let dispatch = (UserMsg >> dispatch)

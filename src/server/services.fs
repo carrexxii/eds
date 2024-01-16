@@ -16,9 +16,10 @@ type Services (ctx: IRemoteContext, env: IWebHostEnvironment) =
 
     override this.Handler =
         {
-            getStudent    = fun id -> async { return StudentService.get id }
-            addStudent    = fun model -> async { return StudentService.add model }
-            updateStudent = fun model -> async { return StudentService.update model }
+            getStudent     = fun id -> async { return StudentService.get id }
+            getStudentList = fun () -> async { return StudentService.getMany () }
+            addStudent     = fun model -> async { return StudentService.add model }
+            updateStudent  = fun model -> async { return StudentService.update model }
 
             // Claims: https://fsbolero.io/docs/Remoting#authentication-and-authorization:~:text=%7C%20%22administrator%22%20%2D%3E%20%5BClaim(ClaimTypes.Role%2C%20%22admin%22)%5D
             signIn = fun model -> async {

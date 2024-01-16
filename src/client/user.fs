@@ -33,9 +33,6 @@ module User =
                     pwError   = err = IncorrectPassword },
                 Cmd.none
         | RecvUser login' -> login, Cmd.ofMsg (Completed (defaultValue Model.Default login'))
-            // match opt with
-            // | Some login' -> { login with login = Some login' }, Cmd.ofMsg Completed
-            // | None -> LoginModel.Default, Cmd.ofMsg Completed
         | GetSession -> printfn "Getting session..."; login, Cmd.OfAuthorized.either remote.getUser () RecvUser ErrorExn
         | ErrorExn err -> failwith $"Encountered exception: {err}"
         | Completed _ -> failwith "Should be caught by parent"

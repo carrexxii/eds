@@ -57,7 +57,6 @@ module Components =
     type ErrorCard () =
         inherit ElmishComponent<string, unit> ()
 
-        // override this.View err onClose =
         override this.View err dispatch =
             div {
                 attr.``class`` "card-error"

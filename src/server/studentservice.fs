@@ -7,6 +7,12 @@ open Database
 module StudentService =
     type Model = Client.Types.Student.Model
 
+    let private readModel (read: RowReader) = 
+        { id      = read.int64    "id"
+          name    = read.string   "name"
+          surname = read.string   "surname"
+          dob     = read.dateTime "dob" |> System.DateOnly.FromDateTime }: Model
+
     let add (model: Model) =
         if model.id <> -1 then printfn $"Unexpected model id: \"{model.id}\". Should be -1 to indicate new record." // TODO: logging
         else exec <| $"INSERT INTO \"Students\"
@@ -17,11 +23,15 @@ module StudentService =
     let get id =
         query <| $"SELECT * FROM \"Students\"
                    WHERE id = {id}"
-              <| (fun read -> { id      = read.int64    "id"
-                                name    = read.string   "name"
-                                surname = read.string   "surname"
-                                dob     = read.dateOnly "dob" }: Model)
+              <| readModel
               |> List.tryHead
+
+    let getMany () =
+        query <| $"SELECT * FROM \"Students\""
+              <| readModel
+              |> function
+                 | [] -> None
+                 | xs -> Some xs
 
     let update (model: Model) =
         if model.id < 0 then Some "Error updating record: invalid id"
