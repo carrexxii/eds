@@ -1,5 +1,6 @@
 namespace Client
 
+open System
 open Option
 
 open Elmish
@@ -14,6 +15,15 @@ module Dashboard =
 
     let update remote state msg =
         match msg with
+        | SetStudentName    name'    -> { state with student.name = name' }, Cmd.none
+        | SetStudentSurname surname' -> { state with student.surname = surname' }, Cmd.none
+        | SetStudentDoB     dob'     ->
+            let date = ref<DateOnly> DateOnly.MinValue
+            match DateOnly.TryParse (dob', date) with
+            | true  -> { state with student.dob = date.Value }, Cmd.none
+            | false -> state, Cmd.none
+        | ClearStudent               -> { state with student = Student.Model.Default }, Cmd.none
+        | SubmitStudent -> state, Cmd.OfAsync.either remote.addStudent state.student (fun _ -> ClearStudent) ErrorExn
         | GetStudentList ->
             { state with gettingRecords = true },
             Cmd.OfAsync.either remote.getStudentList () RecvStudentList ErrorExn
@@ -46,19 +56,44 @@ module Dashboard =
             { attr.empty () }
 
     let studentsView state dispatch =
-        match state.studentRecords with
-        | None ->
-            if not state.gettingRecords then dispatch GetStudentList
-            p { "Loading..." }
-        | Some records ->
-            let headers = Student.Model.FieldList |> Array.ofList
-            let records = Array.map (fun (model: Student.Model) -> model.toStringArray ()) records
-            ecomp<Table, _, _>
-                { headers = headers
-                  records = records
-                  sortBy  = state.sortBy }
-                (fun i -> dispatch (SortStudents i))
-                { attr.empty () }
+        concat {
+            form {
+                attr.``class`` "form"
+                ecomp<Input, _, _>
+                    { InputModel.Default with
+                        value = state.student.name.ToString () }
+                    (fun name -> dispatch (SetStudentName name))
+                    { attr.empty () }
+                ecomp<Input, _, _>
+                    { InputModel.Default with
+                        value = state.student.surname.ToString () }
+                    (fun surname -> dispatch (SetStudentSurname surname))
+                    { attr.empty () }
+                ecomp<Input, _, _>
+                    { InputModel.Default with
+                        value = state.student.dob.ToString () }
+                    (fun dob -> dispatch (SetStudentDoB dob))
+                    { attr.empty () }
+                ecomp<Button, _, _>
+                    "Add"
+                    (fun () -> dispatch SubmitStudent)
+                    { attr.empty () }
+            }
+
+            match state.studentRecords with
+            | None ->
+                if not state.gettingRecords then dispatch GetStudentList
+                p { "Loading..." }
+            | Some records ->
+                let headers = Student.Model.FieldList |> Array.ofList
+                let records = Array.map (fun (model: Student.Model) -> model.toStringArray ()) records
+                ecomp<Table, _, _>
+                    { headers = headers
+                      records = records
+                      sortBy  = state.sortBy }
+                    (fun i -> dispatch (SortStudents i))
+                    { attr.empty () }
+        }
 
     let view page state dispatch =
         match page with

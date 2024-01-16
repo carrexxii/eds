@@ -121,19 +121,27 @@ module Types =
 
         type Model =
             { user          : User.Model
+              student       : Student.Model
               studentRecords: Student.Model array option
               gettingRecords: bool
               sortBy        : (int * SortDirection) option }
             static member Default =
-                { user = User.Model.Default
+                { user           = User.Model.Default
+                  student        = Student.Model.Default
                   studentRecords = None
                   gettingRecords = false
                   sortBy         = None }
         
         type Message =
+            | SetStudentName    of string
+            | SetStudentSurname of string
+            | SetStudentDoB     of string
+            | ClearStudent
+            | SubmitStudent
             | GetStudentList
             | RecvStudentList of Student.Model array option
             | SortStudents    of int
+            | ErrorMsg        of string
             | ErrorExn        of exn
             | Completed
 

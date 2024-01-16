@@ -13,11 +13,12 @@ module StudentService =
           surname = read.string   "surname"
           dob     = read.dateTime "dob" |> System.DateOnly.FromDateTime }: Model
 
-    let add (model: Model) =
-        if model.id <> -1 then printfn $"Unexpected model id: \"{model.id}\". Should be -1 to indicate new record." // TODO: logging
+    let add (student: Model) =
+        if student.id <> -1 then failwith $"Unexpected student id: \"{student.id}\". Should be -1 to indicate new record." // TODO: logging
         else exec <| $"INSERT INTO \"Students\"
                        (name, surname, dob) VALUES
-                       ('{model.name}', '{model.surname}', '{model.dob}')"
+                       ('{student.name}', '{student.surname}',
+                        to_timestamp('{student.dob.Year}/{student.dob.Month}/{student.dob.Day}', 'yyyy/mm/dd'))"
                   |> ignore
 
     let get id =

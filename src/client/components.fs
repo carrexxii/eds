@@ -8,20 +8,30 @@ open Bolero.Html
 [<AutoOpen>]
 module Components =
     type InputModel =
-        { label: string
-          value: string
-          error: string option }
+        { label        : string
+          value        : string
+          isValid      : string -> string option
+          mutable error: string option }
+        static member Default =
+            { label   = ""
+              value   = ""
+              isValid = fun str -> if str = "" then Some "Invalid" else None
+              error   = None }
     type Input () =
         inherit ElmishComponent<InputModel, string> ()
 
         override this.View model dispatch =
+            model.error <- model.isValid model.value
             label {
-                attr.``class`` "label inline-block"
-                model.label
+                attr.``class`` "label"
                 input {
-                    attr.``class`` (if isNone model.error then "text-input" else "text-input-error")
+                    attr.``class`` (if isNone model.error then "text-input"
+                                                          else "text-input-error")
+                    attr.placeholder model.label
                     attr.value model.value
-                    on.change (fun e -> dispatch (unbox e.Value))
+                    on.change (fun e ->
+                        // this.value <- unbox e.Value
+                        dispatch (unbox e.Value))
                 }
                 p {
                     attr.``class`` "input-error-text"
@@ -29,15 +39,20 @@ module Components =
                 }
             }
 
+///////////////////////////////////////////////////////////////////////////////
+
     type Button () =
-        inherit ElmishComponent<string, string> ()
+        inherit ElmishComponent<string, unit> ()
 
         override this.View text dispatch =
             button {
                 attr.``class`` "button"
+                on.click (fun btn -> dispatch ())
                 text
             }
-    
+
+///////////////////////////////////////////////////////////////////////////////
+
     type Profile () =
         inherit ElmishComponent<User.Model, string> ()
 
@@ -45,6 +60,8 @@ module Components =
             div {
                 p { user.name }
             }
+
+///////////////////////////////////////////////////////////////////////////////
 
     type ErrorCard () =
         inherit ElmishComponent<string, unit> ()
@@ -59,6 +76,8 @@ module Components =
                 }
                 err
             }
+
+///////////////////////////////////////////////////////////////////////////////
 
     type ListTableModel =
         { headers: string list option
@@ -81,6 +100,8 @@ module Components =
                     })
             }
 
+///////////////////////////////////////////////////////////////////////////////
+
     type TableModel =
         { headers: string array
           records: string array array
@@ -95,7 +116,7 @@ module Components =
             attr.``class`` "table"
             tr {
                 attr.``class`` "table-row"
-                forEach (Array.mapi (fun i header -> i, header ) model.headers)
+                forEach (Array.mapi (fun i header -> i, header) model.headers)
                     (fun (i, header) -> th {
                         attr.``class`` "table-header"
                         on.click (fun _ -> dispatch i)
@@ -111,10 +132,10 @@ module Components =
                         | _ -> empty ()
                     })
             }
-            forEach model.records <| (fun record -> tr {
+            forEach model.records (fun record -> tr {
                 attr.``class`` "table-row"
                 attr.tabindex "0"
-                forEach record <| (fun cell -> td {
+                forEach record (fun cell -> td {
                     attr.``class`` "table-cell"
                     cell
                 })

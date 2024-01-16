@@ -43,15 +43,17 @@ module User =
         form {
             on.submit (fun _ -> dispatch SubmitLogin)
             ecomp<Input, _, _>
-                { label = "Username: "; value = ""; error = ifErrorOpt user.nameError "Invalid username" }
+                { InputModel.Default with
+                    label = "Username: "
+                    value = "" }
                 (fun name -> dispatch (SetUsername name))
                 { attr.empty () }
-            br
             ecomp<Input, _, _>
-                { label = "Password: "; value = ""; error = ifErrorOpt user.pwError "Invalid password" }
+                { InputModel.Default with
+                    label = "Password: "
+                    value = "" }
                 (fun pw -> dispatch (SetPassword pw))
                 { attr.empty () }
-            br
             ecomp<Button, _, _> 
                 "Login"
                 (fun _ -> dispatch SubmitLogin)
