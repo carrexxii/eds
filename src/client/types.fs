@@ -6,6 +6,14 @@ open Bolero
 open Bolero.Remoting
 
 [<AutoOpen>]
+type SortDirection =
+    | Ascending
+    | Descending
+    static member opposite = function
+        | Ascending  -> Descending
+        | Descending -> Ascending
+
+[<AutoOpen>]
 module Types =
     type Error =
         | IncorrectUsername
@@ -43,11 +51,14 @@ module Types =
                   "Name"
                   "Surname"
                   "DoB" ]
+            member this.toStringArray () =
+                [| this.id.ToString ()
+                   this.name
+                   this.surname
+                   this.dob.ToString () |]
             member this.toStringList () =
-                [ this.id.ToString ()
-                  this.name
-                  this.surname
-                  this.dob.ToString () ]
+                this.toStringArray ()
+                |> List.ofArray
 
         type Message =
             | SetID       of StudentID
@@ -109,17 +120,20 @@ module Types =
             | [<EndPoint "/students">] Students
 
         type Model =
-            { user: User.Model
-              studentRecords: Student.Model list option
-              gettingRecords: bool }
+            { user          : User.Model
+              studentRecords: Student.Model array option
+              gettingRecords: bool
+              sortBy        : (int * SortDirection) option }
             static member Default =
                 { user = User.Model.Default
                   studentRecords = None
-                  gettingRecords = false }
+                  gettingRecords = false
+                  sortBy         = None }
         
         type Message =
             | GetStudentList
-            | RecvStudentList of Student.Model list option
+            | RecvStudentList of Student.Model array option
+            | SortStudents    of int
             | ErrorExn        of exn
             | Completed
 
@@ -165,7 +179,7 @@ module Types =
             getUser: unit -> Async<User.Model>
 
             getStudent    : StudentID -> Async<Student.Model option>
-            getStudentList: unit -> Async<Student.Model list option>
+            getStudentList: unit -> Async<Student.Model array option>
             addStudent    : Student.Model -> Async<unit>
             updateStudent : Student.Model -> Async<string option>
         }

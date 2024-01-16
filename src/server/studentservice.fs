@@ -31,7 +31,7 @@ module StudentService =
               <| readModel
               |> function
                  | [] -> None
-                 | xs -> Some xs
+                 | xs -> Some (Array.ofList xs)
 
     let update (model: Model) =
         if model.id < 0 then Some "Error updating record: invalid id"
