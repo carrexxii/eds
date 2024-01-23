@@ -13,12 +13,12 @@ build: css js
 	npx webpack
 	dotnet build
 
-# .PHONY: watch
-# watch:
-# 	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch &
-# 	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
-# 	npx webpack --watch &
-# 	dotnet watch
+.PHONY: watch
+watch: build
+	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch &
+	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
+	npx webpack --watch &
+	dotnet watch
 
 .PHONY: js
 js:

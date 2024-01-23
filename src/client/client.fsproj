@@ -4,11 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="types.fs" />
     <Compile Include="components.fs" />
+    <Compile Include="user.fs" />
+    <Compile Include="dashboard.fs" />
     <Compile Include="main.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Feliz" Version="2.8.0-beta.0" />
+    <PackageReference Include="Feliz.UseElmish" Version="2.5.*" />
     <PackageReference Include="Fable.Core" Version="4.2.*" />
+    <PackageReference Include="Fable.Elmish" Version="4.1.*" />
+    <PackageReference Include="Fable.Elmish.React" Version="4.0.*" />
+    <PackageReference Include="Elmish" Version="4.1.*" />
   </ItemGroup>
 </Project>

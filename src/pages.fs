@@ -19,7 +19,7 @@ module Pages =
             link [ rel "stylesheet"; href "styles.css" ]
             script [ type' "module"; src "main.js" ] []
         ] [
-            div [ id "main" ] [ inner ]
+            div [ id "root" ] [ inner ]
         ]
 
     let index: HttpHandler = 
