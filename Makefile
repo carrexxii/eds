@@ -1,46 +1,55 @@
-SERVER_DIR = "src/server/"
-CLIENT_DIR = "src/client/"
+SOURCE_DIR = ./src
+CLIENT_DIR = ./src/client
+WWW_ROOT   = ./wwwroot
 
-all: css run
+all: run
 
 .PHONY: run
-run:
-	dotnet run --project $(SERVER_DIR)
-
-.PHONY: watch
-watch:
-	dotnet watch run --project $(SERVER_DIR)
+run: build
+	dotnet run
 
 .PHONY: build
-build: css
-	dotnet build $(SERVER_DIR)
-	dotnet build $(CLIENT_DIR)
+build: css js
+	npx webpack
+	dotnet build
 
-.PHONY: watch-css
-watch-css:
-	npx tailwindcss -i $(SERVER_DIR)/templates/styles.css -o $(CLIENT_DIR)/wwwroot/styles.css --watch
+# .PHONY: watch
+# watch:
+# 	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch &
+# 	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
+# 	npx webpack --watch &
+# 	dotnet watch
 
-.PHONY: restore
-restore:
-	dotnet tool restore
-	dotnet restore $(SERVER_DIR)
-	dotnet restore $(CLIENT_DIR)
+.PHONY: js
+js:
+	dotnet fable $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s
 
 .PHONY: css
 css:
-	npx tailwindcss -i $(SERVER_DIR)/templates/styles.css -o $(CLIENT_DIR)/wwwroot/styles.css
+	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+
+.PHONY: restore
+restore:
+	npm install
+	dotnet tool restore
+	dotnet restore
+	dotnet femto $(CLIENT_DIR)
 
 .PHONY: clean
 clean:
-	dotnet clean $(SERVER_DIR)
+	dotnet clean
 	dotnet clean $(CLIENT_DIR)
-	rm $(CLIENT_DIR)/wwwroot/styles.css
+	dotnet fable clean --yes
+	rm -rf $(CLIENT_DIR)/js/*
+	rm -rf wwwroot/*
 
 .PHONY: remove
 remove: clean
-	rm -rf $(SERVER_DIR)/bin $(SERVER_DIR)/obj
-	rm -rf $(CLIENT_DIR)/bin $(CLIENT_DIR)/obj
+	rm -rf ./bin ./obj
+	rm -rf ./$(CLIENT_DIR)/bin ./$(CLIENT_DIR)/obj
+	rm -rf ./node_modules
+	rm -f  ./*-lock.*
 
 .PHONY: cloc
 cloc:
-	cloc src/server src/client --include-lang F#
+	cloc $(SOURCE_DIR) --include-lang F#
