@@ -1,25 +1,18 @@
 namespace Client
 
-open System
 open Option
 
 open Elmish
 open Feliz
-open Feliz.UseElmish
+
+type SortDirection =
+    | Ascending
+    | Descending
+    static member opposite = function
+        | Ascending  -> Descending
+        | Descending -> Ascending
 
 module Components =
-    [<ReactComponent>]
-    let Counter() =
-        let (count, setCount) = React.useState(0)
-        Html.div [
-            Html.h1 count
-            Html.button [
-                prop.className "button"
-                prop.text "Increment"
-                prop.onClick (fun _ -> setCount(count + 1))
-            ]
-        ]
-
     [<ReactComponent>]
     let textInput label (value: string) dispatch isValid =
         let error, setError = React.useState None
@@ -33,123 +26,116 @@ module Components =
                     prop.placeholder label
                     prop.value value
                     prop.onChange (fun (txt: string) ->
-                        printfn "%s -> %s" value txt
                         setError <| defaultValue
                             (fun str -> if str = "" then Some "Invalid input" else None)
                             isValid txt
-                        // match isValid with
-                        // | None -> setError (if value.Length = 0 then None
-                        //                     else Some "Invalid Input")
-                        // | Some isValid -> setError (if isValid value then None
-                        //                             else Some "Invalid Input")
                         dispatch txt)
                 ]
                 Html.p [
                     prop.className "input-error-text"
-                    prop.text (Option.defaultValue "" error)
+                    prop.text (defaultValue "" error)
                 ]
             ]
         ]
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//     type Button () =
-//         inherit ElmishComponent<string, unit> ()
+    [<ReactComponent>]
+    let button text dispatch =
+        Html.button [
+            prop.className "button"
+            prop.onClick (fun e -> dispatch ())
+            prop.text (string text)
+        ]
 
-//         override this.View text dispatch =
-//             button {
-//                 attr.``class`` "button"
-//                 on.click (fun btn -> dispatch ())
-//                 text
-//             }
+///////////////////////////////////////////////////////////////////////////////
 
-// ///////////////////////////////////////////////////////////////////////////////
+    [<ReactComponent>]
+    let errorCard text dispatch =
+        Html.div [
+            prop.className "card-error"
+            prop.children [
+                Html.button [
+                    prop.className "card-button"
+                    prop.onClick (fun e -> dispatch ())
+                    prop.children [ Svg.svg [ svg.className "X" ] ]
+                ]
+                Html.text (string text)
+            ]
+        ]
 
-//     type Profile () =
-//         inherit ElmishComponent<User.Model, string> ()
+///////////////////////////////////////////////////////////////////////////////
 
-//         override this.View user dispatch =
-//             div {
-//                 p { user.name }
-//             }
+    [<ReactComponent>]
+    let listTable (header: (string * string) option)
+                  (elems : (string * string) list) =
+        Html.table [
+            prop.className "list-table"
+            prop.children [
+                if isSome header then
+                    Html.tr [
+                        Html.th [
+                            prop.className "list-table-t"
+                            prop.text (fst <| get header)
+                        ]
+                        Html.th [
+                            prop.className "list-table-t"
+                            prop.text (snd <| get header)
+                        ]
+                    ]
+                for elem in elems do
+                    Html.tr [
+                        Html.td [ prop.className "list-table-l"; prop.text (fst elem) ]
+                        Html.td [ prop.className "list-table-r"; prop.text (snd elem) ]
+                    ]
+            ]
+        ]
 
-// ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-//     type ErrorCard () =
-//         inherit ElmishComponent<string, unit> ()
+    [<ReactComponent>]
+    let table (header  : string array)
+              (records : string array array)
+              (sortBy  : (int * SortDirection) option)
+              (dispatch: int -> unit) =
+        Html.table [
+            prop.className "table"
+            prop.children [
+                Html.tr [
+                    prop.className "table-row"
+                    prop.children (Array.mapi
+                        (fun i h ->
+                            Html.th [
+                                prop.className "table-header"
+                                prop.onClick (fun e -> dispatch i)
 
-//         override this.View err dispatch =
-//             div {
-//                 attr.``class`` "card-error"
-//                 button {
-//                     attr.``class`` "card-button"
-//                     on.click (fun e -> dispatch ())
-//                     "X"
-//                 }
-//                 err
-//             }
-
-// ///////////////////////////////////////////////////////////////////////////////
-
-//     type ListTableModel =
-//         { headers: string list option
-//           elems  : (string * string) list }
-//     type ListTable () =
-//         inherit ElmishComponent<ListTableModel, unit> ()
-
-//         override this.View model _ =
-//             table {
-//                 attr.``class`` "list-table"
-//                 if isSome model.headers then
-//                     tr {
-//                         forEach (get model.headers) <| (fun header ->
-//                             th { attr.``class`` "list-table-t"; header })
-//                     }
-//                 forEach model.elems <| (fun elem ->
-//                     tr {
-//                         td { attr.``class`` "list-table-l"; fst elem }
-//                         td { attr.``class`` "list-table-r"; snd elem }
-//                     })
-//             }
-
-// ///////////////////////////////////////////////////////////////////////////////
-
-//     type TableModel =
-//         { headers: string array
-//           records: string array array
-//           sortBy : (int * SortDirection) option }
-//     type Table () =
-//         inherit ElmishComponent<TableModel, int> ()
-
-//         override this.ShouldRender (model, model') =
-//             true // TODO: Might need to do this properly later
-
-//         override this.View model dispatch = table {
-//             attr.``class`` "table"
-//             tr {
-//                 attr.``class`` "table-row"
-//                 forEach (Array.mapi (fun i header -> i, header) model.headers)
-//                     (fun (i, header) -> th {
-//                         attr.``class`` "table-header"
-//                         on.click (fun _ -> dispatch i)
-
-//                         header
-//                         match model.sortBy with
-//                         | Some (si, dir) when si = i -> svg {
-//                             attr.``class``
-//                                 (match dir with
-//                                  | Ascending  -> "chevron-up"
-//                                  | Descending -> "chevron-down")
-//                             }
-//                         | _ -> empty ()
-//                     })
-//             }
-//             forEach model.records (fun record -> tr {
-//                 attr.``class`` "table-row"
-//                 attr.tabindex "0"
-//                 forEach record (fun cell -> td {
-//                     attr.``class`` "table-cell"
-//                     cell
-//                 })
-//             })
-//         }
+                                prop.text (string h)
+                                prop.children [
+                                    match sortBy with
+                                    | Some (si, dir) when si = i ->
+                                        Svg.svg [
+                                            svg.className (match dir with
+                                                           | Ascending  -> "chevron-up"
+                                                           | Descending -> "chevron-down")
+                                        ]
+                                    | _ -> Html.none
+                                ]
+                            ])
+                        header
+                    )
+                ]
+                for record in records do
+                    Html.tr [
+                        prop.className "table-row"
+                        prop.tabIndex 0
+                        prop.children (Array.map
+                            (fun cell ->
+                                Html.td [
+                                    prop.className "table-cell"
+                                    prop.text (string cell)
+                                ])
+                            record
+                        )
+                    ]
+            ]
+        ]
