@@ -3,6 +3,7 @@ namespace Client
 open Elmish
 open Elmish.React
 open Feliz
+open Feliz.Router
 open Feliz.ReactApi
 open Feliz.UseElmish
 open Fable.Core
@@ -25,45 +26,61 @@ type Error =
         match this with
         | IncorrectUsername -> "Incorrect Username"
         | IncorrectPassword -> "Incorrect Password"
-        | Warning str       -> "Warning: " + str
-        | Fatal str         -> "Fatal Error: " + str
-        | Exception e       -> "Exception: " + e.ToString ()
+        | Warning str       -> $"Warning: {str}"
+        | Fatal str         -> $"Fatal Error: {str}"
+        | Exception e       -> $"Exception: {e}"
 
 module Main =
     type Model =
-        { page : string
+        { url  : string list
           user : User.Model
+          dash : Dashboard.Model
           error: Error option }
         static member Default =
-            { page  = ""
+            { url   = []
               user  = User.Model.Default
+              dash  = Dashboard.Model.Default
               error = None }
 
     type Message =
-        | SetPage  of string
+        | SetUrl  of string list
         | ErrorMsg of Error
         | ErrorExn of exn
         | ClearError
 
         | UserMsg of User.Message
+        | DashMsg of Dashboard.Message
 
     let init () = 
-        Model.Default, Cmd.none
+        { Model.Default with 
+            url = Router.currentUrl () },
+        Cmd.none
     
     let update msg state =
         printf "%A -> %A" msg state
         match msg with
+        | SetUrl url -> { state with url = url }, Cmd.none
         | UserMsg msg ->
             match msg with
             | User.Message.Completed user' -> { state with user = user' }, Cmd.none
             | _ -> let user, msg = User.update msg state.user
                    { state with user = user }, Cmd.map UserMsg msg
 
-    [<ReactComponent>]
     let view state dispatch =
-        Html.div [
-            User.view state.user (UserMsg >> dispatch)
-            // |> state.root.render
+        let page = 
+            match state.url with
+            | []          -> Html.div [
+                    Html.a [ prop.href (Router.format "about"); prop.text "Index page"]
+                    Html.a [ prop.href (Router.format "login"); prop.text "Login page"]
+                ]
+            | "about"::[] -> Html.p "About page"
+            // | "login"::[] -> User.sview state.user (UserMsg >> dispatch)
+            | "dashboard"::url -> Dashboard.view url state.dash (DashMsg >> dispatch)
+            | url -> Html.p (sprintf "Page not found: %A" url)
+        
+        React.router [
+            router.onUrlChanged (SetUrl >> dispatch)
+            router.children page
         ]
 
     [<EntryPoint>]

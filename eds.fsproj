@@ -4,11 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src/claims.fs" />
     <Compile Include="src/pages.fs" />
     <Compile Include="src/user.fs" />
+    <Compile Include="src/services.fs" />
     <Compile Include="src/main.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Falco" Version="4.*" />
+    <PackageReference Include="Fable.Remoting.AspNetCore" Version="2.38.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="./src/shared/shared.fsproj" />
   </ItemGroup>
 </Project>

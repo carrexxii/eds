@@ -1,5 +1,6 @@
 SOURCE_DIR = ./src
 CLIENT_DIR = ./src/client
+SHARED_DIR = ./src/shared
 WWW_ROOT   = ./wwwroot
 
 all: run
@@ -14,7 +15,7 @@ build: css js
 	dotnet build
 
 .PHONY: watch
-watch: build
+watch:
 	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch &
 	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
 	npx webpack --watch &
@@ -33,12 +34,14 @@ restore:
 	npm install
 	dotnet tool restore
 	dotnet restore
+	dotnet restore $(CLIENT_DIR)
 	dotnet femto $(CLIENT_DIR)
 
 .PHONY: clean
 clean:
 	dotnet clean
 	dotnet clean $(CLIENT_DIR)
+	dotnet clean $(SHARED_DIR)
 	dotnet fable clean --yes
 	rm -rf $(CLIENT_DIR)/js/*
 	rm -rf wwwroot/*
@@ -46,10 +49,10 @@ clean:
 .PHONY: remove
 remove: clean
 	rm -rf ./bin ./obj
-	rm -rf ./$(CLIENT_DIR)/bin ./$(CLIENT_DIR)/obj
+	rm -rf ./*/bin ./*/obj
 	rm -rf ./node_modules
 	rm -f  ./*-lock.*
 
 .PHONY: cloc
 cloc:
-	cloc $(SOURCE_DIR) --include-lang F#
+	cloc $(SOURCE_DIR) $(CLIENT_DIR) $(SHARED_DIR) --include-lang F#
