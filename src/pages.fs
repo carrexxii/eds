@@ -18,25 +18,31 @@ module Pages =
                 Elem.title [] [ raw "Page Title" ]
 
                 link [ rel "stylesheet"; href "styles.css" ]
+                if script' <> "" then
+                    script [ type' "module"; src script' ] []
             ] [
                 Elem.form [ method "POST"; action "/logout" ] [
                     input [ type' "submit"; value "Submit" ]
                     Xss.antiforgeryInput token
                 ]
-
                 div [ id "root" ] [ inner ]
-                script [ type' "module"; src script' ] []
             ]
         |> Response.ofHtmlCsrf
 
     let index: HttpHandler = 
-        master "main.js"
+        master ""
             (p [] [ raw "~ Index page ~" ])
 
-    let status: HttpHandler =
+    let user: HttpHandler =
+        master "main.js"
+            (p [] [ raw "Loading..." ])
+
+    let status: HttpHandler = fun ctx ->
+        let user = Auth.getUser ctx
         Request.ifAuthenticated
-            (Response.ofPlainText "Authenticated")
+            (Response.ofPlainText $"Authenticated ~> {user.Value.Identity.Name}")
             (Response.ofPlainText "Not authenticated")
+            ctx
 
     let notFound: HttpHandler =
         Response.withStatusCode 404

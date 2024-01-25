@@ -1,84 +1,84 @@
 namespace Client
 
-open Option
+// open Option
 
-open Elmish
-open Feliz
+// open Elmish
+// open Feliz
 
-module Dashboard =
-    type Model =
-        { user          : User.Model
-          student       : Student.Model
-          studentRecords: Student.Model array option
-          gettingRecords: bool
-          sortBy        : (int * SortDirection) option }
-        static member Default =
-            { user           = User.Model.Default
-              student        = Student.Model.Default
-              studentRecords = None
-              gettingRecords = false
-              sortBy         = None }
+// module Dashboard =
+//     type Model =
+//         { user          : User.Model
+//           student       : Student.Model
+//           studentRecords: Student.Model array option
+//           gettingRecords: bool
+//           sortBy        : (int * SortDirection) option }
+//         static member Default =
+//             { user           = User.Model.Default
+//               student        = Student.Model.Default
+//               studentRecords = None
+//               gettingRecords = false
+//               sortBy         = None }
 
-    type Message =
-        | SetStudentName    of string
-        | SetStudentSurname of string
-        | SetStudentDoB     of string
-        | ClearStudent
-        | SubmitStudent
-        | GetStudentList
-        | RecvStudentList of Student.Model array option
-        | SortStudents    of int
-        | ErrorMsg        of string
-        | ErrorExn        of exn
-        | Completed
+//     type Message =
+//         | SetStudentName    of string
+//         | SetStudentSurname of string
+//         | SetStudentDoB     of string
+//         | ClearStudent
+//         | SubmitStudent
+//         | GetStudentList
+//         // | RecvStudentList of Student.Model array option
+//         | SortStudents    of int
+//         | ErrorMsg        of string
+//         | ErrorExn        of exn
+//         | Completed
 
-    let init user =
-        { Model.Default with
-            user = user},
-        Cmd.none
+//     let init user =
+//         { Model.Default with
+//             user = user},
+//         Cmd.none
     
-    let update msg state =
-        match msg with
-        | SetStudentName    name'    -> { state with student.name = name' }, Cmd.none
-        | SetStudentSurname surname' -> { state with student.surname = surname' }, Cmd.none
-        // | SetStudentDoB     dob'     ->
-        //     match DateOnly.TryParse dob' with
-        //     | true, dob' -> { state with student.dob = dob' }, Cmd.none
-        //     | false, _ -> state, Cmd.none
-        | ClearStudent               -> { state with student = Student.Model.Default }, Cmd.none
-        // | SubmitStudent -> state, Cmd.OfAsync.either remote.addStudent state.student (fun _ -> ClearStudent) ErrorExn
-        // | GetStudentList ->
-        //     { state with gettingRecords = true },
-        //     Cmd.OfAsync.either remote.getStudentList () RecvStudentList ErrorExn
-        // | RecvStudentList lst ->
-        //     { state with
-        //         studentRecords = lst
-        //         gettingRecords = false },
-        //     Cmd.none // TODO: if lst can be empty, maybe check before overwriting 
-        // | SortStudents i ->
-        //     let dir = snd (defaultValue (-1, Descending) state.sortBy)
-        //     { state with
-        //         sortBy = Some (i, opposite dir)
-        //         studentRecords = Some
-        //             (Array.sortByDescending
-        //                 (fun (student: Student.Model) -> (student.toStringArray ())[i])
-        //                 (defaultValue [||] state.studentRecords)
-        //                 |> (fun arr -> if dir = Descending then Array.rev arr
-        //                                                    else arr)) },
-            // Cmd.none
-        | ErrorExn err -> failwith $"Encountered exception: {err}"
-        | Completed    -> failwith "Should be caught by the parent"
+//     let update msg state =
+//         match msg with
+//         // | SetStudentName    name'    -> { state with student.name = name' }, Cmd.none
+//         // | SetStudentSurname surname' -> { state with student.surname = surname' }, Cmd.none
+//         // | SetStudentDoB     dob'     ->
+//         //     match DateOnly.TryParse dob' with
+//         //     | true, dob' -> { state with student.dob = dob' }, Cmd.none
+//         //     | false, _ -> state, Cmd.none
+//         // | ClearStudent               -> { state with student = Student.Model.Default }, Cmd.none
+//         // | SubmitStudent -> state, Cmd.OfAsync.either remote.addStudent state.student (fun _ -> ClearStudent) ErrorExn
+//         // | GetStudentList ->
+//         //     { state with gettingRecords = true },
+//         //     Cmd.OfAsync.either remote.getStudentList () RecvStudentList ErrorExn
+//         // | RecvStudentList lst ->
+//         //     { state with
+//         //         studentRecords = lst
+//         //         gettingRecords = false },
+//         //     Cmd.none // TODO: if lst can be empty, maybe check before overwriting 
+//         // | SortStudents i ->
+//         //     let dir = snd (defaultValue (-1, Descending) state.sortBy)
+//         //     { state with
+//         //         sortBy = Some (i, opposite dir)
+//         //         studentRecords = Some
+//         //             (Array.sortByDescending
+//         //                 (fun (student: Student.Model) -> (student.toStringArray ())[i])
+//         //                 (defaultValue [||] state.studentRecords)
+//         //                 |> (fun arr -> if dir = Descending then Array.rev arr
+//         //                                                    else arr)) },
+//             // Cmd.none
+//         | ErrorExn err -> failwith $"Encountered exception: {err}"
+//         | Completed    -> failwith "Should be caught by the parent"
 
-    let profileView state =
-        Components.listTable
-            None
-            [ "Name"    , state.user.name
-              "Password", $"{state.user.password}" ]
+//     let profileView state =
+//         Components.listTable
+//             None
+//             [ "Name"    , state.user.name
+//               "Password", $"{state.user.password}" ]
 
-    let view url state dispatch =
-        match url with
-        | ""::[]  -> profileView state
-        | _ -> Html.p "Dashboard page not found"
+    // let view url state dispatch =
+    //     match url with
+    //     | []  -> profileView state
+    //     | url -> Html.p $"Dashboard page not found ~> {url}"
 
 // open System
 // open Option

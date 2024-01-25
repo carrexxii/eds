@@ -1,32 +1,32 @@
 namespace Client
 
-open System
+// open System
 
-module Student =
-    type StudentID = int64
-    type Model =
-        { id     : StudentID
-          name   : string
-          surname: string
-          dob    : DateOnly }
-        static member Default =
-            { id      = -1
-              name    = ""
-              surname = ""
-              dob     = DateOnly.MinValue }
-        static member FieldList =
-            [ "ID"
-              "Name"
-              "Surname"
-              "DoB" ]
-        member this.toStringArray () =
-            [| this.id.ToString ()
-               this.name
-               this.surname
-               this.dob.ToString () |]
-        member this.toStringList () =
-            this.toStringArray ()
-            |> List.ofArray
+// module Student =
+//     type StudentID = int64
+//     type Model =
+//         { id     : StudentID
+//           name   : string
+//           surname: string
+//           dob    : DateOnly }
+//         static member Default =
+//             { id      = -1
+//               name    = ""
+//               surname = ""
+//               dob     = DateOnly.MinValue }
+//         static member FieldList =
+//             [ "ID"
+//               "Name"
+//               "Surname"
+//               "DoB" ]
+//         member this.toStringArray () =
+//             [| this.id.ToString ()
+//                this.name
+//                this.surname
+//                this.dob.ToString () |]
+//         member this.toStringList () =
+//             this.toStringArray ()
+//             |> List.ofArray
 
     // let update (remote: Services) student msg =
     //     match msg with

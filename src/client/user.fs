@@ -1,46 +1,46 @@
 namespace Client
 
-open Elmish
-open Feliz
-open Feliz.UseElmish
+// open Elmish
+// open Feliz
+// open Feliz.UseElmish
 
-open Components
+// open Components
 
-module User =
-    type Model =
-        { name    : string
-          password: string }
-        static member Default =
-            { name     = ""
-              password = "" }
+// module User =
+//     type Model =
+//         { name    : string
+//           password: string }
+//         static member Default =
+//             { name     = ""
+//               password = "" }
 
-    type Message =
-        | SetName     of string
-        | SetPassword of string
-        | SubmitLogin
-        // | SetError    of string option
-        | Completed of Model
+//     type Message =
+//         | SetName     of string
+//         | SetPassword of string
+//         | SubmitLogin
+//         // | SetError    of string option
+//         | Completed of Model
 
-    let init () =
-        Model.Default, Cmd.none
+//     let init () =
+//         Model.Default, Cmd.none
     
-    let update msg state =
-        match msg with
-        | SetName     name     -> { state with name     = name     }, Cmd.none
-        | SetPassword password -> { state with password = password }, Cmd.none
-        | SubmitLogin -> state, Cmd.none
-        // | SetError err  -> { state with error = err }, Cmd.none
-        | Completed model -> failwith "Parent should have caught this"
+//     let update msg state =
+//         match msg with
+//         | SetName     name     -> { state with name     = name     }, Cmd.none
+//         | SetPassword password -> { state with password = password }, Cmd.none
+//         | SubmitLogin -> state, Cmd.none
+//         // | SetError err  -> { state with error = err }, Cmd.none
+//         | Completed model -> failwith "Parent should have caught this"
 
-    [<ReactComponent>]
-    let view state dispatch =
-        Html.form [
-            prop.onSubmit (fun e -> dispatch SubmitLogin)
-            prop.children [
-                textInput "Name:"     state.name     (fun txt -> dispatch (SetName     txt)) None
-                textInput "Password:" state.password (fun txt -> dispatch (SetPassword txt)) None
-            ]
-        ]
+//     [<ReactComponent>]
+//     let view state dispatch =
+//         Html.form [
+//             prop.onSubmit (fun e -> dispatch SubmitLogin)
+//             prop.children [
+//                 textInput "Name:"     state.name     (fun txt -> dispatch (SetName     txt)) None
+//                 textInput "Password:" state.password (fun txt -> dispatch (SetPassword txt)) None
+//             ]
+//         ]
 
 // open Option
 

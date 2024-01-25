@@ -11,6 +11,7 @@ open Fable.Core.JsInterop
 open Browser.Dom
 open Browser
 
+open Shared
 open Components
 
 type Error =
@@ -33,49 +34,55 @@ type Error =
 module Main =
     type Model =
         { url  : string list
-          user : User.Model
-          dash : Dashboard.Model
+          user : Services.User
+        //   dash : Dashboard.Model
           error: Error option }
         static member Default =
             { url   = []
-              user  = User.Model.Default
-              dash  = Dashboard.Model.Default
+              user  = Services.User.Default
+            //   dash  = Dashboard.Model.Default
               error = None }
 
     type Message =
         | SetUrl  of string list
+        | GetUser
+        | RecvUser of Services.User
         | ErrorMsg of Error
         | ErrorExn of exn
         | ClearError
 
-        | UserMsg of User.Message
-        | DashMsg of Dashboard.Message
+        // | DashMsg of Dashboard.Message
 
     let init () = 
         { Model.Default with 
             url = Router.currentUrl () },
-        Cmd.none
+        Cmd.ofMsg GetUser
     
     let update msg state =
         printf "%A -> %A" msg state
         match msg with
         | SetUrl url -> { state with url = url }, Cmd.none
-        | UserMsg msg ->
-            match msg with
-            | User.Message.Completed user' -> { state with user = user' }, Cmd.none
-            | _ -> let user, msg = User.update msg state.user
-                   { state with user = user }, Cmd.map UserMsg msg
+        | GetUser -> state, Cmd.OfAsync.perform Services.userService.getUser () RecvUser
+        | RecvUser user -> { state with user = user }, Cmd.none
+
+        // | UserMsg msg ->
+        //     match msg with
+        //     | User.Message.Completed user' -> { state with user = user' }, Cmd.none
+        //     | _ -> let user, msg = User.update msg state.user
+        //            { state with user = user }, Cmd.map UserMsg msg
 
     let view state dispatch =
         let page = 
             match state.url with
-            | []          -> Html.div [
-                    Html.a [ prop.href (Router.format "about"); prop.text "Index page"]
-                    Html.a [ prop.href (Router.format "login"); prop.text "Login page"]
+            | [] -> Html.div [
+                    Html.p $"~~~ {state.user} ~~~"
+                    Html.a [ prop.href (Router.format "dashboard"); prop.text "Dashboard page" ]
+                    Html.a [ prop.href (Router.format "settings") ; prop.text "Settings page"  ]
+                    Html.a [ prop.href (Router.format "help")     ; prop.text "Help page"      ]
                 ]
-            | "about"::[] -> Html.p "About page"
-            // | "login"::[] -> User.sview state.user (UserMsg >> dispatch)
-            | "dashboard"::url -> Dashboard.view url state.dash (DashMsg >> dispatch)
+            // | "dashboard"::url -> Dashboard.view url state.dash (DashMsg >> dispatch)
+            | "settings"::url  -> Html.p $"Settings page ~> {url}"
+            | "help"::url      -> Html.p $"Help page ~> {url}"
             | url -> Html.p (sprintf "Page not found: %A" url)
         
         React.router [

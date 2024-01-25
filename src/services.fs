@@ -1,11 +1,13 @@
 namespace Server
 
+open Microsoft.AspNetCore.Http
+
 open Shared
 
 module Services =
-    let student: Services.Student = {
-        getUser =
-            async {
-                return 1
-            }
-    }
+    let User: HttpContext -> Services.IUser =
+        fun (ctx: HttpContext) ->
+            { getUser = fun () -> async {
+                return { name     = ctx.User.Identity.Name
+                         password = "1234ezez" }
+              } }

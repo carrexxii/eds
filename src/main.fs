@@ -6,6 +6,7 @@ open Fable.Remoting.Server
 open Fable.Remoting.AspNetCore
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Http
 
 module Main =
     let config = configuration [||] {
@@ -15,7 +16,8 @@ module Main =
 
     let remoting (app: IApplicationBuilder) = 
         Remoting.createApi ()
-        |> Remoting.fromValue Services.student
+        // |> Remoting.withRouteBuilder Shared.Route.builder
+        |> Remoting.fromContext Services.User
         |> app.UseRemoting
         app
 
@@ -34,7 +36,6 @@ module Main =
     let main args =
         webHost [||] {
             add_service authService
-            use_middleware remoting
 
             add_antiforgery
             use_compression
@@ -43,11 +44,14 @@ module Main =
             use_authentication
             use_authorization
 
+            use_middleware remoting
+
             not_found Pages.notFound
             endpoints [
                 get  "/"       <| Pages.index
                 get  "/login"  <| Pages.login
                 get  "/status" <| Pages.status
+                get  "/user"   <| Pages.user
                 post "/login"  <| User.login
                 post "/logout" <| User.logout
             ]
