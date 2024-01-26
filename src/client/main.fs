@@ -44,7 +44,7 @@ module Main =
               error = None }
 
     type Message =
-        | SetUrl  of string list
+        | SetUrl   of string list
         | GetUser
         | RecvUser of Services.User
         | ErrorMsg of Error
@@ -72,17 +72,30 @@ module Main =
         //            { state with user = user }, Cmd.map UserMsg msg
 
     let view state dispatch =
+        let sidebar = 
+            SidebarButtons
+                [ "user-icon"    , "Profile" , Router.format ""
+                  "settings-icon", "Settings", Router.format "settings"
+                  "info-icon"    , "About"   , Router.format "about"
+                  "question-icon", "Help"    , Router.format "help" ]
         let page = 
             match state.url with
             | [] -> Html.div [
-                    Html.p $"~~~ {state.user} ~~~"
-                    Html.a [ prop.href (Router.format "dashboard"); prop.text "Dashboard page" ]
-                    Html.a [ prop.href (Router.format "settings") ; prop.text "Settings page"  ]
-                    Html.a [ prop.href (Router.format "help")     ; prop.text "Help page"      ]
+                    sidebar "/"
+                    Html.p $"Profile page ~> /"
                 ]
-            // | "dashboard"::url -> Dashboard.view url state.dash (DashMsg >> dispatch)
-            | "settings"::url  -> Html.p $"Settings page ~> {url}"
-            | "help"::url      -> Html.p $"Help page ~> {url}"
+            | "settings"::url -> Html.div [
+                    sidebar "/settings"
+                    Html.p $"Settings page ~> {url}"
+                ]
+            | "about"::url -> Html.div [
+                    sidebar "/about"
+                    Html.p $"About page ~> {url}"
+                ]
+            | "help"::url -> Html.div [
+                    sidebar "/help"
+                    Html.p $"Help page ~> {url}"
+                ]
             | url -> Html.p (sprintf "Page not found: %A" url)
         
         React.router [

@@ -16,7 +16,8 @@ build: css js
 
 .PHONY: watch
 watch:
-	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch &
+	trap 'kill %1; kill %2; kill %3' SIGINT
+	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
 	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
 	npx webpack --watch &
 	dotnet watch
@@ -36,6 +37,7 @@ restore:
 	dotnet restore
 	dotnet restore $(CLIENT_DIR)
 	dotnet femto $(CLIENT_DIR)
+	cp ./data/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:

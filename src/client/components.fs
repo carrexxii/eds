@@ -2,6 +2,7 @@ namespace Client
 
 open Option
 
+open Browser
 open Elmish
 open Feliz
 
@@ -139,3 +140,47 @@ module Components =
                     ]
             ]
         ]
+
+///////////////////////////////////////////////////////////////////////////////
+
+    [<ReactComponent>]
+    let SidebarButtons (buttons: (string * string * string) list) url =
+        let expand, setExpand = React.useState false
+        let button (icon, text, link) =
+            Html.a [
+                prop.href link
+                prop.children [
+                    Html.li [
+                        prop.className $"""sidebar-li {if link = url then "bg-slate-100" else ""}"""
+                        prop.children [
+                            Svg.svg [ svg.className $"{icon} m-2 p-3" ]
+                            Html.p [
+                                prop.className $"""inline-block {if not expand then "invisible" else ""}"""
+                                prop.text $" — {text}"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+
+        let buttons = Html.div [
+            Html.button [
+                prop.className "sidebar-toggle"
+                prop.onClick (fun e -> setExpand (not expand))
+                prop.children [
+                    Svg.svg [ svg.className 
+                        $"""{if expand then "arrow-left-icon" else "hamburger-icon"}
+                            p-3 duration-500 ease-in"""
+                    ]
+                ]
+            ]
+            Html.ul [
+                prop.className "sidebar-ul"
+                prop.children (List.map button buttons)
+            ]
+        ]
+        let sidebar = document.getElementById "sidebar"
+        match expand with
+        | true  -> sidebar.className <- "sidebar-open"
+        | false -> sidebar.className <- "sidebar-collapsed"
+        ReactDOM.createPortal (buttons, (document.getElementById "sidebar"))

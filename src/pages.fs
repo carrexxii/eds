@@ -9,7 +9,7 @@ open Falco.Markup.Text
 open Falco.Security
 
 module Pages =
-    let master script' inner =
+    let master inner =
         fun token ->
             html5 "en" [
                 meta [ charset "utf-8" ]
@@ -18,24 +18,29 @@ module Pages =
                 Elem.title [] [ raw "Page Title" ]
 
                 link [ rel "stylesheet"; href "styles.css" ]
-                if script' <> "" then
-                    script [ type' "module"; src script' ] []
             ] [
-                Elem.form [ method "POST"; action "/logout" ] [
-                    input [ type' "submit"; value "Submit" ]
-                    Xss.antiforgeryInput token
+                header [ id "header" ]
+                    [ raw "~~~ Header ~~~" ]
+                div [ id "layout" ] [
+                    // Elem.form [ method "POST"; action "/logout" ] [
+                    //     input [ type' "submit"; value "Submit" ]
+                    //     Xss.antiforgeryInput token
+                    // ]
+                    div [ id "sidebar"; class' "sidebar-open" ]
+                        [ ]
+                    div [ id "root" ]
+                        [ inner ]
                 ]
-                div [ id "root" ] [ inner ]
+                footer [ id "footer" ]
+                    [ raw "~~~ Footer ~~~" ]
             ]
         |> Response.ofHtmlCsrf
 
     let index: HttpHandler = 
-        master ""
-            (p [] [ raw "~ Index page ~" ])
+        master (raw "Index")
 
     let user: HttpHandler =
-        master "main.js"
-            (p [] [ raw "Loading..." ])
+        master (script [ type' "module"; src "main.js" ] [])
 
     let status: HttpHandler = fun ctx ->
         let user = Auth.getUser ctx
