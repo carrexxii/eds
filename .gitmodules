@@ -1,0 +1,3 @@
+[submodule "src/maths/fpga"]
+	path = src/maths/fpga
+	url = https://github.com/carrexxii/fpga

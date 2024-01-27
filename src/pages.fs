@@ -41,7 +41,10 @@ module Pages =
         master (raw "Index")
 
     let user: HttpHandler =
-        master (script [ type' "module"; src "main.js" ] [])
+        master (script [ type' "module"; src "user.js" ] [])
+
+    let maths: HttpHandler =
+        master (script [ type' "module"; src "maths.js" ] [])
 
     let status: HttpHandler = fun ctx ->
         let user = Auth.getUser ctx

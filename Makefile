@@ -1,58 +1,71 @@
-SOURCE_DIR = ./src
-WWW_ROOT   = ./wwwroot
-CLIENTS    = $(filter-out ./src/shared/, $(wildcard ./src/*/))
+SOURCE_DIR := ./src
+BUILD_DIR  := ./build
+WWW_ROOT   := ./wwwroot
+
+CLIENT_PROJS := $(filter-out $(wildcard ./src/shared/*), $(wildcard ./src/*/*.fsproj))
+CLIENTS      := $(basename $(notdir $(CLIENT_PROJS)))
+CLIENT_COUNT := $(words $(CLIENTS))
 
 all: run
 
 .PHONY: run
 run: build
-	dotnet run
+	@dotnet run
 
 .PHONY: build
 build: css js
-	npx webpack
-	dotnet build
+	@npx webpack
+	@dotnet build
 
 .PHONY: watch
-watch: js
-	# Need CLIENTS count + 2 for tailwind and webpack
-	trap '$(foreach COUNT, 1 2 3 4 5, kill %$(COUNT);)' SIGINT
-	npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
-	$(foreach DIR, $(CLIENTS), (dotnet fable watch $(DIR) -o $(DIR)js &);)
-	npx webpack --watch &
-	dotnet watch
+watch: build
+	@trap '$(foreach count,                      \
+		$(shell seq 1 $$(($(CLIENT_COUNT) + 2))), \
+		kill %$(count);)' SIGINT
+	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
+	@$(foreach proj, $(CLIENT_PROJS), \
+		(dotnet fable watch $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) \
+		--noRestore --silent --runWatch npx webpack &);)
+# @npx webpack --watch &
+	@dotnet watch
 
 .PHONY: js
 js:
-	$(foreach DIR, $(CLIENTS), dotnet fable $(DIR) -o $(DIR)js;)
+	@$(foreach dir, $(CLIENTS), mkdir $(BUILD_DIR)/$(dir) -p;) 
+	@$(foreach proj, $(CLIENT_PROJS), \
+		(dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --noRestore --silent &);)
 
 .PHONY: css
 css:
-	npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
 
 .PHONY: restore
 restore:
-	dotnet tool restore &
-	dotnet restore
-	$(foreach DIR, $(CLIENTS), (dotnet femto $(DIR) &);)
-	$(foreach DIR, $(CLIENTS), (dotnet restore $(DIR) &);)
-	cp ./data/* $(WWW_ROOT)/
+	@npm install &
+	@git submodule update &
+	@dotnet tool restore &
+	@dotnet restore
+	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj) &);)
+	@cp ./data/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:
-	dotnet clean
-	$(foreach DIR, $(CLIENTS), dotnet clean $(DIR);)
-	dotnet fable clean --yes
-	$(foreach DIR, $(CLIENTS), rm -rf $(DIR)js/*;)
-	rm -rf wwwroot/*
+	@$(foreach proj, $(CLIENT_PROJS), dotnet clean $(proj);)
+	@dotnet clean
+	@dotnet fable clean --yes
+	@rm -rf wwwroot/*
 
 .PHONY: remove
 remove: clean
-	rm -rf ./bin ./obj
-	$(foreach DIR, $(CLIENTS), rm -rf $(DIR)bin $(DIR)obj;)
-	rm -rf ./node_modules
-	rm -f  ./*-lock.*
+	@$(foreach dir,                                                       \
+		$(wildcard $(SOURCE_DIR)/*/bin/) $(wildcard $(SOURCE_DIR)/*/obj/), \
+		(rm -rf $(dir));)
+	@rm -rf ./bin ./obj
+	@rm -rf ./node_modules
+	@rm -f  ./*-lock.*
+	@rm -rf $(shell grep path .gitmodules | sed 's/.*= //')
+	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);) 
 
 .PHONY: cloc
 cloc:
-	cloc --vcs=git
+	@cloc --vcs=git

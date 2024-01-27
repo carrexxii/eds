@@ -4,12 +4,6 @@ open Elmish
 open Elmish.React
 open Feliz
 open Feliz.Router
-open Feliz.ReactApi
-open Feliz.UseElmish
-open Fable.Core
-open Fable.Core.JsInterop
-open Browser.Dom
-open Browser
 
 open Shared
 open Components
