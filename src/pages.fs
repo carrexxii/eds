@@ -14,13 +14,14 @@ module Pages =
             html5 "en" [
                 meta [ charset "utf-8" ]
                 meta [ name "viewport"; content "width=device-width, initial-scale=1.0" ]
+                meta [ name "description"; content "Meta page description" ]
 
                 Elem.title [] [ raw "Page Title" ]
 
                 link [ rel "stylesheet"; href "styles.css" ]
             ] [
                 header [ id "header" ]
-                    [ raw "~~~ Header ~~~" ]
+                    [ a [ href "/" ] [ raw "~~~ Header ~~~" ] ]
                 div [ id "layout" ] [
                     // Elem.form [ method "POST"; action "/logout" ] [
                     //     input [ type' "submit"; value "Submit" ]

@@ -1,4 +1,4 @@
-namespace Client
+namespace User
 
 open Fable.Remoting.Client
 

@@ -1,7 +1,6 @@
 SOURCE_DIR = ./src
-CLIENT_DIR = ./src/client
-SHARED_DIR = ./src/shared
 WWW_ROOT   = ./wwwroot
+CLIENTS    = $(filter-out ./src/shared/, $(wildcard ./src/*/))
 
 all: run
 
@@ -15,46 +14,45 @@ build: css js
 	dotnet build
 
 .PHONY: watch
-watch:
-	trap 'kill %1; kill %2; kill %3' SIGINT
-	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
-	dotnet fable watch $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s &
+watch: js
+	# Need CLIENTS count + 2 for tailwind and webpack
+	trap '$(foreach COUNT, 1 2 3 4 5, kill %$(COUNT);)' SIGINT
+	npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
+	$(foreach DIR, $(CLIENTS), (dotnet fable watch $(DIR) -o $(DIR)js &);)
 	npx webpack --watch &
 	dotnet watch
 
 .PHONY: js
 js:
-	dotnet fable $(CLIENT_DIR) -o $(CLIENT_DIR)/js -s
+	$(foreach DIR, $(CLIENTS), dotnet fable $(DIR) -o $(DIR)js;)
 
 .PHONY: css
 css:
-	npx tailwindcss -i $(CLIENT_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+	npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
 
 .PHONY: restore
 restore:
-	npm install
-	dotnet tool restore
+	dotnet tool restore &
 	dotnet restore
-	dotnet restore $(CLIENT_DIR)
-	dotnet femto $(CLIENT_DIR)
+	$(foreach DIR, $(CLIENTS), (dotnet femto $(DIR) &);)
+	$(foreach DIR, $(CLIENTS), (dotnet restore $(DIR) &);)
 	cp ./data/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:
 	dotnet clean
-	dotnet clean $(CLIENT_DIR)
-	dotnet clean $(SHARED_DIR)
+	$(foreach DIR, $(CLIENTS), dotnet clean $(DIR);)
 	dotnet fable clean --yes
-	rm -rf $(CLIENT_DIR)/js/*
+	$(foreach DIR, $(CLIENTS), rm -rf $(DIR)js/*;)
 	rm -rf wwwroot/*
 
 .PHONY: remove
 remove: clean
 	rm -rf ./bin ./obj
-	rm -rf ./*/bin ./*/obj
+	$(foreach DIR, $(CLIENTS), rm -rf $(DIR)bin $(DIR)obj;)
 	rm -rf ./node_modules
 	rm -f  ./*-lock.*
 
 .PHONY: cloc
 cloc:
-	cloc $(SOURCE_DIR) $(CLIENT_DIR) $(SHARED_DIR) --include-lang F#
+	cloc --vcs=git

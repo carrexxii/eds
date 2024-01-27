@@ -2,9 +2,12 @@ const path = require('path')
 
 module.exports = {
   mode: "development",
-  entry: './src/client/js/main.js',
+  entry: [
+    './src/user/js/main.js',
+    // './src/maths/js/main.js'
+  ],
   output: {
-    filename: 'main.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'wwwroot'),
   },
 }

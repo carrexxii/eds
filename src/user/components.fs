@@ -1,4 +1,4 @@
-namespace Client
+namespace User
 
 open Option
 
@@ -145,12 +145,12 @@ module Components =
 
     [<ReactComponent>]
     let SidebarButtons (buttons: (string * string * string) list) url =
-        let expand, setExpand = React.useState false
+        let expand, setExpand = React.useState true
         let button (icon, text, link) =
-            Html.a [
-                prop.href link
+            Html.li [
                 prop.children [
-                    Html.li [
+                    Html.a [
+                        prop.href link
                         prop.className $"""sidebar-li {if link = url then "bg-slate-100" else ""}"""
                         prop.children [
                             Svg.svg [ svg.className $"{icon} m-2 p-3" ]
@@ -166,6 +166,7 @@ module Components =
         let buttons = Html.div [
             Html.button [
                 prop.className "sidebar-toggle"
+                prop.ariaLabel "sidebar toggle"
                 prop.onClick (fun e -> setExpand (not expand))
                 prop.children [
                     Svg.svg [ svg.className 

@@ -1,4 +1,4 @@
-namespace Client
+namespace User
 
 // open Elmish
 // open Feliz

@@ -1,4 +1,4 @@
-namespace Client
+namespace User
 
 open Elmish
 open Elmish.React
@@ -74,10 +74,10 @@ module Main =
     let view state dispatch =
         let sidebar = 
             SidebarButtons
-                [ "user-icon"    , "Profile" , Router.format ""
-                  "settings-icon", "Settings", Router.format "settings"
-                  "info-icon"    , "About"   , Router.format "about"
-                  "question-icon", "Help"    , Router.format "help" ]
+                [ "user-icon"    , "Profile" , Router.format "/"
+                  "settings-icon", "Settings", Router.format "/settings"
+                  "info-icon"    , "About"   , Router.format "/about"
+                  "question-icon", "Help"    , Router.format "/help" ]
         let page = 
             match state.url with
             | [] -> Html.div [
