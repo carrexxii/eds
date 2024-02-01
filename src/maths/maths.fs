@@ -6,6 +6,7 @@ open Feliz
 open Feliz.Router
 
 open Shared
+open Shared.Components
 
 module Main =
     type Model =
@@ -20,8 +21,8 @@ module Main =
         | GetUser
         | RecvUser of Services.User
 
-    let init () = 
-        { Model.Default with 
+    let init () =
+        { Model.Default with
             url = Router.currentUrl () },
         Cmd.ofMsg GetUser
 
@@ -32,10 +33,25 @@ module Main =
         | RecvUser user -> { state with user = user }, Cmd.none
 
     let view state dispatch =
+        let sidebar =
+            SidebarButtons
+                [ "home-icon"     , "Home", Router.format "/"
+                  "open-book-icon", "Mafs", Router.format "/mafs"
+                  "compass-icon"  , "GA"  , Router.format "/ga" ]
         let page =
             match state.url with
-            | [] -> Html.p "Maths page"
-            | url -> Html.p (sprintf "Page not found: %A" url)
+            | [] -> Html.div [ sidebar "/"; Html.p $"Maths page" ]
+            | mafs::url when mafs = "mafs" ->
+                Html.div [
+                    sidebar mafs
+                    MafsExamples.view ()
+                ]
+            | ga::url when ga = "ga" ->
+                Html.div [
+                    sidebar ga
+                    Examples.GA.view ()
+                ]
+            | url -> Html.div [ sidebar "/mafs"; Html.p (sprintf "Page not found: %A" url) ]
 
         React.router [
             router.onUrlChanged (SetUrl >> dispatch)

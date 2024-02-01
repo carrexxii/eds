@@ -1,0 +1,41 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CSS",
+            "type": "shell",
+            "command": "make css"
+        },
+        {
+            "label": "JS",
+            "type": "shell",
+            "command": "make js"
+        },
+        {
+            "label": "Pack",
+            "type": "shell",
+            "command": "make pack"
+        },
+        {
+            "label": "DotNet",
+            "type": "shell",
+            "command": "dotnet watch"
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "dependsOn": [
+                "CSS",
+                "JS",
+                "Pack",
+                "DotNet",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

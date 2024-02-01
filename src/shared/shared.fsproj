@@ -5,6 +5,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="types.fs" />
+    <Compile Include="components.fs" />
     <Compile Include="services.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Elmish" Version="4.1.*" />
+    <PackageReference Include="Feliz" Version="2.8.0-beta.0" />
   </ItemGroup>
 </Project>

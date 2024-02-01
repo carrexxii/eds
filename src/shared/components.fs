@@ -1,4 +1,4 @@
-namespace User
+namespace Shared
 
 open Option
 
@@ -14,6 +14,24 @@ type SortDirection =
         | Descending -> Ascending
 
 module Components =
+    let Heading (text: string) =
+        Html.div [
+            prop.className "prose prose-slate"
+            prop.children [ Html.h1 text ]
+        ]
+    let SubHeading (text: string) =
+        Html.div [
+            prop.className "prose prose-slate"
+            prop.children [ Html.h2 text ]
+        ]
+    let Paragraph (text: string) =
+        Html.div [
+            prop.className "prose prose-slate"
+            prop.children [
+                Html.p text
+            ]
+        ]
+
     [<ReactComponent>]
     let textInput label (value: string) dispatch isValid =
         let error, setError = React.useState None
@@ -169,7 +187,7 @@ module Components =
                 prop.ariaLabel "sidebar toggle"
                 prop.onClick (fun e -> setExpand (not expand))
                 prop.children [
-                    Svg.svg [ svg.className 
+                    Svg.svg [ svg.className
                         $"""{if expand then "arrow-left-icon" else "hamburger-icon"}
                             p-3 duration-500 ease-in"""
                     ]

@@ -14,6 +14,7 @@ run: build
 
 .PHONY: build
 build: css js
+	@read
 	@npx webpack
 	@dotnet build
 
@@ -23,26 +24,30 @@ watch: build
 		$(shell seq 1 $$(($(CLIENT_COUNT) + 2))), \
 		kill %$(count);)' SIGINT
 	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
-	@$(foreach proj, $(CLIENT_PROJS), \
+	@$(foreach proj, $(CLIENT_PROJS),                                            \
 		(dotnet fable watch $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) \
 		--noRestore --silent --runWatch npx webpack &);)
-# @npx webpack --watch &
 	@dotnet watch
 
 .PHONY: js
 js:
-	@$(foreach dir, $(CLIENTS), mkdir $(BUILD_DIR)/$(dir) -p;) 
+	@$(foreach dir, $(CLIENTS), mkdir $(BUILD_DIR)/$(dir) -p;)
 	@$(foreach proj, $(CLIENT_PROJS), \
-		(dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --noRestore --silent &);)
+		(dotnet fable watch $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --noRestore --silent &);)
+	@read
 
 .PHONY: css
 css:
-	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always
+
+.PHONY: pack
+pack:
+	@npx webpack watch
 
 .PHONY: restore
 restore:
 	@npm install &
-	@git submodule update &
+	@git submodule update --remote --merge &
 	@dotnet tool restore &
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj) &);)
@@ -64,7 +69,7 @@ remove: clean
 	@rm -rf ./node_modules
 	@rm -f  ./*-lock.*
 	@rm -rf $(shell grep path .gitmodules | sed 's/.*= //')
-	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);) 
+	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);)
 
 .PHONY: cloc
 cloc:

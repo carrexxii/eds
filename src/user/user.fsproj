@@ -5,13 +5,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../shared/services.fs" />
+    <Compile Include="../shared/components.fs" />
     <Compile Include="services.fs" />
     <Compile Include="types.fs" />
-    <Compile Include="components.fs" />
-    <Compile Include="user.fs" />
     <Compile Include="student.fs" />
     <Compile Include="dashboard.fs" />
-    <Compile Include="main.fs" />
+    <Compile Include="user.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="4.1.*" />
