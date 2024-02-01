@@ -21,7 +21,7 @@ module Components =
         ]
     let SubHeading (text: string) =
         Html.div [
-            prop.className "prose prose-slate"
+            prop.className "prose prose-slate mb-4"
             prop.children [ Html.h2 text ]
         ]
     let Paragraph (text: string) =
@@ -30,6 +30,13 @@ module Components =
             prop.children [
                 Html.p text
             ]
+        ]
+
+    let Button text onClick =
+        Html.button [
+            prop.className "button"
+            prop.text (string text)
+            prop.onClick onClick
         ]
 
     [<ReactComponent>]
