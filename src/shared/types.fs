@@ -1,10 +1,10 @@
-namespace Shared
+namespace EDS.Shared
 
 [<AutoOpen>]
 module Types =
-    type Student = 
+    type Student =
         { id: int
           name: string }
-        static member Default = 
+        static member Default =
             { id = -1
               name = "" }

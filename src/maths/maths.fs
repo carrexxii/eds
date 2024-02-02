@@ -1,12 +1,13 @@
-namespace Maths
+namespace EDS.Maths
 
 open Elmish
 open Elmish.React
 open Feliz
 open Feliz.Router
 
-open Shared
-open Shared.Components
+open EDS.Shared
+open EDS.Shared.Components
+open EDS.Maths
 
 module Main =
     type Model =
@@ -37,21 +38,15 @@ module Main =
             SidebarButtons
                 [ "home-icon"     , "Home", Router.format "/"
                   "open-book-icon", "Mafs", Router.format "/mafs"
+                  "open-book-icon", "Linear Algebra", Router.format "/la"
                   "compass-icon"  , "GA"  , Router.format "/ga" ]
         let page =
             match state.url with
             | [] -> Html.div [ sidebar "/"; Html.p $"Maths page" ]
-            | mafs::url when mafs = "mafs" ->
-                Html.div [
-                    sidebar mafs
-                    MafsExamples.view ()
-                ]
-            | ga::url when ga = "ga" ->
-                Html.div [
-                    sidebar ga
-                    Examples.GA.view ()
-                ]
-            | url -> Html.div [ sidebar "/mafs"; Html.p (sprintf "Page not found: %A" url) ]
+            | mafs::url when mafs = "mafs" -> concat (sidebar mafs) (Mafs.view ())
+            | la  ::url when la   = "la"   -> concat (sidebar la  ) (LA.view url)
+            | ga  ::url when ga   = "ga"   -> concat (sidebar ga  ) (GA.view ())
+            | url -> concat (sidebar "/mafs") (Heading <| sprintf "Page not found: %A" url)
 
         React.router [
             router.onUrlChanged (SetUrl >> dispatch)

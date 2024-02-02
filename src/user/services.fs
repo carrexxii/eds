@@ -1,8 +1,8 @@
-namespace User
+namespace EDS.User
 
 open Fable.Remoting.Client
 
-open Shared
+open EDS.Shared
 
 module Services =
     let userService =

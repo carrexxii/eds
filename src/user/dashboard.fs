@@ -1,4 +1,4 @@
-namespace User
+namespace EDS.User
 
 // open Option
 
@@ -36,7 +36,7 @@ namespace User
 //         { Model.Default with
 //             user = user},
 //         Cmd.none
-    
+
 //     let update msg state =
 //         match msg with
 //         // | SetStudentName    name'    -> { state with student.name = name' }, Cmd.none
@@ -54,7 +54,7 @@ namespace User
 //         //     { state with
 //         //         studentRecords = lst
 //         //         gettingRecords = false },
-//         //     Cmd.none // TODO: if lst can be empty, maybe check before overwriting 
+//         //     Cmd.none // TODO: if lst can be empty, maybe check before overwriting
 //         // | SortStudents i ->
 //         //     let dir = snd (defaultValue (-1, Descending) state.sortBy)
 //         //     { state with
@@ -110,7 +110,7 @@ namespace User
 //             { state with
 //                 studentRecords = lst
 //                 gettingRecords = false },
-//             Cmd.none // TODO: if lst can be empty, maybe check before overwriting 
+//             Cmd.none // TODO: if lst can be empty, maybe check before overwriting
 //         | SortStudents i ->
 //             let dir = snd (defaultValue (-1, Descending) state.sortBy)
 //             { state with
@@ -176,6 +176,6 @@ namespace User
 
 //     let view page state dispatch =
 //         match page with
-//         // | Page.Home     -> 
+//         // | Page.Home     ->
 //         | Page.Profile  -> profileView state.user dispatch
 //         | Page.Students -> studentsView state dispatch

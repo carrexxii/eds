@@ -1,4 +1,4 @@
-namespace Server
+namespace EDS.Server
 
 open Falco
 open Falco.Markup
@@ -37,7 +37,7 @@ module Pages =
             ]
         |> Response.ofHtmlCsrf
 
-    let index: HttpHandler = 
+    let index: HttpHandler =
         master (raw "Index")
 
     let user: HttpHandler =

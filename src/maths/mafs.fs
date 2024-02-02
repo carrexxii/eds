@@ -1,4 +1,4 @@
-namespace Maths
+namespace EDS.Maths
 
 open Fable.Core.JsInterop
 open Feliz
@@ -6,9 +6,9 @@ open Feliz.Mafs
 open Feliz.Mafs.Plot
 open Feliz.Mafs.Geometry.Vector
 
-open Shared.Components
+open EDS.Shared.Components
 
-module MafsExamples =
+module Mafs =
     [<ReactComponent>]
     let view () =
         Html.div [

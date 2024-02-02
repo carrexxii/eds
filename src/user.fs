@@ -1,4 +1,4 @@
-namespace Server
+namespace EDS.Server
 
 open Falco
 open Microsoft.AspNetCore.Authentication

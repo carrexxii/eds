@@ -1,4 +1,4 @@
-namespace User
+namespace EDS.User
 
 // open System
 

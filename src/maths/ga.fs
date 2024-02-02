@@ -1,4 +1,4 @@
-namespace Maths.Examples
+namespace EDS.Maths
 
 open Feliz
 open Feliz.Mafs

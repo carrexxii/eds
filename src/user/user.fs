@@ -1,12 +1,12 @@
-namespace User
+namespace EDS.User
 
 open Elmish
 open Elmish.React
 open Feliz
 open Feliz.Router
 
-open Shared
-open Shared.Components
+open EDS.Shared
+open EDS.Shared.Components
 
 type Error =
     | IncorrectUsername

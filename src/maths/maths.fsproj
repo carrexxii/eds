@@ -4,8 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ga.fs" />
     <Compile Include="../shared/services.fs" />
+    <Compile Include="la.fs" />
+    <Compile Include="ga.fs" />
     <Compile Include="mafs.fs" />
     <Compile Include="services.fs" />
     <Compile Include="maths.fs" />

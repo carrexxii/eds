@@ -1,4 +1,4 @@
-namespace User
+namespace EDS.User
 
 // open System
 
@@ -128,7 +128,7 @@ namespace User
 //                   studentRecords = None
 //                   gettingRecords = false
 //                   sortBy         = None }
-        
+
 //         type Message =
 //             | SetStudentName    of string
 //             | SetStudentSurname of string

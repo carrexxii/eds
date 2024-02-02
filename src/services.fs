@@ -1,8 +1,8 @@
-namespace Server
+namespace EDS.Server
 
 open Microsoft.AspNetCore.Http
 
-open Shared
+open EDS.Shared
 
 module Services =
     let User: HttpContext -> Services.IUser =

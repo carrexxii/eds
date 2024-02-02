@@ -1,4 +1,4 @@
-namespace Server
+namespace EDS.Server
 
 open Falco.Routing
 open Falco.HostBuilder
@@ -14,7 +14,7 @@ module Main =
         required_json "appsettings.json"
     }
 
-    let remoting (app: IApplicationBuilder) = 
+    let remoting (app: IApplicationBuilder) =
         Remoting.createApi ()
         // |> Remoting.withRouteBuilder Shared.Route.builder
         |> Remoting.fromContext Services.User

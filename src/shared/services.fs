@@ -1,4 +1,4 @@
-namespace Shared
+namespace EDS.Shared
 
 // module Route =
 //     let builder type' method =

@@ -1,4 +1,4 @@
-namespace Server
+namespace EDS.Server
 
 open System.Security.Claims
 open Microsoft.AspNetCore.Authentication.JwtBearer

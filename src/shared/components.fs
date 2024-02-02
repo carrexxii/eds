@@ -1,5 +1,6 @@
-namespace Shared
+namespace EDS.Shared
 
+open System
 open Option
 
 open Browser
@@ -13,6 +14,16 @@ type SortDirection =
         | Ascending  -> Descending
         | Descending -> Ascending
 
+[<AutoOpen>]
+module Util =
+    let concat a b =
+        Html.div [
+            prop.children [
+                a
+                b
+            ]
+        ]
+
 module Components =
     let Heading (text: string) =
         Html.div [
@@ -24,12 +35,10 @@ module Components =
             prop.className "prose prose-slate mb-4"
             prop.children [ Html.h2 text ]
         ]
-    let Paragraph (text: string) =
-        Html.div [
+    let Article (content: ReactElement list) =
+        Html.article [
             prop.className "prose prose-slate"
-            prop.children [
-                Html.p text
-            ]
+            prop.children content
         ]
 
     let Button text onClick =
