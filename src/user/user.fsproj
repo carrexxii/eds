@@ -7,22 +7,18 @@
     <Compile Include="../shared/services.fs" />
     <Compile Include="../shared/components.fs" />
     <Compile Include="services.fs" />
-    <Compile Include="types.fs" />
-    <Compile Include="student.fs" />
     <Compile Include="dashboard.fs" />
     <Compile Include="user.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Elmish" Version="4.1.*" />
-    <PackageReference Include="Fable.Core" Version="4.2.*" />
-    <PackageReference Include="Fable.Elmish" Version="4.1.*" />
-    <PackageReference Include="Fable.Elmish.React" Version="4.0.*" />
-    <PackageReference Include="Fable.Remoting.Client" Version="7.31.*" />
-    <PackageReference Include="Feliz" Version="2.8.0-beta.0" />
-    <PackageReference Include="Feliz.UseElmish" Version="2.5.*" />
-    <PackageReference Include="Feliz.Router" Version="4.0.*" />
+    <ProjectReference Include="../shared/shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../shared/shared.fsproj" />
+    <PackageReference Include="Elmish" Version="4.1.0" />
+    <PackageReference Include="Fable.Elmish.React" Version="4.0.0" />
+    <PackageReference Include="Fable.Remoting.Client" Version="7.31.0" />
+    <PackageReference Include="Feliz" Version="2.7.0" />
+    <PackageReference Include="Feliz.Router" Version="4.0.0" />
+    <PackageReference Include="Feliz.UseElmish" Version="2.5.0" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src/database.fs" />
     <Compile Include="src/claims.fs" />
     <Compile Include="src/pages.fs" />
     <Compile Include="src/user.fs" />
@@ -11,11 +12,13 @@
     <Compile Include="src/main.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Falco" Version="4.*" />
-    <PackageReference Include="Fable.Remoting.AspNetCore" Version="2.38.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.*" />
+    <ProjectReference Include="./src/shared/shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="./src/shared/shared.fsproj" />
+    <PackageReference Include="Fable.Remoting.AspNetCore" Version="2.38.0" />
+    <PackageReference Include="Fable.Remoting.Server" Version="5.37.0" />
+    <PackageReference Include="falco" Version="4.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+    <PackageReference Include="Npgsql.FSharp" Version="5.7.0" />
   </ItemGroup>
 </Project>

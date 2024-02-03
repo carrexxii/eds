@@ -14,9 +14,6 @@ module User =
             match user with
             | { name = "qwe"; password = "asd" } ->
                 let userPrincipal = Claims.userPrincipal (Claims.userIdentity user.id user.name)
-                // let options = AuthenticationProperties()
-                // options.IsPersistent <- true
-                // Response.signInOptionsAndRedirect AuthConfig.scheme userPrincipal options "/status"
                 Response.signInAndRedirect AuthConfig.scheme userPrincipal "/status"
             | _ -> Response.redirectPermanently "/status"
 

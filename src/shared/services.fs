@@ -1,16 +1,26 @@
 namespace EDS.Shared
 
-// module Route =
-//     let builder type' method =
-        // sprintf "/api/%s/%s" type' method
-
 module Services =
     type User =
-        { name    : string
+        { id      : int
+          username: string
+          email   : string
           password: string }
         static member Default =
-            { name     = ""
+            { id       = -1
+              username = ""
+              email    = ""
               password = "" }
-    type IUser =
-        { getUser: unit -> Async<User> }
+
+        member this.toStringArray () =
+            [| this.id.ToString ()
+               this.username
+               this.email |]
+
+    type IUser = {
+            get    : unit -> Async<User option>
+            getMany: int * int -> Async<User array option>
+            set    : User -> Async<Result<unit, string>>
+            add    : User -> Async<Result<unit, string>>
+        }
         with member this.ctx: Microsoft.AspNetCore.Http.HttpContext = null

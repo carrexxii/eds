@@ -16,8 +16,7 @@ module Main =
 
     let remoting (app: IApplicationBuilder) =
         Remoting.createApi ()
-        // |> Remoting.withRouteBuilder Shared.Route.builder
-        |> Remoting.fromContext Services.User
+        |> Remoting.fromContext Services.User.User
         |> app.UseRemoting
         app
 

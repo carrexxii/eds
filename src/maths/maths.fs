@@ -20,7 +20,7 @@ module Main =
     type Message =
         | SetUrl of string list
         | GetUser
-        | RecvUser of Services.User
+        | RecvUser of Services.User option
 
     let init () =
         { Model.Default with
@@ -30,8 +30,8 @@ module Main =
     let update msg state =
         match msg with
         | SetUrl url -> { state with url = url }, Cmd.none
-        | GetUser -> state, Cmd.OfAsync.perform Services.userService.getUser () RecvUser
-        | RecvUser user -> { state with user = user }, Cmd.none
+        | GetUser -> state, Cmd.OfAsync.perform Services.userService.get () RecvUser
+        | RecvUser user -> { state with user = Option.get user }, Cmd.none
 
     let view state dispatch =
         let sidebar =

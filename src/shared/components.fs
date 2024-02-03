@@ -7,6 +7,7 @@ open Browser
 open Elmish
 open Feliz
 
+[<AutoOpen>]
 type SortDirection =
     | Ascending
     | Descending
@@ -107,22 +108,26 @@ module Components =
         Html.table [
             prop.className "list-table"
             prop.children [
-                if isSome header then
-                    Html.tr [
-                        Html.th [
-                            prop.className "list-table-t"
-                            prop.text (fst <| get header)
+                Html.thead [
+                    if isSome header then
+                        Html.tr [
+                            Html.th [
+                                prop.className "list-table-t"
+                                prop.text (fst <| get header)
+                            ]
+                            Html.th [
+                                prop.className "list-table-t"
+                                prop.text (snd <| get header)
+                            ]
                         ]
-                        Html.th [
-                            prop.className "list-table-t"
-                            prop.text (snd <| get header)
+                ]
+                Html.tbody [
+                    for elem in elems do
+                        Html.tr [
+                            Html.td [ prop.className "list-table-l"; prop.text (fst elem) ]
+                            Html.td [ prop.className "list-table-r"; prop.text (snd elem) ]
                         ]
-                    ]
-                for elem in elems do
-                    Html.tr [
-                        Html.td [ prop.className "list-table-l"; prop.text (fst elem) ]
-                        Html.td [ prop.className "list-table-r"; prop.text (snd elem) ]
-                    ]
+                ]
             ]
         ]
 
