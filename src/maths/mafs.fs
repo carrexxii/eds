@@ -12,15 +12,6 @@ module Mafs =
     [<ReactComponent>]
     let view () =
         Html.div [
-            Mafs { MafsProps.Default with
-                    zoom = !^{| min = 0.1; max = 1.0 |} } [
-                CartesianDefault
-
-                Plot.create <| fun x -> sin x
-                |> Plot.color Theme.blue
-                |> Plot.render XAxis
-            ]
-
             // https://mafs.dev/guides/display/vectors
             SubHeading "Examples Showing Vectors"
 
@@ -92,4 +83,64 @@ module Mafs =
 
                 point.element
             ]
+
+            // https://mafs.dev/guides/examples/riemann-sums
+            SubHeading "Riemann Sums"
+
+            let minPartitions = 1
+            let maxPartitions = 250
+            let partitions, setPartitions = React.useState 100
+
+            let lift  = movablePoint (vec  0 1) Theme.indigo Vertical
+            let slide = movablePoint (vec  1 0) Theme.indigo Horizontal
+            let start = movablePoint (vec -2 0) Theme.orange Horizontal
+            let stop  = movablePoint (vec  2 0) Theme.orange Horizontal
+
+            let fns = [
+                fun x -> sin (3.0*x) - x**2.0 / 20.0 + lift.y
+                fun x -> lift.y + sin x
+                fun x -> lift.y + sinh x
+                fun x -> lift.y + cosh x
+            ]
+
+            let fn, setFn = React.useState 0
+            let dx = (stop.x - start.x) / float partitions
+            let area = ref 0.0
+            Mafs { MafsProps.Default with
+                     viewBox = { x = [| -1; 12 |]
+                                 y = [| -3; 10 |]
+                                 padding = 2 }
+                     zoom = !^{| min = 0.3; max = 2.0 |} } ([
+                Cartesian { CartesianProps.Default with
+                              subDiv = 0 }
+
+                Plot.create (fun x -> fns[fn] (x - slide.x))
+                |> Plot.color Theme.blue
+                |> Plot.render XAxis
+            ]@( Seq.map (fun x ->
+                    let x = start.x + dx*(x - 1.0)
+                    let y = fns[fn] <| (x - slide.x) + dx/2.0
+                    area.Value <- area.Value + dx*y
+                    Polygon.create [ vec x        0
+                                     vec (x + dx) 0
+                                     vec (x + dx) y
+                                     vec x        y ]
+                    |> Polygon.color (if y >= 0 then Theme.green else Theme.red)
+                    |> Polygon.weight 1.0
+                    |> Polygon.opacity 0.3
+                    |> Polygon.render true
+                ) { 1..partitions }
+                |> List.ofSeq
+            )@[ Text.create $"Area: %.5f{area.Value}" [| 3; 3 |] |> Text.render
+                lift.element
+                slide.element
+                start.element
+                stop.element ])
+
+            Slider minPartitions maxPartitions partitions (fun v -> setPartitions (int v)) true
+            RadioList "Functions" 0
+                [ "Wave", fun e -> if e then setFn 0
+                  "Sine", fun e -> if e then setFn 1
+                  "Sinh", fun e -> if e then setFn 2
+                  "Cosh", fun e -> if e then setFn 3 ]
         ]

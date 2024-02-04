@@ -4,6 +4,7 @@ open System
 open Option
 
 open Browser
+open Browser.Types
 open Elmish
 open Feliz
 
@@ -47,6 +48,51 @@ module Components =
             prop.className "button"
             prop.text (string text)
             prop.onClick onClick
+        ]
+
+    // let
+
+    let Slider (min: float) (max: float) (value: float) (onChange: float -> unit) withText =
+        Html.div [
+            prop.className "text-center"
+            prop.children [
+                Html.input [
+                    prop.className "w-full"
+                    prop.type' "range"
+                    prop.min min
+                    prop.max max
+                    prop.value value
+                    prop.onChange onChange
+                ]
+                if withText then Html.p $"{value}"
+            ]
+        ]
+
+    let RadioList legend (initial: int) (xs: list<string * (bool -> unit)>) =
+        Html.fieldSet [
+            prop.className "text-gray-700"
+            prop.children [
+                Html.legend (string legend)
+                Html.div (xs |> List.mapi (fun i x ->
+                        let id = fst x
+                        let isChecked = i = initial
+                        Html.div [
+                            Html.input [
+                                prop.className "form-radio ml-4"
+                                prop.type' "radio"
+                                prop.name legend
+                                prop.id id
+                                prop.defaultChecked isChecked
+                                prop.onCheckedChange (snd x)
+                            ]
+                            Html.label [
+                                prop.className "pl-2"
+                                prop.text id
+                                prop.for' id
+                            ]
+                        ]
+                    ))
+            ]
         ]
 
     [<ReactComponent>]
