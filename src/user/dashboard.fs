@@ -76,7 +76,7 @@ module Dashboard =
         | Completed    -> failwith "Should be caught by the parent"
 
     let profileView state =
-        listTable
+        ListTable
             None
             [ "Name"    , state.user.username
               "Email"   , state.user.email

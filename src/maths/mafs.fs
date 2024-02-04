@@ -4,7 +4,7 @@ open Fable.Core.JsInterop
 open Feliz
 open Feliz.Mafs
 open Feliz.Mafs.Plot
-open Feliz.Mafs.Geometry.Vector
+open Feliz.Mafs.Geometry
 
 open EDS.Shared.Components
 
@@ -23,9 +23,9 @@ module Mafs =
             Mafs MafsProps.Default [
                 CartesianDefault
 
-                create v |> color Theme.blue            |> render
-                create u |> color Theme.red   |> tail v |> render
-                create w |> color Theme.green |> tail u |> render
+                Vector.create v |> Vector.color Theme.blue                   |> Vector.render
+                Vector.create u |> Vector.color Theme.red   |> Vector.tail v |> Vector.render
+                Vector.create w |> Vector.color Theme.green |> Vector.tail u |> Vector.render
 
                 head.element
             ]
@@ -45,9 +45,9 @@ module Mafs =
                 Plot.create <| fun x -> tp.point[1] * fn x / fn mid
                 |> Plot.render XAxis
 
-                Text.point 2 xInt1.point xInt1.point |> Text.render
-                Text.point 2 xInt2.point xInt2.point |> Text.render
-                let tpText = Text.point 2 tp.point tp.point |> Text.render
+                Text.point 2 (Vec2 xInt1) (Vec2 xInt1) |> Text.render
+                Text.point 2 (Vec2 xInt2) (Vec2 xInt2) |> Text.render
+                let tpText = Text.point 2 (Vec2 tp) (Vec2 tp) |> Text.render
 
                 xInt1.element
                 xInt2.element
@@ -131,7 +131,10 @@ module Mafs =
                     |> Polygon.render true
                 ) { 1..partitions }
                 |> List.ofSeq
-            )@[ Text.create $"Area: %.5f{area.Value}" [| 3; 3 |] |> Text.render
+            )@[ Text.create $"Area: %.5f{area.Value}"
+                |> Text.pos (vec 3 3)
+                |> Text.render
+
                 lift.element
                 slide.element
                 start.element

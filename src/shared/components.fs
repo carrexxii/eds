@@ -27,10 +27,15 @@ module Util =
         ]
 
 module Components =
-    let Heading (text: string) =
+    let P text =
+        Html.p [
+            prop.className "prose prose-p"
+            prop.text (string text)
+        ]
+    let Heading text =
         Html.div [
             prop.className "prose prose-slate"
-            prop.children [ Html.h1 text ]
+            prop.children [ Html.h1 (string text) ]
         ]
     let SubHeading (text: string) =
         Html.div [
@@ -50,11 +55,24 @@ module Components =
             prop.onClick onClick
         ]
 
-    // let
+    let NumberInput (min: float) (max: float) (value: float) (onChange: float -> unit) label =
+        Html.div [
+            prop.className "flex flex-col justify-center text-center"
+            prop.children [
+                P label
+                Html.input [
+                    prop.type' "number"
+                    prop.min min
+                    prop.max max
+                    prop.value value
+                    prop.onChange onChange
+                ]
+            ]
+        ]
 
     let Slider (min: float) (max: float) (value: float) (onChange: float -> unit) withText =
         Html.div [
-            prop.className "text-center"
+            prop.className "text-center m-2"
             prop.children [
                 Html.input [
                     prop.className "w-full"
@@ -64,7 +82,21 @@ module Components =
                     prop.value value
                     prop.onChange onChange
                 ]
-                if withText then Html.p $"{value}"
+                if withText then P $"{value}"
+            ]
+        ]
+
+    let Checkbox text isChecked (onChange: bool -> unit) =
+        Html.div [
+            prop.className "flex flex-row items-center text-center"
+            prop.children [
+                Html.input [
+                    prop.className "mx-2"
+                    prop.type' "checkbox"
+                    prop.isChecked isChecked
+                    prop.onChange onChange
+                ]
+                P (string text)
             ]
         ]
 
@@ -96,7 +128,7 @@ module Components =
         ]
 
     [<ReactComponent>]
-    let textInput label (value: string) dispatch isValid =
+    let TextInput label (value: string) dispatch isValid =
         let error, setError = React.useState None
         Html.label [
             prop.className "label"
@@ -123,17 +155,7 @@ module Components =
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
-    let button text dispatch =
-        Html.button [
-            prop.className "button"
-            prop.onClick (fun e -> dispatch ())
-            prop.text (string text)
-        ]
-
-///////////////////////////////////////////////////////////////////////////////
-
-    [<ReactComponent>]
-    let errorCard text dispatch =
+    let ErrorCard text dispatch =
         Html.div [
             prop.className "card-error"
             prop.children [
@@ -149,7 +171,7 @@ module Components =
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
-    let listTable (header: (string * string) option)
+    let ListTable (header: (string * string) option)
                   (elems : (string * string) list) =
         Html.table [
             prop.className "list-table"
@@ -180,7 +202,7 @@ module Components =
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
-    let table (header  : string array)
+    let Table (header  : string array)
               (records : string array array)
               (sortBy  : (int * SortDirection) option)
               (dispatch: int -> unit) =

@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../shared/services.fs" />
+    <Compile Include="ig.fs" />
     <Compile Include="la.fs" />
     <Compile Include="ga.fs" />
     <Compile Include="mafs.fs" />

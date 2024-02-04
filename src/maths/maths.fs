@@ -36,16 +36,18 @@ module Main =
     let view state dispatch =
         let sidebar =
             SidebarButtons
-                [ "home-icon"     , "Home", Router.format "/"
-                  "open-book-icon", "Mafs", Router.format "/mafs"
+                [ "home-icon"     , "Home"          , Router.format "/"
+                  "open-book-icon", "Mafs"          , Router.format "/mafs"
                   "open-book-icon", "Linear Algebra", Router.format "/la"
-                  "compass-icon"  , "GA"  , Router.format "/ga" ]
+                  "compass-icon"  , "GA"            , Router.format "/ga"
+                  "abacus-icon"   , "IG"            , Router.format "/ig" ]
         let page =
             match state.url with
             | [] -> Html.div [ sidebar "/"; Html.p $"Maths page" ]
             | mafs::url when mafs = "mafs" -> concat (sidebar mafs) (Mafs.view ())
             | la  ::url when la   = "la"   -> concat (sidebar la  ) (LA.view url)
             | ga  ::url when ga   = "ga"   -> concat (sidebar ga  ) (GA.view ())
+            | ig  ::url when ig   = "ig"   -> concat (sidebar ig  ) (IG.view ())
             | url -> concat (sidebar "/mafs") (Heading <| sprintf "Page not found: %A" url)
 
         React.router [
