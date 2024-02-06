@@ -70,7 +70,8 @@ module Components =
             ]
         ]
 
-    let Slider (min: float) (max: float) (value: float) (onChange: float -> unit) withText =
+    let Slider (min: float) (max: float) (step: float)
+               (value: float) (onChange: float -> unit) withText =
         Html.div [
             prop.className "text-center m-2"
             prop.children [
@@ -79,6 +80,7 @@ module Components =
                     prop.type' "range"
                     prop.min min
                     prop.max max
+                    prop.step step
                     prop.value value
                     prop.onChange onChange
                 ]
@@ -100,14 +102,14 @@ module Components =
             ]
         ]
 
-    let RadioList legend (initial: int) (xs: list<string * (bool -> unit)>) =
+    let RadioList legend selected (xs: list<string * (bool -> unit)>) =
         Html.fieldSet [
             prop.className "text-gray-700"
             prop.children [
                 Html.legend (string legend)
                 Html.div (xs |> List.mapi (fun i x ->
                         let id = fst x
-                        let isChecked = i = initial
+                        let isChecked = i = (int selected)
                         Html.div [
                             Html.input [
                                 prop.className "form-radio ml-4"
@@ -120,7 +122,7 @@ module Components =
                             Html.label [
                                 prop.className "pl-2"
                                 prop.text id
-                                prop.for' id
+                                prop.htmlFor id
                             ]
                         ]
                     ))
@@ -149,6 +151,31 @@ module Components =
                     prop.className "input-error-text"
                     prop.text (defaultValue "" error)
                 ]
+            ]
+        ]
+
+///////////////////////////////////////////////////////////////////////////////
+
+    [<ReactComponent>]
+    let Tabbed (tabs: (string * ReactElement) list) =
+        let tab, setTab = React.useState 0
+        Html.div [
+            Html.nav [
+                prop.className "flex flex-row rounded-full"
+                prop.children (
+                    tabs |> List.mapi (fun i tab ->
+                        Html.p [
+                            prop.className "grow p-0.5 border-x-2 text-center text-md
+                                            border-slate-200 text-gray-700
+                                            hover:bg-slate-200 hover:cursor-pointer hover:text-black
+                                            duration-200 ease-in-out"
+                            prop.onClick (fun e -> setTab i)
+                            prop.children [ Html.b (fst tab) ]
+                    ]))
+            ]
+            Html.div [
+                prop.className "mt-4 px-8"
+                prop.children (snd tabs[tab])
             ]
         ]
 

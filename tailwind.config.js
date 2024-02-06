@@ -2,7 +2,9 @@
 module.exports = {
   content: [
     "./src/components.html",
-    "./src/*/*.fs"
+    "./src/*.fs",
+    "./src/*/*.fs",
+    "./src/*/*/*.fs"
   ],
   theme: {
     fontFamily: {

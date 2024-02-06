@@ -7,11 +7,6 @@
 @tailwind utilities;
 
 @layer components {
-    #header  { @apply top-0 w-full h-16 border-b-2 bg-slate-100 }
-    #layout  { @apply flex }
-    #root    { @apply flex-col grow md:mr-16 lg:mr-32 p-10 bg-gray-50 }
-    #footer  { @apply left-0 w-full h-16 p-4 border-t-2 text-center }
-
     .sidebar-open      { @apply flex-col flex-shrink-0 left-0 top-0 w-64 p-5
                                 duration-500 ease-in-out border-r-2 }
     .sidebar-collapsed { @apply sidebar-open w-24 }
@@ -67,6 +62,6 @@
         transform: scale(50%);
     }
     to {
-        transform: scale(150%5);
+        transform: scale(150%);
     }
 }

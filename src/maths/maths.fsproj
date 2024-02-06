@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ig/probstat.fs" />
+    <Compile Include="ig/geotrig.fs" />
+    <Compile Include="ig/algebra.fs" />
+    <Compile Include="ig/numbers.fs" />
     <Compile Include="../shared/services.fs" />
     <Compile Include="ig.fs" />
     <Compile Include="la.fs" />

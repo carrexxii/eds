@@ -20,19 +20,19 @@ module Pages =
 
                 link [ rel "stylesheet"; href "styles.css" ]
             ] [
-                header [ id "header" ]
+                header [ class' "top-0 w-full h-16 border-b-2 bg-slate-100" ]
                     [ a [ href "/" ] [ raw "~~~ Header ~~~" ] ]
-                div [ id "layout" ] [
+                div [ id "layout"; class' "flex" ] [
                     // Elem.form [ method "POST"; action "/logout" ] [
                     //     input [ type' "submit"; value "Submit" ]
                     //     Xss.antiforgeryInput token
                     // ]
                     div [ id "sidebar"; class' "sidebar-open" ]
                         [ ]
-                    div [ id "root" ]
+                    div [ id "root"; class' "flex-col grow sm:mr-0 md:mr-16 lg:mr-32 bg-gray-50" ]
                         [ inner ]
                 ]
-                footer [ id "footer" ]
+                footer [ id "footer"; class' "left-0 w-full h-16 p-4 border-t-2 text-center" ]
                     [ raw "~~~ Footer ~~~" ]
             ]
         |> Response.ofHtmlCsrf
