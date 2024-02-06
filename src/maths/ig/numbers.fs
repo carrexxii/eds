@@ -30,7 +30,7 @@ type Set =
 
 module Numbers =
     [<ReactComponent>]
-    let NumberLines () =
+    let NumberSets () =
         Html.div [
             let min = -20
             let max = 20
@@ -132,28 +132,92 @@ module Numbers =
                     ]
                 ]
             ]
+
+            Article [
+                UnorderedList [ "Natural Numbers"
+                                "Integers"
+                                "Rational Numbers"
+                                "Irrational Numbers"
+                                "Real Numbers"
+                                "Prime Numbers"
+                                "Square Numbers and Square Roots"
+                                "Cubic Numbers"
+                                "Factors"
+                                "Prime Factors" ]
+                UnorderedList [ "Highest Common Factor"
+                                "Least Common Factor"
+                                "Upper and Lower Bounds"
+                                "Significant Figures and Decimal Places"
+                                "Accuracy and Precision"
+                                "Inequalities"
+                                "Integers, Fractions Decimals and Percentages" ]
+                Section """
+
+                """
+                Accordion [
+                    "Extended", "Content for the extended section"
+                    "Beyond", "Content for the beyond section"
+                ]
+
+                Section """Text following the extended section"""
+            ]
         ]
 
     [<ReactComponent>]
     let Exponents () =
-        Heading "TODO"
+        Html.div [
+            Heading "Exponents"
+
+            SubHeading "Rules for Exponents"
+            let tex inner = Katex $$"""\color{black}{{inner}}"""
+            StaticTable
+                [ [ Html.text "Rules"; Html.text "Examples" ]
+                  [ tex @"x^0 = 1"
+                    tex @"\qquad 2^0 = 1" ]
+                  [ tex @"x^1 = x"
+                    tex @"\qquad 3^1 = 3" ]
+                  [ tex @"x^n = x_1 \times x_2 \times \dots \times x_n"
+                    tex @"\qquad x^5 = x \times x \times x \times x \times x" ]
+                  [ tex @"x^ax^b = x^{a + b}"
+                    tex @"\qquad x^2x^3 = x^{2 + 3} = x^5 \\
+                          \qquad x^{-1}x^2 = x^{-1 + 2} = x" ]
+                  [ tex @"(x^n)^m = x^{nm}"
+                    tex @"\qquad (x^2)^3 = x^{2 \times 3} = x^6" ]
+                  [ tex @"\dfrac{a}{x^n} = ax^{-n}"
+                    tex @"\qquad \frac{1}{x} = x^{-1}
+                          \qquad \frac{5}{x^2} = 5x^{-2}
+                          \qquad \frac{2}{3x^{-3}} = \frac{2}{3}x^3" ]
+                  [ tex @"\dfrac{x^a}{x^b} = x^{a - b}"
+                    tex @"\qquad \frac{x^2}{x^3} = x^{2 - 3} = x^{-1} = \frac{1}{x} \\
+                          \qquad \frac{x^7}{x^3} = x^{7 - 3} = x^4" ]
+                  [ tex @"\left( \dfrac{x}{y} \right)^n = \dfrac{x^n}{y^n}"
+                    tex @"\qquad \left( \frac{x}{y^2} \right)^3 = \frac{x^3}{y^6}" ] ]
+        ]
 
     [<ReactComponent>]
     let Percentages () =
-        Heading "TODO"
+        Heading "Percentages"
 
     [<ReactComponent>]
     let Estimates () =
-        Heading "TODO"
+        Heading "Estimates"
 
     [<ReactComponent>]
     let Currency () =
-        Heading "TODO"
+        Heading "Currency"
 
-
-    let view () =
-        Tabbed [ "Sets and Number Lines", NumberLines ()
-                 "Exponents"            , Exponents ()
-                 "Percentages"          , Percentages ()
-                 "Estimates"            , Estimates ()
-                 "Currency"             , Currency () ]
+    let view tab =
+        let tab =
+            match tab with
+            | "sets"        -> 0
+            | "exponents"   -> 1
+            | "percentages" -> 2
+            | "estimates"   -> 3
+            | "currency"    -> 4
+            | _ -> 0
+        Tabbed tab
+            [ "Sets"       , NumberSets ()
+              "Exponents"  , Exponents ()
+              "Percentages", Percentages ()
+              "Estimates"  , Estimates ()
+              "Currency"   , Currency () ]

@@ -7,5 +7,4 @@ open EDS.Shared.Components
 module Algebra =
     [<ReactComponent>]
     let view () =
-        Tabbed [  ]
-
+        Tabbed 0 [ ]

@@ -76,11 +76,11 @@ module Dashboard =
         | Completed    -> failwith "Should be caught by the parent"
 
     let profileView state =
-        ListTable
-            None
-            [ "Name"    , state.user.username
-              "Email"   , state.user.email
-              "Password", $"{state.user.password}" ]
+        StaticTable
+            [ [ Html.text ""; Html.text "" ]
+              [ Html.text "Name"    ; Html.text state.user.username      ]
+              [ Html.text "Email"   ; Html.text state.user.email         ]
+              [ Html.text "Password"; Html.text $"{state.user.password}" ] ]
 
     let view url state dispatch =
         match url with

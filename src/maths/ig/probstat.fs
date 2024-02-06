@@ -7,5 +7,5 @@ open EDS.Shared.Components
 module ProbAndStats =
     [<ReactComponent>]
     let view () =
-        Tabbed [ ]
+        Tabbed 0 [ ]
 

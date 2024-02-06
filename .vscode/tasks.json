@@ -9,9 +9,14 @@
             "command": "make css"
         },
         {
-            "label": "JS",
+            "label": "JS/user",
             "type": "shell",
-            "command": "make js"
+            "command": "make user"
+        },
+        {
+            "label": "JS/maths",
+            "type": "shell",
+            "command": "make maths"
         },
         {
             "label": "Pack",
@@ -28,7 +33,8 @@
             "type": "shell",
             "dependsOn": [
                 "CSS",
-                "JS",
+                "JS/user",
+                "JS/maths",
                 "Pack",
                 "DotNet",
             ],

@@ -7,5 +7,5 @@ open EDS.Shared.Components
 module GeoAndTrig =
     [<ReactComponent>]
     let view () =
-        Tabbed [ ]
+        Tabbed 0 [ ]
 

@@ -6,39 +6,17 @@ CLIENT_PROJS := $(filter-out $(wildcard ./src/shared/*), $(wildcard ./src/*/*.fs
 CLIENTS      := $(basename $(notdir $(CLIENT_PROJS)))
 CLIENT_COUNT := $(words $(CLIENTS))
 
-all: run
+all: restore
 
-.PHONY: run
-run: build
-	@dotnet run
-
-.PHONY: build
-build: css js
-	@read
-	@npx webpack
-	@dotnet build
-
-.PHONY: watch
-watch: build
-	@trap '$(foreach count,                      \
-		$(shell seq 1 $$(($(CLIENT_COUNT) + 2))), \
-		kill %$(count);)' SIGINT
-	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always &
-	@$(foreach proj, $(CLIENT_PROJS),                                            \
-		(dotnet fable watch $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) \
-		--noRestore --silent --runWatch npx webpack &);)
-	@dotnet watch
-
-.PHONY: js
-js:
-	@$(foreach dir, $(CLIENTS), mkdir $(BUILD_DIR)/$(dir) -p;)
-	@$(foreach proj, $(CLIENT_PROJS), \
-		(dotnet fable watch $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --noRestore --silent &);)
-	@read
+.PHONY: maths user
+maths:
+	dotnet fable watch $(SOURCE_DIR)/maths/maths.fsproj -o $(BUILD_DIR)/maths --noRestore --silent
+user:
+	dotnet fable watch $(SOURCE_DIR)/user/user.fsproj -o $(BUILD_DIR)/user --noRestore --silent
 
 .PHONY: css
 css:
-	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch=always
+	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --watch
 
 .PHONY: pack
 pack:
@@ -46,12 +24,12 @@ pack:
 
 .PHONY: restore
 restore:
-	@npm install &
-	@git submodule update --remote --merge &
-	@dotnet tool restore &
+	@npm install
+	@git submodule update --remote --merge
+	@dotnet tool restore
 	@dotnet restore
-	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj) &);)
-	@cp ./data/* $(WWW_ROOT)/
+	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
+	@cp -r ./data/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:
@@ -59,6 +37,7 @@ clean:
 	@dotnet clean
 	@dotnet fable clean --yes
 	@rm -rf wwwroot/*
+	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);)
 
 .PHONY: remove
 remove: clean
@@ -69,7 +48,6 @@ remove: clean
 	@rm -rf ./node_modules
 	@rm -f  ./*-lock.*
 	@rm -rf $(shell grep path .gitmodules | sed 's/.*= //')
-	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);)
 
 .PHONY: cloc
 cloc:
