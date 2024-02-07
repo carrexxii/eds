@@ -140,9 +140,18 @@ module Components =
             ]
         ]
 
-    let RadioList legend selected (xs: list<string * (bool -> unit)>) =
+    let CheckList (legend: string) (xs: (string * bool * (bool -> unit)) list) =
         Html.fieldSet [
-            prop.className "text-gray-700"
+            prop.className "m-2 text-gray-700"
+            prop.children ([
+                Html.legend legend
+            ]@ (xs |> List.map (fun (text, isChecked, fn) ->
+                    Checkbox text isChecked fn)))
+        ]
+
+    let RadioList (legend: string) (selected: int) (xs: list<string * (bool -> unit)>) =
+        Html.fieldSet [
+            prop.className "m-2 text-gray-700"
             prop.children [
                 Html.legend (string legend)
                 Html.div (xs |> List.mapi (fun i x ->
@@ -195,8 +204,12 @@ module Components =
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
-    let Tabbed (tab: int) (tabs: (string * ReactElement) list) =
-        let tab, setTab = React.useState tab
+    let Tabbed (tabName: string) (tabs: (string * ReactElement) list) =
+        let tab, setTab = React.useState (
+            tabs
+            |> List.tryFindIndex (fun t -> fst t = tabName)
+            |> defaultValue 0)
+        printfn $"Tab -> '{tab}'"
         Html.div [
             Html.nav [
                 prop.className "flex flex-row rounded-full"
@@ -219,6 +232,33 @@ module Components =
 
 ///////////////////////////////////////////////////////////////////////////////
 
+    // [<ReactComponent>]
+    type Size =
+        | Small
+        | Medium
+        | Large
+        | Full
+    let Term (text: string) (size: Size) (content: ReactElement) =
+        Html.div [
+            prop.className "group relative inline-block font-semibold px-1"
+            prop.children [
+                Html.text text
+                Html.span [
+                    let w = match size with
+                            | Small  -> "w-32"
+                            | Medium -> "w-56"
+                            | Large  -> "w-96"
+                            | Full   -> "w-[48rem]"
+                    prop.className (w + " absolute z-10 p-2 left-[5%] bottom-[105%] font-normal opacity-0 invisible
+                                    group-hover:visible group-hover:opacity-100 rounded-md border-2 border-slate-800 bg-slate-300
+                                    transition-all duration-500 ease-in-out")
+                    prop.children content
+                ]
+            ]
+        ]
+
+///////////////////////////////////////////////////////////////////////////////
+
     [<ReactComponent>]
     let Accordion (xs: (string * string) list) =
         let opened, setOpened = React.useState (xs |> List.map (fun x -> false))
@@ -227,23 +267,20 @@ module Components =
             prop.children (
                 xs |> List.mapi (fun i x ->
                     Html.div [
-                        prop.className ""
-                        prop.children [
-                            Html.div [
-                                prop.className $"""border-b-2 p-2 hover:cursor-pointer font-semibold
-                                                   {if i = 0             then "rounded-t-lg" else ""}
-                                                   {if i = xs.Length - 1 then "rounded-b-lg" else ""}
-                                                   {if opened[i] then "text-black bg-slate-100" else "text-gray-700"}
-                                                   duration-200 ease-in-out"""
-                                prop.text (fst x)
-                                prop.onClick (fun e -> setOpened (List.updateAt i (not opened[i]) opened))
-                            ]
-                            Html.div [
-                                prop.className $"""prose prose-p px-2 text-pretty text-justify overflow-hidden
-                                                   {if opened[i] then "h-fit" else "h-0"}
-                                                   transition-all duration-500 ease-in-out"""
-                                prop.text (snd x)
-                            ]
+                        Html.div [
+                            prop.className $"""border-b-2 p-2 hover:cursor-pointer font-semibold
+                                                {if i = 0             then "rounded-t-lg" else ""}
+                                                {if i = xs.Length - 1 then "rounded-b-lg" else ""}
+                                                {if opened[i] then "text-black bg-slate-100" else "text-gray-700"}
+                                                duration-200 ease-in-out"""
+                            prop.text (fst x)
+                            prop.onClick (fun e -> setOpened (List.updateAt i (not opened[i]) opened))
+                        ]
+                        Html.div [
+                            prop.className $"""prose prose-p px-2 text-pretty text-justify overflow-hidden
+                                                {if opened[i] then "h-fit" else "h-0"}
+                                                transition-all duration-500 ease-in-out"""
+                            prop.text (snd x)
                         ]
                     ]
                 )

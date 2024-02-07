@@ -134,6 +134,18 @@ module Numbers =
             ]
 
             Article [
+                Html.text "Some text before"
+                Term "Define this" Small  (Html.text "This is the definition")
+                Html.br []
+                Term "Define this" Medium (Html.text "This is the definition")
+                Html.br []
+                Term "Define this" Large  (Html.text "This is the definition")
+                Html.br []
+                Term "Define this" Full   (Html.text "This is the definition")
+                Html.text "Some text afterwards"
+            ]
+
+            Article [
                 UnorderedList [ "Natural Numbers"
                                 "Integers"
                                 "Rational Numbers"
@@ -206,18 +218,12 @@ module Numbers =
     let Currency () =
         Heading "Currency"
 
+    let tabs =
+        [ "Sets"       , NumberSets ()
+          "Exponents"  , Exponents ()
+          "Percentages", Percentages ()
+          "Estimates"  , Estimates ()
+          "Currency"   , Currency () ]
+
     let view tab =
-        let tab =
-            match tab with
-            | "sets"        -> 0
-            | "exponents"   -> 1
-            | "percentages" -> 2
-            | "estimates"   -> 3
-            | "currency"    -> 4
-            | _ -> 0
-        Tabbed tab
-            [ "Sets"       , NumberSets ()
-              "Exponents"  , Exponents ()
-              "Percentages", Percentages ()
-              "Estimates"  , Estimates ()
-              "Currency"   , Currency () ]
+        Tabbed tab tabs

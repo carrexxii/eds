@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ig/geometry.fs" />
     <Compile Include="ig/probstat.fs" />
     <Compile Include="ig/geotrig.fs" />
     <Compile Include="ig/algebra.fs" />

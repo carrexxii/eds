@@ -10,33 +10,55 @@ module IG =
     let view = function
         | "numbers"::[] -> Numbers.view ""
         | "numbers"::(Route.Query [ "tab", tab ])::[] -> Numbers.view tab
+
         | "algebra" ::[] -> Algebra.view ()
-        | "geotrig" ::[] -> GeoAndTrig.view ()
+
+        | "geometry"::[] -> Geometry.view ""
+        | "geometry"::(Route.Query [ "tab", tab ])::[] -> Geometry.view tab
+
         | "probstat"::[] -> ProbAndStats.view ()
+
         | [] ->
             Html.div [
                 prop.className "prose prose-lg p-16"
                 prop.children [
                     Heading "Outline"
 
-                    Link "Numbers" (Router.format ("ig", "numbers"))
-                    LinkList
-                        [ let subUrl (url: string) = Router.format ("ig", "numbers", [ "tab", url ])
-                          "Number sets", subUrl "sets"
-                          "Exponents"  , subUrl "exponents"
-                          "Percentages", subUrl "percentages"
-                          "Estimates"  , subUrl "estimates"
-                          "Currency"   , subUrl "currency" ]
+                    Link "Numbers"  (Router.format ("ig", "numbers"))
+                    let subUrl (url: string) =
+                        Router.format ("ig", "numbers", [ "tab", url ])
+                    LinkList (Numbers.tabs |> List.map (fun tab -> fst tab, subUrl (fst tab)))
 
-                    Link "Algebra" (Router.format ("ig", "algebra"))
+                    Link "Algebra and Graphs" (Router.format ("ig", "algebra"))
                     LinkList
                         [  ]
 
-                    Link "Geometry and Trigonometry"  (Router.format ("ig", "geotrig"))
+                    Link "Geometry"  (Router.format ("ig", "geometry"))
+                    let subUrl (url: string) =
+                        Router.format ("ig", "geometry", [ "tab", url ])
+                    LinkList (Geometry.tabs |> List.map (fun tab -> fst tab, subUrl (fst tab)))
+
+                    Link "Mensuration"  (Router.format ("ig", "mensuration"))
                     LinkList
                         [  ]
 
-                    Link "Probability and Statistics" (Router.format ("ig", "probstat"))
+                    Link "Coordinate Geometry"  (Router.format ("ig", "coordinates"))
+                    LinkList
+                        [  ]
+
+                    Link "Trigonometry"  (Router.format ("ig", "trigonometry"))
+                    LinkList
+                        [  ]
+
+                    Link "Matrices and Transformations"  (Router.format ("ig", "matrices"))
+                    LinkList
+                        [  ]
+
+                    Link "Probability"  (Router.format ("ig", "probability"))
+                    LinkList
+                        [  ]
+
+                    Link "Statistics" (Router.format ("ig", "statistics"))
                     LinkList
                         [  ]
                 ]
