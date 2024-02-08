@@ -16,16 +16,6 @@ type SortDirection =
         | Ascending  -> Descending
         | Descending -> Ascending
 
-[<AutoOpen>]
-module Util =
-    let concat a b =
-        Html.div [
-            prop.children [
-                a
-                b
-            ]
-        ]
-
 module Components =
     let Heading text =
         Html.div [
@@ -37,15 +27,15 @@ module Components =
             prop.className "prose prose-slate mb-4"
             prop.children [ Html.h2 text ]
         ]
-    let Section (content: string) =
-        Html.article [
-            prop.className "prose prose-a prose-slate"
-            prop.text content
-        ]
     let Article (content: ReactElement list) =
         Html.article [
-            prop.className "prose prose-slate"
+            prop.className "prose prose-slate text-justify"
             prop.children content
+        ]
+    let Section (content: string) =
+        Html.article [
+            prop.className "prose prose-a prose-slate inline"
+            prop.text content
         ]
     let Link (text: string) (addr: string) =
         Html.a [
@@ -64,6 +54,11 @@ module Components =
                     ])
             )
         ]
+    let OrderedList (xs: string list) =
+        Html.ol (
+            xs |> List.map (fun x ->
+                Html.li x)
+        )
     let LinkList (links: (string * string) list) =
         Html.ul [
             prop.className "prose prose-ul"
@@ -74,6 +69,26 @@ module Components =
                         prop.children (Link text href)
                     ])
             )
+        ]
+
+    type NoteType =
+        | Info
+        | Warning
+        | Extra
+    let Note (type': NoteType) (text: string) =
+        Html.aside [
+            prop.className "note"
+            prop.children [
+                Svg.svg [
+                    svg.className $"""mx-2 mb-0.5
+                        {match type' with
+                         | Info    -> "info-icon"
+                         | Warning -> "warning-icon"
+                         | Extra   -> "extra-icon"}
+                    """
+                ]
+                Html.text text
+            ]
         ]
 
     let Button text onClick =
@@ -209,7 +224,6 @@ module Components =
             tabs
             |> List.tryFindIndex (fun t -> fst t = tabName)
             |> defaultValue 0)
-        printfn $"Tab -> '{tab}'"
         Html.div [
             Html.nav [
                 prop.className "flex flex-row rounded-full"
@@ -240,16 +254,16 @@ module Components =
         | Full
     let Term (text: string) (size: Size) (content: ReactElement) =
         Html.div [
-            prop.className "group relative inline-block font-semibold px-1"
+            prop.className "group relative inline font-semibold"
             prop.children [
                 Html.text text
                 Html.span [
                     let w = match size with
-                            | Small  -> "w-32"
-                            | Medium -> "w-56"
+                            | Small  -> "w-36"
+                            | Medium -> "w-64"
                             | Large  -> "w-96"
                             | Full   -> "w-[48rem]"
-                    prop.className (w + " absolute z-10 p-2 left-[5%] bottom-[105%] font-normal opacity-0 invisible
+                    prop.className (w + " absolute z-10 p-2 left-[5%] bottom-[105%] prose prose-sm prose-zinc opacity-0 invisible
                                     group-hover:visible group-hover:opacity-100 rounded-md border-2 border-slate-800 bg-slate-300
                                     transition-all duration-500 ease-in-out")
                     prop.children content
@@ -375,7 +389,7 @@ module Components =
 
     [<ReactComponent>]
     let SidebarButtons (buttons: (string * string * string) list) url =
-        let expand, setExpand = React.useState true
+        let expand, setExpand = React.useState false
         let button (icon, text, link) =
             Html.li [
                 prop.children [
@@ -399,9 +413,9 @@ module Components =
                 prop.ariaLabel "sidebar toggle"
                 prop.onClick (fun e -> setExpand (not expand))
                 prop.children [
-                    Svg.svg [ svg.className
-                        $"""{if expand then "arrow-left-icon" else "hamburger-icon"}
-                            p-3 duration-500 ease-in"""
+                    Svg.svg [
+                        svg.className $"""{if expand then "arrow-left-icon" else "hamburger-icon"}
+                                          p-3 duration-500 ease-in"""
                     ]
                 ]
             ]

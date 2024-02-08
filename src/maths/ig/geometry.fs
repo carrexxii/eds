@@ -6,6 +6,7 @@ open Fable.Core.JsInterop
 open Feliz
 open Feliz.Mafs
 
+open EDS.Shared
 open EDS.Shared.Components
 
 module Geometry =
@@ -94,7 +95,7 @@ module Geometry =
                 Html.div [
                     prop.className "flex flex-row"
                     prop.children [
-                        let shouldSnap, setShouldSnap = React.useState false
+                        let shouldSnap, setShouldSnap = React.useState true
                         let showPoints, setShowPoints = React.useState false
                         let showAngles, setShowAngles = React.useState false
 
@@ -150,7 +151,8 @@ module Geometry =
                         Html.div [
                             prop.className "p-4"
                             prop.children [
-                                SubHeading $"This is a {triangleName p1v p2v p3v} triangle"
+                                let name = triangleName p1v p2v p3v
+                                SubHeading $"""This is {aOrAn name} {name} triangle"""
                                 Html.div [
                                     prop.className "flex flex-row gap-4"
                                     prop.children [
@@ -181,7 +183,7 @@ module Geometry =
                 Html.div [
                     prop.className "flex flex-row-reverse gap-8 ml-auto"
                     prop.children [
-                        let shouldSnap, setShouldSnap = React.useState false
+                        let shouldSnap, setShouldSnap = React.useState true
                         let showPoints, setShowPoints = React.useState false
                         let showAngles, setShowAngles = React.useState false
 
@@ -301,7 +303,6 @@ module Geometry =
         Html.div [
 
         ]
-
 
     let tabs =
         [ "Constructions"   , Constructions ()

@@ -27,9 +27,9 @@ module Pages =
                     //     input [ type' "submit"; value "Submit" ]
                     //     Xss.antiforgeryInput token
                     // ]
-                    div [ id "sidebar"; class' "sidebar-open" ]
+                    div [ id "sidebar"; class' "sidebar-closed" ]
                         [ ]
-                    div [ id "root"; class' "flex flex-col grow sm:mr-0 md:mr-16 lg:mr-32 bg-gray-50" ]
+                    div [ id "root"; class' "flex flex-col grow bg-gray-50" ]
                         [ inner ]
                 ]
                 footer [ id "footer"; class' "left-0 w-full h-16 p-4 border-t-2 text-center" ]
