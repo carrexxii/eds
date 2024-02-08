@@ -37,25 +37,26 @@ module Trigonometry =
     // 5 Solve simple trigonometrical problems in three
     // dimensions including angle between a line and a
     // plane.
+
     [<ReactComponent>]
     let Bearings () =
         Html.div [
             prop.className "mx-16"
             prop.children [
-                let facing = movablePoint (vec 0 1.0) Theme.indigo None
+                let facing = movablePoint (vec 0 1) Theme.indigo None
                 let target = movablePoint (vec 2 2) Theme.red    None
-                Mafs { MafsProps.Default
-                         with height = 600 } [
-                    PolarDefault
+                Mafs.create ()
+                |> Mafs.height 600
+                |> Mafs.render [
+                    Polar.create () |> Polar.render
 
-                    Vector.create (Vec2 facing.point) |> Vector.render
-                    Vector.create (Vec2 target.point) |> Vector.render
+                    Vector.create facing.pos |> Vector.render
+                    Vector.create target.pos |> Vector.render
 
-                    let startAngle = Vec2 target.point |> fun p -> -Math.Atan2 (-p.x, -p.y) + Math.PI + Math.PI/2.0
-                    let endAngle   = Vec2 facing.point |> fun p -> -Math.Atan2 (-p.x, -p.y) + Math.PI + Math.PI/2.0
-                    Parametric.create <| fun t -> vec (0.35*cos t) (0.35*sin t)
-                    |> Parametric.color Theme.orange
-                    |> Parametric.render (vec startAngle endAngle)
+                    Arc.create (vec 0 0)
+                    |> Arc.targets (target.pos, facing.pos)
+                    |> Arc.color Theme.orange
+                    |> Arc.render
 
                     facing.element
                     target.element
@@ -63,9 +64,54 @@ module Trigonometry =
             ]
         ]
 
+    [<ReactComponent>]
     let Trigonometry () =
         Html.div [
+            prop.className "mx-16"
+            prop.children [
+                let corner = vec -2 -2
+                let xPoint = movablePoint (vec 1 -2) Theme.blue (Some
+                    (Constrain <| fun p -> vec (if p.x < corner.x then corner.x else p.x) corner.y))
+                let yPoint = movablePoint (vec -2 1) Theme.red (Some
+                    (Constrain <| fun p -> vec corner.x (if p.y < corner.y then corner.y else p.y)))
+                let centroid = (corner + xPoint.pos + yPoint.pos) / 3.0
+                Mafs.create () |> Mafs.render ([
+                    Polygon.create [ corner; xPoint.pos; yPoint.pos ]
+                    |> Polygon.color Theme.green
+                    |> Polygon.opacity 0.3
+                    |> Polygon.render true
 
+                    xPoint.element
+                    Arc.create xPoint.pos
+                    |> Arc.targets (corner - xPoint.pos, yPoint.pos - xPoint.pos)
+                    |> Arc.color Theme.blue
+                    |> Arc.render
+                    Latex.create $"\\tiny
+                        %.1f{ Math.Atan2 ((yPoint.pos - xPoint.pos).y,
+                                          (corner     - xPoint.pos).x)
+                              |> (+) (-Math.PI)
+                              |> abs
+                              |> Radians
+                              |> Angle.toDeg}"
+                    |> Latex.pos (xPoint.pos - 0.8*(xPoint.pos - centroid).normal)
+                    |> Latex.render
+
+                    yPoint.element
+                    Arc.create yPoint.pos
+                    |> Arc.targets (corner - yPoint.pos, xPoint.pos - yPoint.pos)
+                    |> Arc.color Theme.red
+                    |> Arc.render
+                    Latex.create $"\\tiny
+                        %.1f{ Math.Atan2 ((corner     - yPoint.pos).y,
+                                          (xPoint.pos - yPoint.pos).x)
+                              |> (+) (Math.PI/2.00)
+                              |> abs
+                              |> Radians
+                              |> Angle.toDeg}"
+                    |> Latex.pos (yPoint.pos - 0.8*(yPoint.pos - centroid).normal)
+                    |> Latex.render
+                ])
+            ]
         ]
 
     let FurtherTrigonometry () =

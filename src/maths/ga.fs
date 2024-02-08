@@ -8,7 +8,7 @@ open SharpGA
 module GA =
     let view () =
         Html.div [
-            Mafs MafsProps.Default [
-                CartesianDefault
+            Mafs.create () |> Mafs.render [
+                Cartesian.create () |> Cartesian.render
             ]
         ]

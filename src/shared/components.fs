@@ -7,6 +7,7 @@ open Browser
 open Browser.Types
 open Elmish
 open Feliz
+open Feliz.Router
 
 [<AutoOpen>]
 type SortDirection =
@@ -234,7 +235,12 @@ module Components =
                                             border-slate-200 text-gray-700
                                             hover:bg-slate-200 hover:cursor-pointer hover:text-black
                                             duration-200 ease-in-out"
-                            prop.onClick (fun e -> setTab i)
+                            prop.onClick (fun e ->
+                                Router.currentUrl ()
+                                |> List.filter (fun seg -> not (seg.StartsWith "?"))
+                                |> fun path -> Router.format (path @ [ $"?tab={fst tab}" ])
+                                               |> Router.navigate
+                                setTab i)
                             prop.children [ Html.b (fst tab) ]
                     ]))
             ]
@@ -246,7 +252,6 @@ module Components =
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    // [<ReactComponent>]
     type Size =
         | Small
         | Medium

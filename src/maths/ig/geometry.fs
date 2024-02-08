@@ -81,14 +81,6 @@ module Geometry =
 
     [<ReactComponent>]
     let Constructions () =
-        let props =
-            { MafsProps.Default with
-                width = !^500.0
-                pan = false
-                zoom = !^{| min = 0.5; max = 2.0 |}
-                viewBox = { x = [| -5; 5 |]
-                            y = [| -5; 5 |]
-                            padding = 0.5 } }
         Html.div [
             prop.className "flex flex-col gap-12"
             prop.children [
@@ -103,15 +95,18 @@ module Geometry =
                             if shouldSnap
                             then vec (Math.Round pt.x) (Math.Round pt.y)
                             else vec (Math.Round (pt.x, 1)) (Math.Round (pt.y, 1))
-                        let p1 = movablePoint (vec -1 -1) Theme.green (Constrain snap)
-                        let p2 = movablePoint (vec  1 -1) Theme.green (Constrain snap)
-                        let p3 = movablePoint (vec  0  1) Theme.green (Constrain snap)
-                        let p1v = Vec2 p1.point
-                        let p2v = Vec2 p2.point
-                        let p3v = Vec2 p3.point
-                        Mafs props ([
-                            CartesianDefault
-                            Polygon.create [ p1v; p2v; p3v ]
+                        let p1 = movablePoint (vec -1 -1) Theme.green (Some <| Constrain snap)
+                        let p2 = movablePoint (vec  1 -1) Theme.green (Some <| Constrain snap)
+                        let p3 = movablePoint (vec  0  1) Theme.green (Some <| Constrain snap)
+                        Mafs.create ()
+                        |> Mafs.pan false
+                        |> Mafs.zoom 0.5 2.0
+                        |> Mafs.viewBox {| x = vec -5 5
+                                           y = vec -5 5
+                                           padding = 0.5 |}
+                        |> Mafs.render ([
+                            Cartesian.create () |> Cartesian.render
+                            Polygon.create [ p1.pos; p2.pos; p3.pos ]
                             |> Polygon.opacity 0.3
                             |> Polygon.color Theme.green
                             |> Polygon.render true
@@ -119,7 +114,7 @@ module Geometry =
                             p1.element
                             p2.element
                             p3.element
-                        ]@ (let points = [ p1v; p2v; p3v ]
+                        ]@ (let points = [ p1.pos; p2.pos; p3.pos ]
                             if showPoints then points else []
                             |> List.map (fun p ->
                                 let isHighest (p: Vec2) =
@@ -136,22 +131,22 @@ module Geometry =
                                 |> Text.render))
                         @ (if showAngles then
                                 let centroid = vec ((p1.x + p2.x + p3.x) / 3.0) ((p1.y + p2.y + p3.y) / 3.0)
-                                [ p1v - p2v, p1v - p3v
-                                  p2v - p1v, p2v - p3v
-                                  p3v - p1v, p3v - p2v ]
+                                [ p1.pos - p2.pos, p1.pos - p3.pos
+                                  p2.pos - p1.pos, p2.pos - p3.pos
+                                  p3.pos - p1.pos, p3.pos - p2.pos ]
                                 |> List.map (fun (p1, p2) -> Radians <| Math.Acos ((p1*p2) / (p1.mag*p2.mag)))
                                 |> List.map2 (fun p a ->
                                     let cv = centroid - p
                                     Latex.create $"\\tiny %.1f{Angle.toDeg a}\\degree"
                                     |> Latex.pos (p + 0.3*cv)
                                     |> Latex.render)
-                                    [ p1v; p2v; p3v ]
+                                    [ p1.pos; p2.pos; p3.pos ]
                             else []))
 
                         Html.div [
                             prop.className "p-4"
                             prop.children [
-                                let name = triangleName p1v p2v p3v
+                                let name = triangleName p1.pos p2.pos p3.pos
                                 SubHeading $"""This is {aOrAn name} {name} triangle"""
                                 Html.div [
                                     prop.className "flex flex-row gap-4"
@@ -161,18 +156,18 @@ module Geometry =
                                               "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
                                               "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
                                         RadioList "Basic Triangle Types" -1
-                                            [ "Equilateral", fun e -> p1.setPoint [| -2; 0     |]
-                                                                      p2.setPoint [|  0; 3.464 |]
-                                                                      p3.setPoint [|  2; 0     |]
-                                              "Isosceles", fun e -> p1.setPoint [|  0; -2 |]
-                                                                    p2.setPoint [|  2;  0 |]
-                                                                    p3.setPoint [| -2;  2 |]
-                                              "Scalene", fun e -> p1.setPoint [| -3; -1 |]
-                                                                  p2.setPoint [|  4; -1 |]
-                                                                  p3.setPoint [| -2;  3 |]
-                                              "Right", fun e -> p1.setPoint [|  4;  3 |]
-                                                                p2.setPoint [|  4; -3 |]
-                                                                p3.setPoint [| -2;  3 |] ]
+                                            [ "Equilateral", fun e -> p1.setPoint (vec -2 0    )
+                                                                      p2.setPoint (vec  0 3.464)
+                                                                      p3.setPoint (vec  2 0    )
+                                              "Isosceles", fun e -> p1.setPoint (vec  0 -2)
+                                                                    p2.setPoint (vec  2  0)
+                                                                    p3.setPoint (vec -2  2)
+                                              "Scalene", fun e -> p1.setPoint (vec -3 -1)
+                                                                  p2.setPoint (vec  4 -1)
+                                                                  p3.setPoint (vec -2  3)
+                                              "Right", fun e -> p1.setPoint (vec  4  3)
+                                                                p2.setPoint (vec  4 -3)
+                                                                p3.setPoint (vec -2  3) ]
                                     ]
                                 ]
                             ]
@@ -191,18 +186,20 @@ module Geometry =
                             if shouldSnap
                             then vec (Math.Round pt.x) (Math.Round pt.y)
                             else vec (Math.Round (pt.x, 1)) (Math.Round (pt.y, 1))
-                        let p1 = movablePoint (vec -1 -1) Theme.green (Constrain snap)
-                        let p2 = movablePoint (vec -1  1) Theme.green (Constrain snap)
-                        let p3 = movablePoint (vec  1  1) Theme.green (Constrain snap)
-                        let p4 = movablePoint (vec  1 -1) Theme.green (Constrain snap)
-                        let p1v = Vec2 p1.point
-                        let p2v = Vec2 p2.point
-                        let p3v = Vec2 p3.point
-                        let p4v = Vec2 p4.point
-                        let isConvex = quadIsConvex p1v p2v p3v p4v
-                        Mafs props ([
-                            CartesianDefault
-                            Polygon.create [ p1v; p2v; p3v; p4v ]
+                        let p1 = movablePoint (vec -1 -1) Theme.green (Some <| Constrain snap)
+                        let p2 = movablePoint (vec -1  1) Theme.green (Some <| Constrain snap)
+                        let p3 = movablePoint (vec  1  1) Theme.green (Some <| Constrain snap)
+                        let p4 = movablePoint (vec  1 -1) Theme.green (Some <| Constrain snap)
+                        let isConvex = quadIsConvex p1.pos p2.pos p3.pos p4.pos
+                        Mafs.create ()
+                        |> Mafs.pan false
+                        |> Mafs.zoom 0.5 2.0
+                        |> Mafs.viewBox {| x = vec -5 5
+                                           y = vec -5 5
+                                           padding = 0.5 |}
+                        |> Mafs.render ([
+                            Cartesian.create () |> Cartesian.render
+                            Polygon.create [ p1.pos; p2.pos; p3.pos; p4.pos ]
                             |> Polygon.opacity 0.3
                             |> Polygon.color (if isConvex then Theme.green else Theme.red)
                             |> Polygon.render true
@@ -211,7 +208,7 @@ module Geometry =
                             p2.element
                             p3.element
                             p4.element
-                        ]@ (let points = [ p1v; p2v; p3v; p4v ]
+                        ]@ (let points = [ p1.pos; p2.pos; p3.pos; p4.pos ]
                             if showPoints then points else []
                             |> List.map (fun p ->
                                 let isHighest (p: Vec2) =
@@ -228,20 +225,20 @@ module Geometry =
                                 |> Text.render))
                         @ (if showAngles then
                                 let centroid = vec ((p1.x + p2.x + p3.x + p4.x) / 4.0) ((p1.y + p2.y + p3.y + p4.y) / 4.0)
-                                quadAngles p1v p2v p3v p4v
+                                quadAngles p1.pos p2.pos p3.pos p4.pos
                                 |> List.map2 (fun p a ->
                                     let cv = centroid - p
                                     Latex.create $"\\tiny %.1f{Angle.toDeg a}\\degree"
                                     |> Latex.pos (p + 0.3*cv)
                                     |> Latex.render)
-                                    [ p1v; p2v; p3v; p4v ]
+                                    [ p1.pos; p2.pos; p3.pos; p4.pos ]
                             else []))
 
                         Html.div [
                             prop.className "p-4"
                             prop.children [
                                 if isConvex
-                                then SubHeading $"This is a {quadName p1v p2v p3v p4v}"
+                                then SubHeading $"This is a {quadName p1.pos p2.pos p3.pos p4.pos}"
                                 else SubHeading $"Not convex/has crossed points"
                                 Html.div [
                                     prop.className "flex flex-row gap-4"
@@ -251,30 +248,30 @@ module Geometry =
                                               "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
                                               "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
                                         RadioList "Basic Quadrilateral Types" -1
-                                            [ "Square", fun e -> p1.setPoint [| -2; -2 |]
-                                                                 p2.setPoint [| -2;  2 |]
-                                                                 p3.setPoint [|  2;  2 |]
-                                                                 p4.setPoint [|  2; -2 |]
-                                              "Rectangle", fun e -> p1.setPoint [| -2.5; -1.5 |]
-                                                                    p2.setPoint [| -2.5;  1.5 |]
-                                                                    p3.setPoint [|  2.5;  1.5 |]
-                                                                    p4.setPoint [|  2.5; -1.5 |]
-                                              "Rhombus", fun e -> p1.setPoint [| -3; -1 |]
-                                                                  p2.setPoint [| -2;  2 |]
-                                                                  p3.setPoint [|  1;  3 |]
-                                                                  p4.setPoint [|  0;  0 |]
-                                              "Parallelogram", fun e -> p1.setPoint [| -4; -3 |]
-                                                                        p2.setPoint [|  0;  3 |]
-                                                                        p3.setPoint [|  4;  3 |]
-                                                                        p4.setPoint [|  0; -3 |]
-                                              "Trapezium", fun e -> p1.setPoint [| -3; -2 |]
-                                                                    p2.setPoint [| -1;  2 |]
-                                                                    p3.setPoint [|  1;  2 |]
-                                                                    p4.setPoint [|  3; -2 |]
-                                              "Kite", fun e -> p1.setPoint [| -3.0;  0.0 |]
-                                                               p2.setPoint [| -0.9;  1.3 |]
-                                                               p3.setPoint [|  4.0;  0.0 |]
-                                                               p4.setPoint [| -0.9; -1.3 |] ]
+                                            [ "Square", fun e -> p1.setPoint (vec -2 -2)
+                                                                 p2.setPoint (vec -2  2)
+                                                                 p3.setPoint (vec  2  2)
+                                                                 p4.setPoint (vec  2 -2)
+                                              "Rectangle", fun e -> p1.setPoint (vec -2.5 -1.5)
+                                                                    p2.setPoint (vec -2.5  1.5)
+                                                                    p3.setPoint (vec  2.5  1.5)
+                                                                    p4.setPoint (vec  2.5 -1.5)
+                                              "Rhombus", fun e -> p1.setPoint (vec -3 -1)
+                                                                  p2.setPoint (vec -2  2)
+                                                                  p3.setPoint (vec  1  3)
+                                                                  p4.setPoint (vec  0  0)
+                                              "Parallelogram", fun e -> p1.setPoint (vec -4 -3)
+                                                                        p2.setPoint (vec  0  3)
+                                                                        p3.setPoint (vec  4  3)
+                                                                        p4.setPoint (vec  0 -3)
+                                              "Trapezium", fun e -> p1.setPoint (vec -3 -2)
+                                                                    p2.setPoint (vec -1  2)
+                                                                    p3.setPoint (vec  1  2)
+                                                                    p4.setPoint (vec  3 -2)
+                                              "Kite", fun e -> p1.setPoint (vec -3.0  0.0)
+                                                               p2.setPoint (vec -0.9  1.3)
+                                                               p3.setPoint (vec  4.0  0.0)
+                                                               p4.setPoint (vec -0.9 -1.3) ]
                                     ]
                                 ]
                             ]

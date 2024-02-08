@@ -39,11 +39,13 @@ module Numbers =
             let lowerInc, setLowerInc = React.useState true
             let upperInc, setUpperInc = React.useState true
             let numberSet, setNumberSet = React.useState Integers
-            Mafs { MafsProps.Default with
-                     height = 200
-                     zoom   = !^{| min = 0.5; max = 7.5 |} } ([
-                Cartesian { CartesianProps.Default with
-                              yAxis = !^false }
+            Mafs.create ()
+            |> Mafs.height 200
+            |> Mafs.zoom 0.5 7.5
+            |> Mafs.render ([
+                Cartesian.create ()
+                |> Cartesian.yAxis None
+                |> Cartesian.render
 
                 Latex.create
                     $$"""\Large{ {{Set.toLatex numberSet}} =
