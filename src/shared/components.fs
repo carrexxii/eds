@@ -18,35 +18,50 @@ type SortDirection =
         | Descending -> Ascending
 
 module Components =
+    let Article (content: ReactElement list) =
+        Html.article [
+            prop.className "prose prose-zinc text-justify prose-p:font-normal"
+            prop.children content
+        ]
     let Heading text =
         Html.div [
-            prop.className "prose prose-slate text-center mb-2"
+            prop.className "text-center mb-2"
             prop.children [ Html.h1 (string text) ]
         ]
     let SubHeading (text: string) =
         Html.div [
-            prop.className "prose prose-slate mb-4"
+            prop.className "mb-4"
             prop.children [ Html.h2 text ]
         ]
-    let Article (content: ReactElement list) =
-        Html.article [
-            prop.className "prose prose-slate text-justify"
-            prop.children content
+    let SmallHeading (text: string) =
+        Html.span [
+            prop.className ""
+            prop.children [
+                Html.h3 [
+                    prop.className "m-0 p-0 inline"
+                    prop.text text
+                ]
+            ]
         ]
     let Section (content: string) =
-        Html.article [
-            prop.className "prose prose-a prose-slate inline"
+        Html.p [
+            prop.className ""
+            prop.text content
+        ]
+    let SectionSmall (content: string) =
+        Html.p [
+            prop.className "m-0 p-0 text-sm"
             prop.text content
         ]
     let Link (text: string) (addr: string) =
         Html.a [
-            prop.className "prose prose-a"
+            prop.className ""
             prop.href addr
             prop.text text
         ]
     let UnorderedList (xs: string list) =
         Html.ul [
-            prop.className "prose prose-ul"
+            prop.className ""
             prop.children (
                 xs |> List.map (fun x ->
                     Html.li [
@@ -62,7 +77,7 @@ module Components =
         )
     let LinkList (links: (string * string) list) =
         Html.ul [
-            prop.className "prose prose-ul"
+            prop.className ""
             prop.children (
                 links |> List.mapi (fun i (text, href) ->
                     Html.li [
@@ -78,7 +93,7 @@ module Components =
         | Extra
     let Note (type': NoteType) (text: string) =
         Html.aside [
-            prop.className "note"
+            prop.className "float-right w-64 -mr-64 mt-8 p-2 border-l-2 rounded-md text-sm text-justify"
             prop.children [
                 Svg.svg [
                     svg.className $"""mx-2 mb-0.5
@@ -252,23 +267,23 @@ module Components =
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    type Size =
+    type PopupSize =
         | Small
         | Medium
         | Large
         | Full
-    let Term (text: string) (size: Size) (content: ReactElement) =
+    let Popup (text: string) (size: PopupSize) (content: ReactElement) =
         Html.div [
-            prop.className "group relative inline font-semibold"
+            prop.className "group relative inline font-semibold "
             prop.children [
                 Html.text text
                 Html.span [
                     let w = match size with
-                            | Small  -> "w-36"
-                            | Medium -> "w-64"
-                            | Large  -> "w-96"
-                            | Full   -> "w-[48rem]"
-                    prop.className (w + " absolute z-10 p-2 left-[5%] bottom-[105%] prose prose-sm prose-zinc opacity-0 invisible
+                            | Small  -> "w-36 p-2"
+                            | Medium -> "w-64 p-3"
+                            | Large  -> "w-96 p-4"
+                            | Full   -> "w-[48rem] p-4"
+                    prop.className (w + " absolute z-10 -top-[5rem] prose prose-sm opacity-0 invisible
                                     group-hover:visible group-hover:opacity-100 rounded-md border-2 border-slate-800 bg-slate-300
                                     transition-all duration-500 ease-in-out")
                     prop.children content

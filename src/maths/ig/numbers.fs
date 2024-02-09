@@ -137,13 +137,13 @@ module Numbers =
 
             Article [
                 Html.text "Some text before"
-                Term "Define this" Small  (Html.text "This is the definition")
+                Popup "Define this" Small  (Html.text "This is the definition")
                 Html.br []
-                Term "Define this" Medium (Html.text "This is the definition")
+                Popup "Define this" Medium (Html.text "This is the definition")
                 Html.br []
-                Term "Define this" Large  (Html.text "This is the definition")
+                Popup "Define this" Large  (Html.text "This is the definition")
                 Html.br []
-                Term "Define this" Full   (Html.text "This is the definition")
+                Popup "Define this" Full   (Html.text "This is the definition")
                 Html.text "Some text afterwards"
             ]
 

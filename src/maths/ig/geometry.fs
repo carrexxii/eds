@@ -99,6 +99,7 @@ module Geometry =
                         let p2 = movablePoint (vec  1 -1) Theme.green (Some <| Constrain snap)
                         let p3 = movablePoint (vec  0  1) Theme.green (Some <| Constrain snap)
                         Mafs.create ()
+                        |> Mafs.width 500
                         |> Mafs.pan false
                         |> Mafs.zoom 0.5 2.0
                         |> Mafs.viewBox {| x = vec -5 5
@@ -192,6 +193,7 @@ module Geometry =
                         let p4 = movablePoint (vec  1 -1) Theme.green (Some <| Constrain snap)
                         let isConvex = quadIsConvex p1.pos p2.pos p3.pos p4.pos
                         Mafs.create ()
+                        |> Mafs.width 500
                         |> Mafs.pan false
                         |> Mafs.zoom 0.5 2.0
                         |> Mafs.viewBox {| x = vec -5 5
@@ -296,9 +298,72 @@ module Geometry =
 
         ]
 
+    type LociExamples =
+        | LociCircle
+        | LociLine
+    [<ReactComponent>]
     let Loci () =
         Html.div [
+            Html.div [
+                prop.className "flex flex-row-reverse"
+                prop.children [
+                    let xRange = vec -5 5
+                    let yRange = vec -5 5
+                    let points =
+                        [ movablePoint (vec -3  1) Theme.green None
+                          movablePoint (vec  3 -3) Theme.green None
+                          movablePoint (vec  2  3) Theme.green None ]
+                    let pointCount, setPointCount = React.useState 2
+                    let lociCount , setLociCount  = React.useState 10
+                    let selection , setSelection  = React.useState LociCircle
+                    let len       , setLen        = React.useState 5.0
 
+                    Mafs.create ()
+                    |> Mafs.preserveAR true
+                    |> Mafs.pan false
+                    |> Mafs.viewBox {| x = xRange
+                                       y = yRange
+                                       padding = 0 |}
+                    |> Mafs.render ((
+                        points
+                        |> List.take pointCount
+                        |> List.map (fun p -> p.element)
+                    )@([ 0..lociCount ]
+                        |> List.map (
+                            match selection with
+                            | LociCircle -> (fun t ->
+                                let center = points[0].pos
+                                let angle  = 2.0*Math.PI * ((float t) / (float lociCount))
+                                let p = vec (center.x + len * Math.Cos angle) (center.y + len * Math.Sin angle)
+                                Point.create p
+                                |> Point.render)
+                            | LociLine -> (fun t ->
+                                let mid = points[0].pos.midpoint points[1].pos
+                                let m = (vec (points[1].y - points[0].y) -(points[1].x - points[0].x)).normal
+                                let p1 = mid - len*m
+                                let p2 = mid + len*m
+                                Point.create (p1.lerp p2 ((float t) / (float lociCount)))
+                                |> Point.render)
+                            | _ -> (fun t -> Point.create (vec 0 0) |> Point.render))
+                    ))
+
+                    Article [
+                        Heading "Loci"
+                        Section """Loci are a set of points.Loci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of points"""
+                        RadioList "Examples" 0
+                            [ "Circle Around a Point", fun e -> if e then
+                                                                    setSelection LociCircle
+                                                                    setPointCount 1
+                              "Closest to Two Points", fun e -> if e then
+                                                                    setSelection LociLine
+                                                                    setPointCount 2 ]
+
+                        SubHeading "Number of Loci: "
+                        Slider 2 200 1 lociCount (fun v -> setLociCount (int v)) true
+                        Slider 1 10 0.1 len (fun v -> setLen v) true
+                    ]
+                ]
+            ]
         ]
 
     let tabs =
