@@ -153,9 +153,9 @@ module Geometry =
                                     prop.className "flex flex-row gap-4"
                                     prop.children [
                                         CheckList "Options"
-                                            [ "Snap"       , shouldSnap, (fun e -> setShouldSnap (not shouldSnap))
-                                              "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
-                                              "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
+                                            [ TextString "Snap"       , shouldSnap, (fun e -> setShouldSnap (not shouldSnap))
+                                              TextString "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
+                                              TextString "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
                                         RadioList "Basic Triangle Types" -1
                                             [ "Equilateral", fun e -> p1.setPoint (vec -2 0    )
                                                                       p2.setPoint (vec  0 3.464)
@@ -246,9 +246,9 @@ module Geometry =
                                     prop.className "flex flex-row gap-4"
                                     prop.children [
                                         CheckList "Options"
-                                            [ "Snap"       , shouldSnap, (fun e -> setShouldSnap (not shouldSnap))
-                                              "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
-                                              "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
+                                            [ TextString "Snap"       , shouldSnap, (fun e -> setShouldSnap (not shouldSnap))
+                                              TextString "Show Points", showPoints, (fun e -> setShowPoints (not showPoints))
+                                              TextString "Show Angles", showAngles, (fun e -> setShowAngles (not showAngles)) ]
                                         RadioList "Basic Quadrilateral Types" -1
                                             [ "Square", fun e -> p1.setPoint (vec -2 -2)
                                                                  p2.setPoint (vec -2  2)
@@ -309,11 +309,8 @@ module Geometry =
                 prop.children [
                     let xRange = vec -5 5
                     let yRange = vec -5 5
-                    let points =
-                        [ movablePoint (vec -3  1) Theme.green None
-                          movablePoint (vec  3 -3) Theme.green None
-                          movablePoint (vec  2  3) Theme.green None ]
-                    let pointCount, setPointCount = React.useState 2
+                    let p1 =  movablePoint (vec -3  1) Theme.green None
+                    let p2 =  movablePoint (vec  3 -3) Theme.green None
                     let lociCount , setLociCount  = React.useState 10
                     let selection , setSelection  = React.useState LociCircle
                     let len       , setLen        = React.useState 5.0
@@ -324,43 +321,37 @@ module Geometry =
                     |> Mafs.viewBox {| x = xRange
                                        y = yRange
                                        padding = 0 |}
-                    |> Mafs.render ((
-                        points
-                        |> List.take pointCount
-                        |> List.map (fun p -> p.element)
-                    )@([ 0..lociCount ]
+                    |> Mafs.render ([
+                        p1.element
+                        if selection <> LociCircle
+                        then p2.element
+                    ]@([ 0..lociCount ]
                         |> List.map (
                             match selection with
                             | LociCircle -> (fun t ->
-                                let center = points[0].pos
+                                let center = p1.pos
                                 let angle  = 2.0*Math.PI * ((float t) / (float lociCount))
                                 let p = vec (center.x + len * Math.Cos angle) (center.y + len * Math.Sin angle)
                                 Point.create p
                                 |> Point.render)
                             | LociLine -> (fun t ->
-                                let mid = points[0].pos.midpoint points[1].pos
-                                let m = (vec (points[1].y - points[0].y) -(points[1].x - points[0].x)).normal
+                                let mid = p1.pos.midpoint p2.pos
+                                let m = (vec (p2.y - p1.y) -(p2.x - p1.x)).normal
                                 let p1 = mid - len*m
                                 let p2 = mid + len*m
                                 Point.create (p1.lerp p2 ((float t) / (float lociCount)))
-                                |> Point.render)
-                            | _ -> (fun t -> Point.create (vec 0 0) |> Point.render))
+                                |> Point.render))
                     ))
 
                     Article [
                         Heading "Loci"
-                        Section """Loci are a set of points.Loci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of points"""
+                        Html.p """Loci are a set of points.Loci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of pointsLoci are a set of points"""
                         RadioList "Examples" 0
-                            [ "Circle Around a Point", fun e -> if e then
-                                                                    setSelection LociCircle
-                                                                    setPointCount 1
-                              "Closest to Two Points", fun e -> if e then
-                                                                    setSelection LociLine
-                                                                    setPointCount 2 ]
+                            [ "Circle Around a Point", fun e -> setSelection LociCircle
+                              "Closest to Two Points", fun e -> setSelection LociLine ]
 
-                        SubHeading "Number of Loci: "
-                        Slider 2 200 1 lociCount (fun v -> setLociCount (int v)) true
-                        Slider 1 10 0.1 len (fun v -> setLen v) true
+                        Slider "Loci:" 2 200 1 lociCount (fun v -> setLociCount (int v)) true
+                        Slider "Length:" 1 10 0.1 len (fun v -> setLen v) true
                     ]
                 ]
             ]

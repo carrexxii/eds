@@ -38,20 +38,20 @@ module Mensuration =
                 Html.div [
                     Article [
                         Heading "Units"
-                        Section $"""When applying maths to real-life problems, numbers should be given some meaning/context.
+                        Html.p $"""When applying maths to real-life problems, numbers should be given some meaning/context.
                                     We call the context given to a number its """
                         Popup "Unit" Medium (Html.text "The meaning or context of a number, such as 1 kg, 5 cm or 10 m/s")
-                        Section """. The two main types of units are:"""
+                        Html.p """. The two main types of units are:"""
                         Note Extra """The metric system is the primary one around the world today and will be the one we focus on.
                                       For real-life situations, however, it can be useful to know the approximate values for some imperial units."""
                         OrderedList
                             [ "Metric units (or SI units) such as meters and kilograms."
                               "Imperial units (use in the USA) such as feet and inches." ]
-                        Section """The main units you will come across are:"""
+                        Html.p """The main units you will come across are:"""
                         Note Info "The letters in [brackets] are the abbreviations that will be used for telling the units for equations."
                         UnorderedList
-                            [ "Meters [m]"; "Kilograms [kg]"; "Seconds [s]" ]
-                        Section """Units can also be combined together to make more units. For example, you probably know that speed
+                            [ Html.text "Meters [m]"; Html.text "Kilograms [kg]"; Html.text "Seconds [s]" ]
+                        Html.p """Units can also be combined together to make more units. For example, you probably know that speed
                                    can be measured in kilometers per hour (km/h). This is a combination of distance (km) and time (h)."""
                         Accordion [ "Extended",
                             """

@@ -1,6 +1,5 @@
 namespace EDS.Maths.IG
 
-open Fable.Core.JsInterop
 open Feliz
 open Feliz.Mafs
 
@@ -107,16 +106,16 @@ module Numbers =
                         prop.className "px-3 border-r-2"
                         prop.children [
                             "Lower Limit" |> NumberInput min max lower (fun v -> setLower v)
-                            Slider min max step lower (fun v -> setLower v) false
-                            Checkbox "Inclusive" lowerInc (fun v -> setLowerInc v)
+                            Slider "" min max step lower (fun v -> setLower v) false
+                            Checkbox (TextString "Inclusive") lowerInc (fun v -> setLowerInc v)
                         ]
                     ]
                     Html.div [
                         prop.className "px-3 border-l-2"
                         prop.children [
                             "Upper Limit" |> NumberInput min max upper (fun v -> setUpper v)
-                            Slider min max step upper (fun v -> setUpper v) false
-                            Checkbox "Inclusive" upperInc (fun v -> setUpperInc v)
+                            Slider "" min max step upper (fun v -> setUpper v) false
+                            Checkbox (TextString "Inclusive") upperInc (fun v -> setUpperInc v)
                         ]
                     ]
                     Html.div [
@@ -148,32 +147,29 @@ module Numbers =
             ]
 
             Article [
-                UnorderedList [ "Natural Numbers"
-                                "Integers"
-                                "Rational Numbers"
-                                "Irrational Numbers"
-                                "Real Numbers"
-                                "Prime Numbers"
-                                "Square Numbers and Square Roots"
-                                "Cubic Numbers"
-                                "Factors"
-                                "Prime Factors" ]
-                UnorderedList [ "Highest Common Factor"
-                                "Least Common Factor"
-                                "Upper and Lower Bounds"
-                                "Significant Figures and Decimal Places"
-                                "Accuracy and Precision"
-                                "Inequalities"
-                                "Integers, Fractions Decimals and Percentages" ]
-                Section """
-
-                """
+                UnorderedList [ Html.text "Natural Numbers"
+                                Html.text "Integers"
+                                Html.text "Rational Numbers"
+                                Html.text "Irrational Numbers"
+                                Html.text "Real Numbers"
+                                Html.text "Prime Numbers"
+                                Html.text "Square Numbers and Square Roots"
+                                Html.text "Cubic Numbers"
+                                Html.text "Factors"
+                                Html.text "Prime Factors" ]
+                UnorderedList [ Html.text "Highest Common Factor"
+                                Html.text "Least Common Factor"
+                                Html.text "Upper and Lower Bounds"
+                                Html.text "Significant Figures and Decimal Places"
+                                Html.text "Accuracy and Precision"
+                                Html.text "Inequalities"
+                                Html.text "Integers, Fractions Decimals and Percentages" ]
                 Accordion [
                     "Extended", "Content for the extended section"
                     "Beyond", "Content for the beyond section"
                 ]
 
-                Section """Text following the extended section"""
+                Html.p """Text following the extended section"""
             ]
         ]
 

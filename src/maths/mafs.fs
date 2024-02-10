@@ -143,7 +143,7 @@ module Mafs =
                 start.element
                 stop.element ])
 
-            Slider minPartitions maxPartitions 1.0 partitions (fun v -> setPartitions (int v)) true
+            Slider "" minPartitions maxPartitions 1.0 partitions (fun v -> setPartitions (int v)) true
             RadioList "Functions" 0
                 [ "Wave", fun e -> if e then setFn 0
                   "Sine", fun e -> if e then setFn 1

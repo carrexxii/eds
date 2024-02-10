@@ -22,6 +22,9 @@ module IG =
         | "trigonometry"::[] -> Trigonometry.view ""
         | "trigonometry"::(Route.Query [ "tab", tab ])::[] -> Trigonometry.view tab
 
+        | "transforms"::[] -> Transforms.view ""
+        | "transforms"::(Route.Query [ "tab", tab ])::[] -> Transforms.view tab
+
         | "probstat"::[] -> ProbAndStats.view ()
 
         | [] ->
@@ -47,6 +50,9 @@ module IG =
 
                     Link "Trigonometry"  (Router.format ("ig", "trigonometry"))
                     LinkList (Trigonometry.tabs |> List.map (fun tab -> fst tab, subUrl "trigonometry" (fst tab)))
+
+                    Link "Vectors and Transformations"  (Router.format ("ig", "transforms"))
+                    LinkList (Transforms.tabs |> List.map (fun tab -> fst tab, subUrl "transforms" (fst tab)))
 
                     Link "Coordinate Geometry"  (Router.format ("ig", "coordinates"))
                     LinkList

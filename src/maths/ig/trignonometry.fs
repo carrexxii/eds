@@ -14,10 +14,10 @@ module Trigonometry =
             Article [
                 SmallHeading "Pythagorean Proof"
                 Katex "\\implies c^2 = a^2 + b^2 \\\\"
-                SectionSmall """If you look at the equation, you see that each of side of the triangle is squared.
-                                If we physically square them (to get a square shape) you can see that the areas
-                                of the two squares formed by the legs (b and c) add up to the area of the square
-                                formed from the hypotenuse (c)"""
+                Html.p """If you look at the equation, you see that each of side of the triangle is squared.
+                If we physically square them (to get a square shape) you can see that the areas
+                of the two squares formed by the legs (b and c) add up to the area of the square
+                formed from the hypotenuse (c)"""
                 Html.br []
             ]
             let corner = vec 2 -2
@@ -135,10 +135,10 @@ module Trigonometry =
                     prop.children [
                         Article [
                             Heading "Trigonometry"
-                            Section """Trigonometry is maths dealing with right triangles. The first part which you will
+                            Html.p """Trigonometry is maths dealing with right triangles. The first part which you will
                                        be familiar with is the Pythagorean theorem: """
                             Katex "\\\\ \\qquad c^2 = a^2 + b^2\\\\"
-                            Section """ where c is the length of the hypotenuse and a and b are the lengths of its two legs."""
+                            Html.p """ where c is the length of the hypotenuse and a and b are the lengths of its two legs."""
                             Popup "Pythagorean Theorem" Full (PythagoreanProof ())
                         ]
 

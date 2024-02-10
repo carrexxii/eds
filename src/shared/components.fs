@@ -7,51 +7,46 @@ open Browser
 open Browser.Types
 open Elmish
 open Feliz
+open Feliz.Mafs
 open Feliz.Router
 
-[<AutoOpen>]
-type SortDirection =
-    | Ascending
-    | Descending
-    static member opposite = function
-        | Ascending  -> Descending
-        | Descending -> Ascending
-
 module Components =
+    type TextType =
+        | TextString  of string
+        | LatexString of string
+
+    [<AutoOpen>]
+    type SortDirection =
+        | Ascending
+        | Descending
+        static member opposite = function
+            | Ascending  -> Descending
+            | Descending -> Ascending
+
     let Article (content: ReactElement list) =
         Html.article [
-            prop.className "prose prose-zinc text-justify prose-p:font-normal"
+            prop.className "prose prose-zinc m-2 text-justify"
             prop.children content
         ]
-    let Heading text =
-        Html.div [
-            prop.className "text-center mb-2"
-            prop.children [ Html.h1 (string text) ]
+    let Heading (text: string) =
+        Html.h1 [
+            prop.className "text-3xl text-center font-semibold"
+            prop.text text
         ]
     let SubHeading (text: string) =
-        Html.div [
-            prop.className "mb-4"
-            prop.children [ Html.h2 text ]
+        Html.h2 [
+            prop.className "text-xl font-semibold"
+            prop.text text
         ]
     let SmallHeading (text: string) =
-        Html.span [
-            prop.className ""
-            prop.children [
-                Html.h3 [
-                    prop.className "m-0 p-0 inline"
-                    prop.text text
-                ]
-            ]
+        Html.h3 [
+            prop.className "text-lg font-semibold m-0 p-0 inline"
+            prop.text text
         ]
-    let Section (content: string) =
-        Html.p [
+    let Section (content: ReactElement list) =
+        Html.p  [
             prop.className ""
-            prop.text content
-        ]
-    let SectionSmall (content: string) =
-        Html.p [
-            prop.className "m-0 p-0 text-sm"
-            prop.text content
+            prop.children content
         ]
     let Link (text: string) (addr: string) =
         Html.a [
@@ -59,17 +54,14 @@ module Components =
             prop.href addr
             prop.text text
         ]
-    let UnorderedList (xs: string list) =
-        Html.ul [
-            prop.className ""
-            prop.children (
-                xs |> List.map (fun x ->
-                    Html.li [
-                        prop.className "prose prose-li"
-                        prop.text x
-                    ])
-            )
-        ]
+    let UnorderedList (xs: ReactElement list) =
+        Html.ul (
+            xs |> List.map (fun x ->
+                Html.li [
+                    prop.className "prose prose-li"
+                    prop.children x
+                ])
+        )
     let OrderedList (xs: string list) =
         Html.ol (
             xs |> List.map (fun x ->
@@ -115,14 +107,12 @@ module Components =
         ]
 
     let NumberInput (min: float) (max: float) (value: float) (onChange: float -> unit) (label: string) =
-        Html.div [
-            prop.className "flex flex-col justify-center text-center"
+        Html.label [
+            prop.className "flex flex-row m-2 items-center text-center"
             prop.children [
-                Html.p [
-                    prop.className "prose prose-p"
-                    prop.text label
-                ]
+                Html.text label
                 Html.input [
+                    prop.className "ml-2 px-1 py-1 border-x-0 border-slate-500 bg-transparent"
                     prop.type' "number"
                     prop.min min
                     prop.max max
@@ -132,11 +122,15 @@ module Components =
             ]
         ]
 
-    let Slider (min: float) (max: float) (step: float)
+    let Slider (title: string) (min: float) (max: float) (step: float)
                (value: float) (onChange: float -> unit) (withText: bool) =
         Html.div [
-            prop.className "text-center m-2"
+            prop.className "flex flex-row gap-4 text-center items-center m-2"
             prop.children [
+                Html.h6 [
+                    prop.className "font-semibold"
+                    prop.text title
+                ]
                 Html.input [
                     prop.className "w-full"
                     prop.type' "range"
@@ -148,14 +142,14 @@ module Components =
                 ]
                 if withText then
                     Html.p [
-                        prop.className "prose prose-p"
+                        prop.className ""
                         prop.text $"{value}"
                     ]
             ]
         ]
 
-    let Checkbox (text: string) (isChecked: bool) (onChange: bool -> unit) =
-        Html.div [
+    let Checkbox (text: TextType) (isChecked: bool) (onChange: bool -> unit) =
+        Html.label [
             prop.className "flex flex-row items-center text-center"
             prop.children [
                 Html.input [
@@ -164,14 +158,13 @@ module Components =
                     prop.isChecked isChecked
                     prop.onChange onChange
                 ]
-                Html.p [
-                    prop.className "prose prose-p"
-                    prop.text text
-                ]
+                match text with
+                | TextString  str -> Html.text str
+                | LatexString str -> Katex str
             ]
         ]
 
-    let CheckList (legend: string) (xs: (string * bool * (bool -> unit)) list) =
+    let CheckList (legend: string) (xs: (TextType * bool * (bool -> unit)) list) =
         Html.fieldSet [
             prop.className "m-2 text-gray-700"
             prop.children ([
@@ -245,7 +238,7 @@ module Components =
                 prop.className "flex flex-row rounded-full"
                 prop.children (
                     tabs |> List.mapi (fun i tab ->
-                        Html.p [
+                        Html.div [
                             prop.className "grow p-0.5 border-x-2 text-center text-md
                                             border-slate-200 text-gray-700
                                             hover:bg-slate-200 hover:cursor-pointer hover:text-black
@@ -277,7 +270,7 @@ module Components =
             prop.className "group relative inline font-semibold "
             prop.children [
                 Html.text text
-                Html.span [
+                Html.div [
                     let w = match size with
                             | Small  -> "w-36 p-2"
                             | Medium -> "w-64 p-3"
@@ -344,11 +337,12 @@ module Components =
         let header  = xs.Head
         let content = xs.Tail
         Html.table [
-            prop.className "prose prose-table"
+            prop.className "prose prose-table mx-0 my-4 border-b-2"
             prop.children [
-                Html.thead [
-                    Html.tr (header |> List.map (fun h -> Html.th h))
-                ]
+                if header[0] <> Html.none then
+                    Html.thead [
+                        Html.tr (header |> List.map (fun h -> Html.th h))
+                    ]
                 Html.tbody (
                     content |> List.map (fun row ->
                         Html.tr (row |> List.map (fun cell -> Html.td cell)))
