@@ -6,6 +6,7 @@ open Fable.Core.JsInterop
 open Feliz
 open Feliz.Mafs
 
+open EDS.Maths
 open EDS.Shared
 open EDS.Shared.Components
 
@@ -16,11 +17,6 @@ module Transforms =
             prop.className "flex flex-row-reverse gap-8"
             prop.children [
                 Html.div [
-                    let snapWith (p: Vec2) (dp: int) =
-                        let x = Math.Round (p.x, dp)
-                        let y = Math.Round (p.y, dp)
-                        vec x y
-
                     let snap, setSnap = React.useState true
                     let facing = movablePoint (vec 1 2) Theme.green (Some <|
                         Constrain (fun p -> snapWith p (if snap then 0 else 1)))
@@ -30,10 +26,17 @@ module Transforms =
                     |> Mafs.render [
                         Cartesian.create () |> Cartesian.render
 
-                        Vector.create (pos.pos + facing.pos)
+                        let head = (pos.pos + facing.pos)
+                        Vector.create head
                         |> Vector.tail pos.pos
                         |> Vector.weight 3.0
                         |> Vector.render
+
+                        let leg = Line.create Line.Segment
+                                  |> Line.point1 head
+                                  |> Line.style Dashed
+                        leg |> Line.point2 (vec head.x 0) |> Line.render
+                        leg |> Line.point2 (vec 0 head.y) |> Line.render
 
                         Text.create $"%.1f{facing.pos.mag}"
                         |> Text.pos (pos.pos.midpoint facing.pos)
@@ -57,15 +60,16 @@ module Transforms =
                     Html.hr []
                     Html.br []
 
-                    let snap  , setSnap    = React.useState true
-                    let sumVec, setSumVec  = React.useState true
+                    let snap      , setSnap       = React.useState true
+                    let showPoints, setShowPoints = React.useState true
+                    let sumVec    , setSumVec     = React.useState false
                     let firstVector , setFirstVector  = React.useState "AB"
                     let secondVector, setSecondVector = React.useState "BC"
                     let points = Map <| seq {
                         'O', movablePoint (vec  0  0) Theme.foreground (Some <| Constrain (fun p -> vec 0 0))
-                        'A', movablePoint (vec  2  2) Theme.green (Some <| Constrain (fun p -> snapWith p (if snap then 0 else 1)))
-                        'B', movablePoint (vec -3  0) Theme.green (Some <| Constrain (fun p -> snapWith p (if snap then 0 else 1)))
-                        'C', movablePoint (vec  1 -2) Theme.green (Some <| Constrain (fun p -> snapWith p (if snap then 0 else 1)))
+                        'A', movablePoint (vec  2  2) Theme.green (constrainSnap snap)
+                        'B', movablePoint (vec -3  0) Theme.green (constrainSnap snap)
+                        'C', movablePoint (vec  1 -2) Theme.green (constrainSnap snap)
                     }
                     let vecIsValid (str: string) =
                         str.Length = 2 &&
@@ -89,8 +93,7 @@ module Transforms =
                             |> Text.pos (head.midpoint tail)
                             |> Text.color color
                             |> Text.render)
-                        |> List.fold (fun acc (v, t) ->
-                            v::t::acc) []
+                        |> List.fold (fun acc (v, t) -> v::t::acc) []
                     )@[
                         if sumVec && vecIsValid firstVector && vecIsValid secondVector then
                             let tail = points[firstVector[0]].pos
@@ -106,10 +109,14 @@ module Transforms =
                             |> Text.render
                     ]@[
                         for p in points do
-                            Text.create (string p.Key)
-                            |> Text.pos p.Value.pos
-                            |> Text.attach North -16
-                            |> Text.render
+                            if showPoints && p.Key <> 'O'
+                            then $$"""{{string p.Key}}\begin{pmatrix} {{p.Value.pos.x}} \\\\ {{p.Value.pos.y}} \end{pmatrix}"""
+                            else (string p.Key)
+                            |> Latex.create
+                            |> Latex.pos (p.Value.pos + (if not showPoints || p.Key = 'O'
+                                                         then vec 0.2 0.2
+                                                         else vec 0.7 0.3))
+                            |> Latex.render
                             p.Value.element
                     ])
                     Html.div [
@@ -117,8 +124,9 @@ module Transforms =
                             prop.className "flex flex-row gap-12 items-center"
                             prop.children [
                                 CheckList "Options"
-                                    [ (TextString "Snap")    , snap  , (fun e -> setSnap e)
-                                      (TextString "Show Sum"), sumVec, (fun e -> setSumVec e) ]
+                                    [ (TextString "Snap")       , snap      , (fun e -> setSnap e)
+                                      (TextString "Show Points"), showPoints, (fun e -> setShowPoints e)
+                                      (TextString "Show Sum")   , sumVec    , (fun e -> setSumVec e) ]
                                 TextInput "First Vector" firstVector (fun str -> setFirstVector str)
                                     (Some <| fun str ->
                                         if vecIsValid str
@@ -202,7 +210,88 @@ module Transforms =
     [<ReactComponent>]
     let Transforms () =
         Html.div [
+            prop.className ""
+            prop.children [
+                let maxPoints = 8.0
+                let pointCount          , setPointCount           = React.useState 1
+                let showCoords          , setShowCoords           = React.useState false
+                let showReflectionCoords, setShowReflectionCoords = React.useState false
+                let snap                , setSnap                 = React.useState false
+                let points = [ vec -1 -1; vec -1 0; vec -1  1; vec 0  1
+                               vec  1  1; vec  1 0; vec  1 -1; vec 0 -1 ]
+                             |> List.map (fun p ->
+                                movablePoint p Theme.green (constrainSnap snap))
+                let points = { 1..int maxPoints }
+                             |> Seq.map (fun p ->
+                                let p = float (p - 1)
+                                let x = cos (2.0*Math.PI/maxPoints * p)
+                                let y = sin (2.0*Math.PI/maxPoints * p)
+                                movablePoint (vec x y) Theme.green (constrainSnap snap))
+                             |> List.ofSeq
+                let lPoint1 = movablePoint (vec -3 -3) Theme.indigo (constrainSnap snap)
+                let lPoint2 = movablePoint (vec  3  3) Theme.indigo (constrainSnap snap)
+                Mafs.create ()
+                |> Mafs.zoom 0.3 1.0
+                |> Mafs.render ([
+                    Cartesian.create () |> Cartesian.render
+                    Line.create Line.ThroughPoints
+                    |> Line.point1 lPoint1.pos
+                    |> Line.point2 lPoint2.pos
+                    |> Line.render
+                ]@(
+                    let points = points
+                                 |> List.take (pointCount)
+                                 |> List.map (fun p -> p.pos)
+                    let reflects = points
+                                   |> List.map (fun p ->
+                                        let dist = pointLineDist lPoint1.pos lPoint2.pos p
+                                        let v = (lPoint2.pos - lPoint1.pos).normal
+                                        p + 2.0*((vec -v.y v.x) * dist))
 
+                    (if points.Length > 1 then
+                        [ points  , Theme.green
+                          reflects, Theme.red ]
+                        |> List.map (fun (points, color) ->
+                            Polygon.create points
+                            |> Polygon.color color
+                            |> Polygon.opacity 0.3
+                            |> Polygon.render true)
+                    else
+                        [ Point.create reflects[0]
+                          |> Point.color Theme.red
+                          |> Point.render ])
+                    @(
+                        let drawCoord (p: Vec2) =
+                            let x = $"%.1f{p.x}"
+                            let y = $"%.1f{p.y}"
+                            Latex.create $$"""\tiny \begin{pmatrix} {{x}} \\\\ {{y}} \end{pmatrix}"""
+                            |> Latex.pos (p + vec 0 0.5)
+                            |> Latex.render
+                        if showCoords
+                        then points |> List.take (pointCount) |> List.map (fun p -> drawCoord p)
+                        else []
+                        @
+                        if showReflectionCoords
+                        then reflects |> List.take (pointCount) |> List.map (fun p -> drawCoord p)
+                        else [])
+                )@[
+                    lPoint1.element
+                    lPoint2.element
+                ]@(points
+                    |> List.take (pointCount)
+                    |> List.map (fun p -> p.element)
+                ))
+                Html.div [
+                    prop.className "flex flex-row gap-12 m-2"
+                    prop.children [
+                        CheckList "Options"
+                            [ (TextString "Snap")                       , snap                , (fun e -> setSnap e)
+                              (TextString "Show Coordinates")           , showCoords          , (fun e -> setShowCoords e)
+                              (TextString "Show Reflection Coordinates"), showReflectionCoords, (fun e -> setShowReflectionCoords e) ]
+                        NumberInput 1 maxPoints pointCount (fun v -> setPointCount (int v)) "Number of Points: "
+                    ]
+                ]
+            ]
         ]
 
     let tabs =

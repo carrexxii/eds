@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="common.fs" />
     <Compile Include="ig/terms.fs" />
     <Compile Include="ig/transforms.fs" />
     <Compile Include="ig/trignonometry.fs" />
