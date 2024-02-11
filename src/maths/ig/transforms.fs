@@ -2,12 +2,10 @@ namespace EDS.Maths.IG
 
 open System
 
-open Fable.Core.JsInterop
 open Feliz
 open Feliz.Mafs
 
 open EDS.Maths
-open EDS.Shared
 open EDS.Shared.Components
 
 module Transforms =
@@ -17,18 +15,20 @@ module Transforms =
             prop.className "flex flex-row-reverse gap-8"
             prop.children [
                 Html.div [
-                    let snap, setSnap = React.useState true
-                    let facing = movablePoint (vec 1 2) Theme.green (Some <|
-                        Constrain (fun p -> snapWith p (if snap then 0 else 1)))
-                    let pos = movablePoint (vec 0 0) Theme.foreground (Some <|
-                        Constrain (fun p -> vec 0 0))
+                    let snap     , setSnap      = React.useState true
+                    let showScale, setShowScale = React.useState false
+                    let scale    , setScale     = React.useState 1.0
+                    let facing = movablePoint (vec 1 2) Theme.green   (Some <| Constrain (fun p -> snapWith p (if snap then 0 else 1)))
+                    let pos = movablePoint (vec 0 0) Theme.foreground (Some <| Constrain (fun p -> vec 0 0))
                     Mafs.create ()
+                    |> Mafs.zoom 0.5 1.0
                     |> Mafs.render [
                         Cartesian.create () |> Cartesian.render
 
                         let head = (pos.pos + facing.pos)
                         Vector.create head
                         |> Vector.tail pos.pos
+                        |> Vector.color Theme.green
                         |> Vector.weight 3.0
                         |> Vector.render
 
@@ -37,6 +37,11 @@ module Transforms =
                                   |> Line.style Dashed
                         leg |> Line.point2 (vec head.x 0) |> Line.render
                         leg |> Line.point2 (vec 0 head.y) |> Line.render
+
+                        if showScale then
+                            Vector.create (head * scale)
+                            |> Vector.color Theme.red
+                            |> Vector.render
 
                         Text.create $"%.1f{facing.pos.mag}"
                         |> Text.pos (pos.pos.midpoint facing.pos)
@@ -49,10 +54,12 @@ module Transforms =
                     Html.div [
                         prop.className "flex flex-row gap-12 m-2"
                         prop.children [
-                            Checkbox (TextString "Snap") snap (fun e -> setSnap e)
+                            CheckList "Options"
+                                [ (TextString "Snap")        , snap     , (fun e -> setSnap e)
+                                  (TextString "Scale Vector"), showScale, (fun e -> setShowScale e) ]
                             NumberInput -5.0 5.0 facing.x (fun v -> facing.setPoint (vec v facing.y)) "x: "
                             NumberInput -5.0 5.0 facing.y (fun v -> facing.setPoint (vec facing.x v)) "y: "
-                            Html.div [ prop.className "w-32" ]
+                            NumberInput -5.0 5.0 scale (fun v -> setScale v) "Scale: "
                         ]
                     ]
 
@@ -207,16 +214,24 @@ module Transforms =
 
         ]
 
+    type Transform =
+        | Reflect
+        | Scale
+        | Rotate
     [<ReactComponent>]
     let Transforms () =
         Html.div [
             prop.className ""
             prop.children [
                 let maxPoints = 8.0
-                let pointCount          , setPointCount           = React.useState 1
-                let showCoords          , setShowCoords           = React.useState false
-                let showReflectionCoords, setShowReflectionCoords = React.useState false
-                let snap                , setSnap                 = React.useState false
+                let pointCount    , setPointCount     = React.useState 1
+                let showCoords    , setShowCoords     = React.useState false
+                let showNewCoords , setShowNewCoords  = React.useState false
+                let showPaths     , setShowPaths      = React.useState false
+                let method        , setMethod         = React.useState Reflect
+                let scaleFactor   , setScaleFactor    = React.useState 2.0
+                let rotationFactor, setRotationFactor = React.useState 180.0
+                let snap          , setSnap           = React.useState false
                 let points = [ vec -1 -1; vec -1 0; vec -1  1; vec 0  1
                                vec  1  1; vec  1 0; vec  1 -1; vec 0 -1 ]
                              |> List.map (fun p ->
@@ -228,25 +243,36 @@ module Transforms =
                                 let y = sin (2.0*Math.PI/maxPoints * p)
                                 movablePoint (vec x y) Theme.green (constrainSnap snap))
                              |> List.ofSeq
+                let tPoint  = movablePoint (vec  0  0) Theme.indigo (constrainSnap snap)
                 let lPoint1 = movablePoint (vec -3 -3) Theme.indigo (constrainSnap snap)
                 let lPoint2 = movablePoint (vec  3  3) Theme.indigo (constrainSnap snap)
                 Mafs.create ()
                 |> Mafs.zoom 0.3 1.0
                 |> Mafs.render ([
                     Cartesian.create () |> Cartesian.render
-                    Line.create Line.ThroughPoints
-                    |> Line.point1 lPoint1.pos
-                    |> Line.point2 lPoint2.pos
-                    |> Line.render
+                    if method = Reflect then
+                        Line.create Line.ThroughPoints
+                        |> Line.point1 lPoint1.pos
+                        |> Line.point2 lPoint2.pos
+                        |> Line.render
                 ]@(
                     let points = points
                                  |> List.take (pointCount)
                                  |> List.map (fun p -> p.pos)
-                    let reflects = points
-                                   |> List.map (fun p ->
-                                        let dist = pointLineDist lPoint1.pos lPoint2.pos p
-                                        let v = (lPoint2.pos - lPoint1.pos).normal
-                                        p + 2.0*((vec -v.y v.x) * dist))
+                    let reflects =
+                        points
+                        |> List.map (fun p ->
+                            match method with
+                            | Reflect ->
+                                let dist = pointLineDist lPoint1.pos lPoint2.pos p
+                                let v = (lPoint2.pos - lPoint1.pos).normal
+                                p + 2.0*((vec -v.y v.x) * dist)
+                            | Scale ->
+                                let dist = tPoint.pos.dist p
+                                let dir  = (tPoint.pos - p).normal
+                                p - dir*dist*(scaleFactor - 1.0)
+                            | Rotate ->
+                                p.rotateAbout tPoint.pos (Degrees rotationFactor))
 
                     (if points.Length > 1 then
                         [ points  , Theme.green
@@ -261,6 +287,18 @@ module Transforms =
                           |> Point.color Theme.red
                           |> Point.render ])
                     @(
+                        if showPaths then
+                            List.zip points reflects
+                            |> List.map (fun (p1, p2) ->
+                                Line.create Line.Segment
+                                |> Line.point1 p1
+                                |> Line.point2 p2
+                                |> Line.color Theme.yellow
+                                |> Line.style Dashed
+                                |> Line.weight 2.0
+                                |> Line.render)
+                        else []
+                    )@(
                         let drawCoord (p: Vec2) =
                             let x = $"%.1f{p.x}"
                             let y = $"%.1f{p.y}"
@@ -270,25 +308,36 @@ module Transforms =
                         if showCoords
                         then points |> List.take (pointCount) |> List.map (fun p -> drawCoord p)
                         else []
-                        @
-                        if showReflectionCoords
+                    @
+                        if showNewCoords
                         then reflects |> List.take (pointCount) |> List.map (fun p -> drawCoord p)
                         else [])
                 )@[
-                    lPoint1.element
-                    lPoint2.element
+                    match method with
+                    | Scale
+                    | Rotate -> tPoint.element
+                    | Reflect ->
+                        lPoint1.element
+                        lPoint2.element
                 ]@(points
-                    |> List.take (pointCount)
+                    |> List.take pointCount
                     |> List.map (fun p -> p.element)
                 ))
                 Html.div [
                     prop.className "flex flex-row gap-12 m-2"
                     prop.children [
                         CheckList "Options"
-                            [ (TextString "Snap")                       , snap                , (fun e -> setSnap e)
-                              (TextString "Show Coordinates")           , showCoords          , (fun e -> setShowCoords e)
-                              (TextString "Show Reflection Coordinates"), showReflectionCoords, (fun e -> setShowReflectionCoords e) ]
+                            [ TextString "Snap"                , snap         , fun e -> setSnap e
+                              TextString "Show Coordinates"    , showCoords   , fun e -> setShowCoords e
+                              TextString "Show New Coordinates", showNewCoords, fun e -> setShowNewCoords e
+                              TextString "Show Paths"          , showPaths    , fun e -> setShowPaths e ]
+                        RadioList "We Want to" 0
+                            [ "Reflect", fun e -> setMethod Reflect
+                              "Scale"  , fun e -> setMethod Scale
+                              "Rotate" , fun e -> setMethod Rotate ]
                         NumberInput 1 maxPoints pointCount (fun v -> setPointCount (int v)) "Number of Points: "
+                        if method = Scale  then Slider "Scale: "    0 5.0 0.1 scaleFactor    (fun v -> setScaleFactor v)    true
+                        if method = Rotate then Slider "Rotation: " 0 360 1   rotationFactor (fun v -> setRotationFactor v) true
                     ]
                 ]
             ]
