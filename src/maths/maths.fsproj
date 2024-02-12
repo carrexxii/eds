@@ -4,13 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ig/statistics.fs" />
+    <Compile Include="ig/probability.fs" />
     <Compile Include="common.fs" />
     <Compile Include="ig/terms.fs" />
     <Compile Include="ig/transforms.fs" />
     <Compile Include="ig/trignonometry.fs" />
     <Compile Include="ig/mensuration.fs" />
     <Compile Include="ig/geometry.fs" />
-    <Compile Include="ig/probstat.fs" />
     <Compile Include="ig/algebra.fs" />
     <Compile Include="ig/numbers.fs" />
     <Compile Include="ig.fs" />
@@ -31,5 +32,6 @@
     <PackageReference Include="Fable.Remoting.Client" Version="7.31.0" />
     <PackageReference Include="Feliz" Version="2.7.0" />
     <PackageReference Include="Feliz.Router" Version="4.0.0" />
+    <PackageReference Include="Feliz.Recharts" Version="4.2.0" />
   </ItemGroup>
 </Project>

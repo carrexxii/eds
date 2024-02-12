@@ -163,12 +163,15 @@ module Transforms =
                         vectors are multi-dimensional values and can be used for 2D, 3D and even """
                         Terms.higherDim; Html.text """ values."""
                     ]
+                    Section [
+                        Html.text "This covers content for "; Terms.section7; Html.text " in the syllabus."
+                    ]
 
                     SubHeading "What Are Vectors?"
                     Section [
                         Html.text "Vectors are multi-dimensional values (a number alone is called a "; Terms.scalar
                         Html.text "). We will write vectors as either:"
-                        StaticTable
+                        StaticTable TableVertical
                             [ [ Html.none ]
                               [ Html.text "Column vectors: "; Katex @"\begin{pmatrix} x \\ y \end{pmatrix}, \;
                                                                       \begin{pmatrix} 2 \\ 3 \end{pmatrix}" ]
@@ -182,7 +185,7 @@ module Transforms =
                         Html.text """We will need to be able to do three different operations using vectors: adding
                                      subtracting and multiplying (by a scalar). Doing this is no more difficult than
                                      normal, but we will need to do it twice because our vectors have two values: """
-                        StaticTable
+                        StaticTable TableVertical
                             [ [ Html.text "Operation"; Html.text "Rule"; Html.text "Example" ]
                               [ Html.text "Addition: "
                                 Katex @"\begin{pmatrix} x \\ y \end{pmatrix} +
@@ -224,6 +227,8 @@ module Transforms =
             prop.className ""
             prop.children [
                 let maxPoints = 8.0
+                let snap          , setSnap           = React.useState false
+                let snapRotate    , setSnapRotate     = React.useState false
                 let pointCount    , setPointCount     = React.useState 1
                 let showCoords    , setShowCoords     = React.useState false
                 let showNewCoords , setShowNewCoords  = React.useState false
@@ -231,11 +236,6 @@ module Transforms =
                 let method        , setMethod         = React.useState Reflect
                 let scaleFactor   , setScaleFactor    = React.useState 2.0
                 let rotationFactor, setRotationFactor = React.useState 180.0
-                let snap          , setSnap           = React.useState false
-                let points = [ vec -1 -1; vec -1 0; vec -1  1; vec 0  1
-                               vec  1  1; vec  1 0; vec  1 -1; vec 0 -1 ]
-                             |> List.map (fun p ->
-                                movablePoint p Theme.green (constrainSnap snap))
                 let points = { 1..int maxPoints }
                              |> Seq.map (fun p ->
                                 let p = float (p - 1)
@@ -328,6 +328,7 @@ module Transforms =
                     prop.children [
                         CheckList "Options"
                             [ TextString "Snap"                , snap         , fun e -> setSnap e
+                              TextString "Snap Rotation"       , snapRotate   , fun e -> setSnapRotate e
                               TextString "Show Coordinates"    , showCoords   , fun e -> setShowCoords e
                               TextString "Show New Coordinates", showNewCoords, fun e -> setShowNewCoords e
                               TextString "Show Paths"          , showPaths    , fun e -> setShowPaths e ]
@@ -336,8 +337,10 @@ module Transforms =
                               "Scale"  , fun e -> setMethod Scale
                               "Rotate" , fun e -> setMethod Rotate ]
                         NumberInput 1 maxPoints pointCount (fun v -> setPointCount (int v)) "Number of Points: "
-                        if method = Scale  then Slider "Scale: "    0 5.0 0.1 scaleFactor    (fun v -> setScaleFactor v)    true
-                        if method = Rotate then Slider "Rotation: " 0 360 1   rotationFactor (fun v -> setRotationFactor v) true
+                        if method = Scale  then Slider "Scale: " -5 5 0.1 scaleFactor (fun v -> setScaleFactor v) true
+                        if method = Rotate then
+                            let scale = if snapRotate then 90 else 1
+                            Slider "Rotation: " -360 360 scale rotationFactor (fun v -> setRotationFactor v) true
                     ]
                 ]
             ]

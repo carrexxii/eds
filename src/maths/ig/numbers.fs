@@ -165,8 +165,8 @@ module Numbers =
                                 Html.text "Inequalities"
                                 Html.text "Integers, Fractions Decimals and Percentages" ]
                 Accordion [
-                    "Extended", "Content for the extended section"
-                    "Beyond", "Content for the beyond section"
+                    Html.text "Extended", Html.text "Content for the extended section"
+                    Html.text "Beyond"  , Html.text "Content for the beyond section"
                 ]
 
                 Html.p """Text following the extended section"""
@@ -180,7 +180,7 @@ module Numbers =
 
             SubHeading "Rules for Exponents"
             let tex inner = Katex $$"""\color{black}{{inner}}"""
-            StaticTable
+            StaticTable TableVertical
                 [ [ Html.text "Rules"; Html.text "Examples" ]
                   [ tex @"x^0 = 1"
                     tex @"\qquad 2^0 = 1" ]

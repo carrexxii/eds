@@ -125,7 +125,7 @@ module Components =
     let Slider (title: string) (min: float) (max: float) (step: float)
                (value: float) (onChange: float -> unit) (withText: bool) =
         Html.div [
-            prop.className "flex flex-row gap-4 text-center items-center m-2"
+            prop.className "flex flex-row grow gap-4 text-center items-center m-2"
             prop.children [
                 Html.h6 [
                     prop.className "font-semibold"
@@ -287,10 +287,10 @@ module Components =
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
-    let Accordion (xs: (string * string) list) =
+    let Accordion (xs: (ReactElement * ReactElement) list) =
         let opened, setOpened = React.useState (xs |> List.map (fun x -> false))
         Html.div [
-            prop.className "flex flex-col ml-2 mb-4 pl-2 border-l-4 border-b-0 border-green-300"
+            prop.className "flex flex-col h-fit ml-2 mb-4 pl-2 border-l-4 border-b-0 border-green-300"
             prop.children (
                 xs |> List.mapi (fun i x ->
                     Html.div [
@@ -300,14 +300,14 @@ module Components =
                                                 {if i = xs.Length - 1 then "rounded-b-lg" else ""}
                                                 {if opened[i] then "text-black bg-slate-100" else "text-gray-700"}
                                                 duration-200 ease-in-out"""
-                            prop.text (fst x)
+                            prop.children (fst x)
                             prop.onClick (fun e -> setOpened (List.updateAt i (not opened[i]) opened))
                         ]
                         Html.div [
                             prop.className $"""prose prose-p px-2 text-pretty text-justify overflow-hidden
-                                                {if opened[i] then "h-fit" else "h-0"}
+                                                {if opened[i] then "h-fit opacity-1" else "h-0 opacity-0"}
                                                 transition-all duration-500 ease-in-out"""
-                            prop.text (snd x)
+                            prop.children (snd x)
                         ]
                     ]
                 )
@@ -332,21 +332,33 @@ module Components =
 
 ///////////////////////////////////////////////////////////////////////////////
 
+    type TableDirection =
+        | TableHorizontal
+        | TableVertical
     [<ReactComponent>]
-    let StaticTable (xs: ReactElement list list) =
-        let header  = xs.Head
-        let content = xs.Tail
+    let StaticTable (dir: TableDirection) (xs: ReactElement list list) =
         Html.table [
-            prop.className "prose prose-table mx-0 my-4 border-b-2"
+            prop.className "prose prose-table mx-0 my-4"
             prop.children [
-                if header[0] <> Html.none then
-                    Html.thead [
-                        Html.tr (header |> List.map (fun h -> Html.th h))
-                    ]
-                Html.tbody (
-                    content |> List.map (fun row ->
-                        Html.tr (row |> List.map (fun cell -> Html.td cell)))
-                )
+                if dir = TableVertical then
+                    let header  = xs.Head
+                    let content = xs.Tail
+                    if header[0] <> Html.none then
+                        Html.thead [
+                            Html.tr (header |> List.map (fun h -> Html.th h))
+                        ]
+                    Html.tbody (
+                        content |> List.map (fun row ->
+                            Html.tr (row |> List.map (fun cell -> Html.td cell)))
+                    )
+                else
+                    Html.tbody (
+                        xs |> List.map (fun row ->
+                            Html.tr (row |> List.mapi (fun i cell ->
+                                if i = 0 && cell <> Html.none
+                                then Html.th cell
+                                else Html.td cell)))
+                    )
             ]
         ]
 

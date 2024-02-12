@@ -53,8 +53,8 @@ module Mensuration =
                             [ Html.text "Meters [m]"; Html.text "Kilograms [kg]"; Html.text "Seconds [s]" ]
                         Html.p """Units can also be combined together to make more units. For example, you probably know that speed
                                    can be measured in kilometers per hour (km/h). This is a combination of distance (km) and time (h)."""
-                        Accordion [ "Extended",
-                            """
+                        Accordion [ Html.text "Extended",
+                            Html.text """
 
                             """
                         ]

@@ -25,7 +25,11 @@ module IG =
         | "transforms"::[] -> Transforms.view ""
         | "transforms"::(Route.Query [ "tab", tab ])::[] -> Transforms.view tab
 
-        | "probstat"::[] -> ProbAndStats.view ()
+        | "probability"::[] -> Probability.view ""
+        | "probability"::(Route.Query [ "tab", tab ])::[] -> Probability.view tab
+
+        | "statistics"::[] -> Statistics.view ""
+        | "statistics"::(Route.Query [ "tab", tab ])::[] -> Statistics.view tab
 
         | [] ->
             let subUrl (section: string) (url: string) =
@@ -54,25 +58,11 @@ module IG =
                     Link "Vectors and Transformations"  (Router.format ("ig", "transforms"))
                     LinkList (Transforms.tabs |> List.map (fun tab -> fst tab, subUrl "transforms" (fst tab)))
 
-                    Link "Coordinate Geometry"  (Router.format ("ig", "coordinates"))
-                    LinkList
-                        [  ]
-
-                    Link "Trigonometry"  (Router.format ("ig", "trigonometry"))
-                    LinkList
-                        [  ]
-
-                    Link "Matrices and Transformations"  (Router.format ("ig", "matrices"))
-                    LinkList
-                        [  ]
-
                     Link "Probability"  (Router.format ("ig", "probability"))
-                    LinkList
-                        [  ]
+                    LinkList (Probability.tabs |> List.map (fun tab -> fst tab, subUrl "probability" (fst tab)))
 
-                    Link "Statistics" (Router.format ("ig", "statistics"))
-                    LinkList
-                        [  ]
+                    Link "Statistics"  (Router.format ("ig", "statistics"))
+                    LinkList (Statistics.tabs |> List.map (fun tab -> fst tab, subUrl "statistics" (fst tab)))
                 ]
             ]
         | url -> SubHeading $"Page '{url}' does not exist"
