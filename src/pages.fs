@@ -46,6 +46,9 @@ module Pages =
     let maths: HttpHandler =
         master (script [ type' "module"; src "maths.js" ] [])
 
+    let csc: HttpHandler =
+        master (script [ type' "module"; src "csc.js" ] [])
+
     let status: HttpHandler = fun ctx ->
         let user = Auth.getUser ctx
         Request.ifAuthenticated

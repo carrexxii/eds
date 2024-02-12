@@ -52,6 +52,7 @@ module Main =
                 get  "/status" <| Pages.status
                 get  "/user"   <| Pages.user
                 get  "/maths"  <| Pages.maths
+                get  "/csc"    <| Pages.csc
                 post "/login"  <| User.login
                 post "/logout" <| User.logout
             ]

@@ -19,6 +19,11 @@
             "command": "make maths"
         },
         {
+            "label": "JS/csc",
+            "type": "shell",
+            "command": "make csc"
+        },
+        {
             "label": "Pack",
             "type": "shell",
             "command": "make pack"
@@ -35,6 +40,7 @@
                 "CSS",
                 "JS/user",
                 "JS/maths",
+                "JS/csc",
                 "Pack",
                 "DotNet",
             ],

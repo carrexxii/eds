@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ig/asm.fs" />
+    <Compile Include="ig.fs" />
+    <Compile Include="services.fs" />
+    <Compile Include="csc.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../shared/shared.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Elmish" Version="4.1.0" />
+    <PackageReference Include="Fable.Elmish.React" Version="4.0.0" />
+    <PackageReference Include="Fable.Remoting.Client" Version="7.31.0" />
+    <PackageReference Include="Feliz" Version="2.7.0" />
+    <PackageReference Include="Feliz.Router" Version="4.0.0" />
+  </ItemGroup>
+</Project>

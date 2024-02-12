@@ -67,7 +67,7 @@ module Statistics =
                 prop.children [
                     Html.div [
                         StaticTable TableHorizontal
-                            [ [ Html.text "Grade: " ] @ [ for point in data -> Html.text point.name  ]
+                            [ [ Html.text "Grade: " ] @ [ for point in data -> Html.text $"{point.name}  "  ]
                               [ Html.text "Mark: "  ] @ [ for point in data -> Html.text point.value ] ]
                     ]
                     Accordion [

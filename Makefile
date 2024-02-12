@@ -8,9 +8,11 @@ CLIENT_COUNT := $(words $(CLIENTS))
 
 all: restore
 
-.PHONY: maths user
+.PHONY: maths csc user
 maths:
 	dotnet fable watch $(SOURCE_DIR)/maths/maths.fsproj -o $(BUILD_DIR)/maths --noRestore --silent
+csc:
+	dotnet fable watch $(SOURCE_DIR)/csc/csc.fsproj -o $(BUILD_DIR)/csc --noRestore --silent
 user:
 	dotnet fable watch $(SOURCE_DIR)/user/user.fsproj -o $(BUILD_DIR)/user --noRestore --silent
 
