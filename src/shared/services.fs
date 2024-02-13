@@ -1,5 +1,7 @@
 namespace EDS.Shared
 
+open Fable.Remoting.Client
+
 module Services =
     type User =
         { id      : int
@@ -24,3 +26,13 @@ module Services =
             add    : User -> Async<Result<unit, string>>
         }
         with member this.ctx: Microsoft.AspNetCore.Http.HttpContext = null
+    let userService =
+        Remoting.createApi ()
+        |> Remoting.buildProxy<IUser>
+
+    type IResource = {
+        getProgram: string -> Async<string array option>
+    }
+    let resourceService =
+        Remoting.createApi ()
+        |> Remoting.buildProxy<IResource>

@@ -1,5 +1,6 @@
 namespace EDS.Server
 
+open System.IO
 open Microsoft.AspNetCore.Http
 
 open EDS.Shared
@@ -55,5 +56,19 @@ module Services =
                                ('{user.username}', '{user.email}', '{user.password}')"
                         |> ignore
                     return Ok ()
+                }
+            }
+
+    module Resource =
+        let [<Literal>] CSCFolder = "data/csc"
+
+        let Resource: HttpContext -> Services.IResource =
+            fun (ctx: HttpContext) -> {
+                getProgram = fun name -> async {
+                    return
+                        try File.ReadAllLines $"{CSCFolder}/test.asaasm" |> Some
+                        with exn ->
+                            printfn $"getProgram error: '{exn}'"
+                            None
                 }
             }

@@ -225,6 +225,15 @@ module Components =
             ]
         ]
 
+    [<ReactComponent>]
+    let Loading () =
+        Html.div [
+            prop.className "m-8 text-center"
+            prop.children [
+                Html.text "Loading..."
+            ]
+        ]
+
 ///////////////////////////////////////////////////////////////////////////////
 
     [<ReactComponent>]
@@ -253,6 +262,7 @@ module Components =
                     ]))
             ]
             Html.div [
+                prop.id "root-inner"
                 prop.className "mt-4 px-8"
                 prop.children (snd tabs[tab])
             ]
@@ -454,4 +464,4 @@ module Components =
         match expand with
         | true  -> sidebar.className <- "sidebar-open"
         | false -> sidebar.className <- "sidebar-collapsed"
-        ReactDOM.createPortal (buttons, (document.getElementById "sidebar"))
+        ReactDOM.createPortal (buttons, sidebar)

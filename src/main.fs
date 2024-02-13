@@ -14,9 +14,9 @@ module Main =
         required_json "appsettings.json"
     }
 
-    let remoting (app: IApplicationBuilder) =
+    let remoting context (app: IApplicationBuilder) =
         Remoting.createApi ()
-        |> Remoting.fromContext Services.User.User
+        |> Remoting.fromContext context
         |> app.UseRemoting
         app
 
@@ -43,7 +43,8 @@ module Main =
             use_authentication
             use_authorization
 
-            use_middleware remoting
+            use_middleware (remoting Services.User.User)
+            use_middleware (remoting Services.Resource.Resource)
 
             not_found Pages.notFound
             endpoints [

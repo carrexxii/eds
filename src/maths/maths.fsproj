@@ -18,7 +18,6 @@
     <Compile Include="la.fs" />
     <Compile Include="ga.fs" />
     <Compile Include="mafs.fs" />
-    <Compile Include="services.fs" />
     <Compile Include="maths.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -29,7 +28,6 @@
   <ItemGroup>
     <PackageReference Include="Elmish" Version="4.1.0" />
     <PackageReference Include="Fable.Elmish.React" Version="4.0.0" />
-    <PackageReference Include="Fable.Remoting.Client" Version="7.31.0" />
     <PackageReference Include="Feliz" Version="2.7.0" />
     <PackageReference Include="Feliz.Router" Version="4.0.0" />
     <PackageReference Include="Feliz.Recharts" Version="4.2.0" />

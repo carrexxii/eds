@@ -37,11 +37,11 @@ module Main =
         let sidebar =
             SidebarButtons
                 [ "home-icon"     , "Home", Router.format ""
-                  "dashboard-icon", "IG"  , Router.format "ig" ]
+                  "dashboard-icon", "AS/A", Router.format "asa" ]
         let page =
             match state.url with
             | [] -> Html.div [ sidebar ""; Html.p "CSC page" ]
-            | "ig"::url -> Html.div [ sidebar "ig"; IG.view url ]
+            | "asa"::url -> Html.div [ sidebar "asa"; AS.view url ]
             | url -> concat (sidebar "mafs") (SubHeading $"Page not found: {url}")
 
         React.router [
