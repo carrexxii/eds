@@ -9,11 +9,6 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 
 module Main =
-    let config = configuration [||] {
-        base_path $"{__SOURCE_DIRECTORY__}/.."
-        required_json "appsettings.json"
-    }
-
     let remoting context (app: IApplicationBuilder) =
         Remoting.createApi ()
         |> Remoting.fromContext context

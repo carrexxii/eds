@@ -4,3 +4,6 @@
 [submodule "src/csc/asa/asm"]
 	path = src/csc/asa/asm
 	url = https://github.com/carrexxii/AS-A-ASM-Emulator
+[submodule "src/maths/mafs"]
+	path = src/maths/mafs
+	url = https://github.com/carrexxii/Feliz.Mafs

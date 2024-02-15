@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="../shared/shared.fsproj" />
     <ProjectReference Include="SharpGA/SharpGA.fsproj" />
-    <ProjectReference Include="../../../mafs/Feliz.Mafs/Feliz.Mafs.fsproj" />
+    <ProjectReference Include="mafs/Feliz.Mafs/Feliz.Mafs.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="4.1.0" />

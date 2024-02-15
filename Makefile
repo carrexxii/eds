@@ -1,12 +1,33 @@
 SOURCE_DIR := ./src
 BUILD_DIR  := ./build
 WWW_ROOT   := ./wwwroot
+DATA_DIR   := ./data
 
 CLIENT_PROJS := $(filter-out $(wildcard ./src/shared/*), $(wildcard ./src/*/*.fsproj))
 CLIENTS      := $(basename $(notdir $(CLIENT_PROJS)))
 CLIENT_COUNT := $(words $(CLIENTS))
 
 all: restore
+
+.PHONY: release
+release:
+	# @dotnet tool restore
+	# @make remove
+	@make restore
+	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+	@$(foreach proj, $(CLIENT_PROJS), (dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --optimize);)
+	@npx webpack
+	@dotnet publish -c Release -o $(BUILD_DIR)
+	@cp -r $(DATA_DIR) $(BUILD_DIR)
+	@cp -r $(WWW_ROOT) $(BUILD_DIR)
+
+.PHONY: docker
+docker:
+	@docker build -t eds .
+
+.PHONY: run
+run:
+	@docker run -it -p 8080:8080 eds
 
 .PHONY: maths csc user
 maths:
@@ -31,7 +52,6 @@ restore:
 	@dotnet tool restore
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
-	@cp -r ./data/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:
