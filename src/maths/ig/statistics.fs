@@ -8,6 +8,9 @@ open Feliz.Recharts
 open EDS.Shared
 open EDS.Shared.Components
 
+// TODO:
+// - Add example data sets (marks, genres, etc) + option to upload/add
+
 module Statistics =
     // type Point =
     //     { grade: string

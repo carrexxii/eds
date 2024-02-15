@@ -2,9 +2,9 @@
 module.exports = {
   content: [
     "./src/components.html",
-    "./build/*.js",
-    "./build/*/*.js",
-    "./build/*/*/*.js",
+    "./src/*.fs",
+    "./src/*/*.fs",
+    "./src/*/*/*.fs",
   ],
   theme: {
     fontFamily: {

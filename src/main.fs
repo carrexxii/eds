@@ -1,14 +1,22 @@
 namespace EDS.Server
 
+open System
 open Falco.Routing
 open Falco.HostBuilder
 open Fable.Remoting.Server
 open Fable.Remoting.AspNetCore
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Http
 
 module Main =
+    let env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+
+    let config = configuration [||] {
+        required_json "appsettings.json"
+        optional_json (String.Concat [|"appsettings."; env; ".json"|])
+    }
+
     let remoting context (app: IApplicationBuilder) =
         Remoting.createApi ()
         |> Remoting.fromContext context
@@ -29,6 +37,12 @@ module Main =
     [<EntryPoint>]
     let main args =
         webHost [||] {
+            logging (fun logging ->
+                logging
+                    .ClearProviders()
+                    .AddSimpleConsole()
+                    .AddConfiguration(config))
+
             add_service authService
 
             add_antiforgery

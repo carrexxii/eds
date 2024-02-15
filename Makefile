@@ -12,7 +12,9 @@ all: run
 .PHONY: release
 release:
 	@make restore
-	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
+	@git clone https://github.com/carrexxii/Feliz.Mafs /mafs
+
+	@npx tailwindcss -c ./tailwind.config.js -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css --minify
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --optimize);)
 	@npx webpack
 	@dotnet publish -c Release -o $(BUILD_DIR)
@@ -24,7 +26,7 @@ docker:
 	@docker build -t eds .
 
 .PHONY: run
-run: release docker
+run: docker
 	@docker run -it -p 8080:8080 eds
 
 .PHONY: maths csc user
@@ -50,9 +52,12 @@ restore:
 	@dotnet tool restore
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
+	@dotnet dev-certs https
+	@mkdir -p $(WWW_ROOT)/
 	@cp -r $(DATA_DIR)/* $(WWW_ROOT)/
 	@mkdir -p $(WWW_ROOT)/fonts
 	@cp -r ./node_modules/katex/dist/fonts/* $(WWW_ROOT)/fonts
+	@mkdir -p $(BUILD_DIR)
 
 .PHONY: clean
 clean:
@@ -61,6 +66,7 @@ clean:
 	@dotnet fable clean --yes
 	@rm -rf wwwroot/*
 	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);)
+	@rm -rf $(BUILD_DIR)/*
 
 .PHONY: remove
 remove: clean
