@@ -51,6 +51,8 @@ restore:
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
 	@cp -r $(DATA_DIR)/* $(WWW_ROOT)/
+	@mkdir -p $(WWW_ROOT)/fonts
+	@cp -r ./node_modules/katex/dist/fonts/* $(WWW_ROOT)/fonts
 
 .PHONY: clean
 clean:
