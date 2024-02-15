@@ -12,6 +12,13 @@ all: run
 .PHONY: release
 release:
 	@make restore
+	@git clone https://github.com/carrexxii/Feliz.Mafs /app/src/maths/mafs
+	@git clone https://github.com/carrexxii/AS-A-ASM-Emulator /app/src/csc/asm
+	@git clone https://github.com/carrexxii/SharpGA /app/src/maths/sharpga
+	@git clone https://github.com/carrexxii/Feliz.Mafs /mafs
+	@git clone https://github.com/carrexxii/AS-A-ASM-Emulator /asm
+	@git clone https://github.com/carrexxii/SharpGA /sharpga
+
 	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --optimize);)
 	@npx webpack
@@ -20,11 +27,11 @@ release:
 	@cp -r $(WWW_ROOT) $(BUILD_DIR)
 
 .PHONY: docker
-docker:
+docker: remove
 	@docker build -t eds .
 
 .PHONY: run
-run: release docker
+run: docker
 	@docker run -it -p 8080:8080 eds
 
 .PHONY: maths csc user
@@ -50,6 +57,7 @@ restore:
 	@dotnet tool restore
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
+	@mkdir -p $(WWW_ROOT)/
 	@cp -r $(DATA_DIR)/* $(WWW_ROOT)/
 	@mkdir -p $(WWW_ROOT)/fonts
 	@cp -r ./node_modules/katex/dist/fonts/* $(WWW_ROOT)/fonts

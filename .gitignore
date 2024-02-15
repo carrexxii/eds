@@ -4,7 +4,7 @@ paket-files/
 node_modules/
 obj/
 bin/
-data/
+build/
 js/
 wwwroot/
 *lock*
