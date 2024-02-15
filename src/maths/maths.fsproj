@@ -22,7 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../shared/shared.fsproj" />
-    <ProjectReference Include="SharpGA/SharpGA.fsproj" />
+    <ProjectReference Include="sharpga/SharpGA.fsproj" />
     <ProjectReference Include="mafs/Feliz.Mafs/Feliz.Mafs.fsproj" />
   </ItemGroup>
   <ItemGroup>

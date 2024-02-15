@@ -7,12 +7,10 @@ CLIENT_PROJS := $(filter-out $(wildcard ./src/shared/*), $(wildcard ./src/*/*.fs
 CLIENTS      := $(basename $(notdir $(CLIENT_PROJS)))
 CLIENT_COUNT := $(words $(CLIENTS))
 
-all: restore
+all: run
 
 .PHONY: release
 release:
-	# @dotnet tool restore
-	# @make remove
 	@make restore
 	@npx tailwindcss -i $(SOURCE_DIR)/styles.css -o $(WWW_ROOT)/styles.css
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet fable $(proj) -o $(BUILD_DIR)/$(basename $(notdir $(proj))) --optimize);)
@@ -26,7 +24,7 @@ docker:
 	@docker build -t eds .
 
 .PHONY: run
-run:
+run: release docker
 	@docker run -it -p 8080:8080 eds
 
 .PHONY: maths csc user
@@ -52,6 +50,7 @@ restore:
 	@dotnet tool restore
 	@dotnet restore
 	@$(foreach proj, $(CLIENT_PROJS), (dotnet restore $(proj));)
+	@cp -r $(DATA_DIR)/* $(WWW_ROOT)/
 
 .PHONY: clean
 clean:

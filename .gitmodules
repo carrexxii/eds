@@ -1,9 +1,9 @@
-[submodule "src/maths/SharpGA"]
-	path = src/maths/SharpGA
-	url = https://github.com/carrexxii/SharpGA
-[submodule "src/csc/asa/asm"]
-	path = src/csc/asa/asm
-	url = https://github.com/carrexxii/AS-A-ASM-Emulator
 [submodule "src/maths/mafs"]
 	path = src/maths/mafs
 	url = https://github.com/carrexxii/Feliz.Mafs
+[submodule "src/csc/asm"]
+	path = src/csc/asm
+	url = https://github.com/carrexxii/AS-A-ASM-Emulator
+[submodule "src/maths/sharpga"]
+	path = src/maths/sharpga
+	url = https://github.com/carrexxii/SharpGA

@@ -10,7 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../shared/shared.fsproj" />
-    <ProjectReference Include="./asa/asm/fasm.fsproj" />
+    <ProjectReference Include="asm/fasm.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="4.1.0" />
