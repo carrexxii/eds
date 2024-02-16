@@ -19,10 +19,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
 COPY --from=build /app/build /app
 
-ENV ASPNETCORE_ENVIRONMENT=production
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENV IS_GOOGLE_CLOUD=true
 
-EXPOSE 5000
+EXPOSE 8080
 ENTRYPOINT [ "dotnet", "/app/eds.dll" ]
 
 # # Install node
