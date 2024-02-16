@@ -69,6 +69,7 @@ clean:
 	@dotnet fable clean --yes
 	@rm -rf wwwroot/*
 	@$(foreach dir, $(CLIENTS), rm -rf $(BUILD_DIR)/$(dir);)
+	@rm -rf $(BUILD_DIR)/*
 
 .PHONY: remove
 remove: clean
