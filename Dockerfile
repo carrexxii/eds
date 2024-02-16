@@ -6,7 +6,7 @@
 # ENTRYPOINT [ "dotnet", "eds.dll" ]
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /build
 
 RUN apt-get update
 RUN apt-get install make
@@ -16,14 +16,15 @@ COPY . .
 RUN make release
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
-WORKDIR /app
-COPY --from=build /app/build /app
+WORKDIR /
+COPY --from=build /build /app
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV IS_GOOGLE_CLOUD=true
 
+WORKDIR /app
 EXPOSE 8080
-ENTRYPOINT [ "dotnet", "/app/eds.dll" ]
+ENTRYPOINT [ "dotnet", "/app/build/eds.dll" ]
 
 # # Install node
 # ARG NODE_MAJOR=20
