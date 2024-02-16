@@ -5,26 +5,25 @@
 # EXPOSE 5000
 # ENTRYPOINT [ "dotnet", "eds.dll" ]
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS compile
 
 RUN apt-get update
 RUN apt-get install make
 RUN apt-get install npm -y
 
+WORKDIR /build
 COPY . .
 RUN make release
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
-WORKDIR /
-COPY --from=build /build /app
+COPY --from=compile /build/build /app
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV IS_GOOGLE_CLOUD=true
 
 WORKDIR /app
 EXPOSE 8080
-ENTRYPOINT [ "dotnet", "/app/build/eds.dll" ]
+ENTRYPOINT [ "dotnet", "/app/eds.dll" ]
 
 # # Install node
 # ARG NODE_MAJOR=20
