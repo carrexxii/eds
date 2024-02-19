@@ -226,6 +226,16 @@ module Components =
         ]
 
     [<ReactComponent>]
+    let Listbox (xs: string list) (onSelect: string -> unit) =
+        Html.select [
+            prop.className "m-2 w-full"
+            prop.onChange onSelect
+            prop.children (
+                xs |> List.map (fun x -> Html.option x)
+            )
+        ]
+
+    [<ReactComponent>]
     let Loading () =
         Html.div [
             prop.className "m-8 text-center"

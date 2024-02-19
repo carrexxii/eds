@@ -12,21 +12,10 @@ open EDS.Shared.Components
 // - Add example data sets (marks, genres, etc) + option to upload/add
 
 module Statistics =
-    // type Point =
-    //     { grade: string
-    //       freq : int }
     type Point =
         { name : string
           value: int }
     let rand = Random ()
-    // let data =
-    //     [ for grade in [ "A*"; "A"; "B"; "C"; "D"; "E"; "F"; "U" ] do
-    //         let freq = rand.Next () % 50
-    //         let freq = if [ "A*"; "A"; "E"; "F"; "U" ] |> List.contains grade
-    //                    then (max 5 freq) / 2
-    //                    else (max 5 freq) * 2
-    //         { grade = grade
-    //           freq  = freq } ]
     let marks =
         [ for x in 1..75 do
             let mark = rand.Next () % 100
@@ -48,10 +37,27 @@ module Statistics =
             let grade = symbol (10*(grade + 1))
             { name  = grade
               value = marks
-                      |> List.filter (fun mark ->
-                          printfn $"{mark} -> {symbol mark} ({symbol mark = grade})"
-                          symbol mark = grade)
+                      |> List.filter (fun mark -> symbol mark = grade)
                       |> List.length } ]
+    let pairData =
+        [ for y in 0..5 do
+            for x in 0..5 do
+                float (rand.Next () % 1000),
+                float (rand.Next () % 1000) ]
+        |> List.sort
+
+    let chartContainer chart descrip rev =
+        Html.div [
+            prop.className $"""flex flex-col{if rev then "-reverse" else ""} gap-12"""
+            prop.children [
+                Recharts.responsiveContainer [
+                    responsiveContainer.width (length.percent 100)
+                    responsiveContainer.height 500
+                    responsiveContainer.chart chart
+                ]
+                descrip
+            ]
+        ]
 
     let MMMaR () =
         Html.div [
@@ -63,7 +69,7 @@ module Statistics =
 // frequency distributions, histograms with equal
 // intervals and scatter diagrams.
     [<ReactComponent>]
-    let ChartsDiagrams () =
+    let BarPieCharts () =
         Html.div [
             Html.div [
                 prop.className "flex flex-row gap-20"
@@ -90,18 +96,6 @@ module Statistics =
                 ]
             ]
 
-            let chartContainer chart descrip rev =
-                Html.div [
-                    prop.className $"""flex flex-col{if rev then "-reverse" else ""}"""
-                    prop.children [
-                        Recharts.responsiveContainer [
-                            responsiveContainer.width (length.percent 100)
-                            responsiveContainer.height 500
-                            responsiveContainer.chart chart
-                        ]
-                        descrip
-                    ]
-                ]
             Html.div [
                 prop.className ""
                 prop.children [
@@ -140,7 +134,6 @@ module Statistics =
                                     cell.stroke color
                                     cell.strokeOpacity 0.8
                                     cell.strokeWidth 2
-                                    // cell.key "grade"
                                 ])
                         pieChart.children [
                             Recharts.pie [
@@ -173,6 +166,60 @@ module Statistics =
             ]
         ]
 
+    [<ReactComponent>]
+    let ScatterPlots () =
+        let bestFit, setBestFit = React.useState false
+        let meanX = pairData |> List.map (fun point -> float (fst point)) |> List.average
+        let meanY = pairData |> List.map (fun point -> float (snd point)) |> List.average
+        let numer = pairData |> List.sumBy (fun point -> (fst point - meanX)*(snd point - meanY))
+        let denom = pairData |> List.sumBy (fun point -> (fst point - meanX)**2)
+        let m = numer / denom
+        let b = meanY - m*meanX
+        Html.div [
+            let scatterPlot = Recharts.composedChart [
+                composedChart.children [
+                    Recharts.cartesianGrid []
+                    Recharts.yAxis [ yAxis.dataKey (fun (point: int * int) -> snd point) ]
+
+                    Recharts.xAxis [
+                        xAxis.dataKey (fun (point: float * float) -> fst point)
+                        xAxis.domain (domain.constant 0, domain.max)
+                        xAxis.xAxisId 1
+                    ]
+                    Recharts.scatter [
+                        scatter.data pairData
+                        scatter.fill "#2C8"
+                        scatter.xAxisId 1
+                    ]
+
+                    if bestFit then
+                        Recharts.xAxis [
+                            xAxis.domain (domain.constant 0, domain.constant 1)
+                            xAxis.hide true
+                            xAxis.xAxisId 2
+                        ]
+                        Recharts.line [
+                            line.data
+                                [ {| x = 0; y = b |}
+                                  {| x = 1; y = b + 1000.0*m |} ]
+                            line.dataKey (fun (point: {| x:float; y:float |}) -> point.y)
+                            line.stroke "#D38"
+                            line.strokeWidth 2
+                            line.dot false
+                            line.xAxisId 2
+                        ]
+                ]
+            ]
+            let scatterDescrip = Html.div [
+                Listbox [ "a"; "b"; "c" ] (fun x -> printfn $"{x}")
+                Checkbox (TextString "Line of Best Fit") bestFit (fun e -> setBestFit e)
+                Html.hr [ prop.className "my-2" ]
+                Html.text "description for the scatter plot and line of best fit"
+            ]
+
+            chartContainer scatterPlot scatterDescrip true
+        ]
+
     let CumulativeFrequency () =
         Html.div [
 
@@ -190,7 +237,8 @@ module Statistics =
 
     let tabs =
         [ "Mean, Median, Mode and Range", MMMaR ()
-          "Charts and Diagrams"         , ChartsDiagrams ()
+          "Bar and Pie Charts"          , BarPieCharts ()
+          "Scatter Plots"               , ScatterPlots ()
           "Cumulative Frequency"        , CumulativeFrequency ()
           "Correlation"                 , Correlation ()
           "Lines of Best Fit"           , LinesofBestFit () ]

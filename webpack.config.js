@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  mode: "production",
+  mode: "development",
   entry: {
     user : './build/user/user.js',
     maths: './build/maths/maths.js',
