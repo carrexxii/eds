@@ -40,7 +40,7 @@ module Mensuration =
                         Heading "Units"
                         Html.p $"""When applying maths to real-life problems, numbers should be given some meaning/context.
                                     We call the context given to a number its """
-                        Popup "Unit" Medium (Html.text "The meaning or context of a number, such as 1 kg, 5 cm or 10 m/s")
+                        Popup "Unit" (Html.text "The meaning or context of a number, such as 1 kg, 5 cm or 10 m/s")
                         Html.p """. The two main types of units are:"""
                         Note Extra """The metric system is the primary one around the world today and will be the one we focus on.
                                       For real-life situations, however, it can be useful to know the approximate values for some imperial units."""

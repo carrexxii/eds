@@ -226,7 +226,7 @@ module Components =
         ]
 
     [<ReactComponent>]
-    let Listbox (xs: string list) (onSelect: string -> unit) =
+    let Listbox (onSelect: string -> unit) (xs: string list) =
         Html.select [
             prop.className "m-2 w-full"
             prop.onChange onSelect
@@ -280,25 +280,15 @@ module Components =
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    type PopupSize =
-        | Small
-        | Medium
-        | Large
-        | Full
-    let Popup (text: string) (size: PopupSize) (content: ReactElement) =
+    let Popup (text: string) (content: ReactElement) =
         Html.div [
-            prop.className "group relative inline font-semibold "
+            prop.className "group relative inline font-semibold"
             prop.children [
                 Html.text text
                 Html.div [
-                    let w = match size with
-                            | Small  -> "w-36 p-2"
-                            | Medium -> "w-64 p-3"
-                            | Large  -> "w-96 p-4"
-                            | Full   -> "w-[48rem] p-4"
-                    prop.className (w + " absolute z-10 -top-[5rem] prose prose-sm opacity-0 invisible
-                                    group-hover:visible group-hover:opacity-100 rounded-md border-2 border-slate-800 bg-slate-300
-                                    transition-all duration-500 ease-in-out")
+                    prop.className "absolute origin-center z-10 min-w-16 top-[2rem] prose prose-zinc prose-sm opacity-0 invisible
+                                    group-hover:visible group-hover:opacity-100 rounded-md border-2 border-slate-800 bg-slate-200
+                                    transition-all duration-500 ease-in-out overflow-auto"
                     prop.children content
                 ]
             ]

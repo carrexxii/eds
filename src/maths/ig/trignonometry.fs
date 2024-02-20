@@ -18,7 +18,6 @@ module Trigonometry =
                 If we physically square them (to get a square shape) you can see that the areas
                 of the two squares formed by the legs (b and c) add up to the area of the square
                 formed from the hypotenuse (c)"""
-                Html.br []
             ]
             let corner = vec 2 -2
             let xPoint = movablePoint (vec -1 -2) Theme.blue (Some
@@ -35,8 +34,8 @@ module Trigonometry =
                 |> _.normal
                 |> ( * ) dist
             Mafs.create ()
-            |> Mafs.width  400
-            |> Mafs.height 400
+            |> Mafs.width  600
+            |> Mafs.height 350
             |> Mafs.viewBox {| x = vec -5 5
                                y = vec -5 5
                                padding = 1.0 |}
@@ -139,7 +138,7 @@ module Trigonometry =
                                        be familiar with is the Pythagorean theorem: """
                             Katex "\\\\ \\qquad c^2 = a^2 + b^2\\\\"
                             Html.p """ where c is the length of the hypotenuse and a and b are the lengths of its two legs."""
-                            Popup "Pythagorean Theorem" Full (PythagoreanProof ())
+                            Popup "Pythagorean Theorem" (PythagoreanProof ())
                         ]
 
                         let corner = vec -2 -2
