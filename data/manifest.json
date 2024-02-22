@@ -1,0 +1,23 @@
+{
+    "lang": "en-uk",
+    "name": "Apex",
+    "short_name": "Apex",
+    "description": "Interactive educational tools and learning resources",
+    "start_url": "/",
+    "background_color": "#F8FAFC",
+    "theme_color": "#F8FAFC",
+    "orientation": "any",
+    "display": "standalone",
+    "icons": [
+        {
+            "src":"icons/android-chrome-192x192.png",
+            "sizes":"192x192",
+            "type":"image/png"
+        },
+        {
+            "src":"icons/android-chrome-512x512.png",
+            "sizes":"512x512",
+            "type":"image/png"
+        }
+    ]
+}

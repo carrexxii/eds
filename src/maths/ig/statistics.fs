@@ -105,6 +105,7 @@ module Statistics =
                     Recharts.tooltip []
                     Recharts.bar [
                         bar.dataKey (fun (point: string * int) -> snd point)
+                        bar.barSize 9999
                         bar.fill colors[2]
                         bar.fillOpacity 0.4
                         bar.stroke colors[2]
@@ -269,7 +270,7 @@ module Statistics =
 
     let tabs =
         [ "Mean, Median, Mode and Range", MMMaR ()
-          "Bar Charts"                  , BarCharts ()
+          "Bar Charts and Histograms"   , BarCharts ()
           "Pie Charts"                  , PieCharts ()
           "Scatter Plots"               , ScatterPlots ()
           "Cumulative Frequency"        , CumulativeFrequency ()

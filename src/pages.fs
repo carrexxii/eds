@@ -1,5 +1,6 @@
 namespace EDS.Server
 
+// open System
 open Falco
 open Falco.Markup
 open Falco.Markup.Templates
@@ -9,6 +10,8 @@ open Falco.Markup.Text
 open Falco.Security
 
 module Pages =
+    // let env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+
     let master inner =
         fun token ->
             html5 "en" [
@@ -18,8 +21,18 @@ module Pages =
 
                 Elem.title [] [ raw "Page Title" ]
 
+                link [ rel "icon"      ; href "icons/favicon.ico" ]
+                link [ rel "manifest"  ; href "manifest.json" ]
                 link [ rel "stylesheet"; href "styles.css" ]
             ] [
+                script [] [
+                    raw """
+                        if("serviceWorker" in navigator) {
+                            navigator.serviceWorker.register("sw.js", { scope: "/" })
+                        }
+                    """
+                ]
+
                 header [ class' "top-0 w-full h-16 border-b-2 bg-slate-100" ]
                     [ a [ href "/" ] [ raw "~~~ Header ~~~" ] ]
                 div [ id "layout"; class' "flex" ] [

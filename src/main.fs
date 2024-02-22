@@ -51,6 +51,7 @@ module Main =
 
             use_authentication
             use_authorization
+            // use_https
 
             use_middleware (remoting Services.User.User)
             use_middleware (remoting Services.Resource.Resource)

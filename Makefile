@@ -55,8 +55,6 @@ restore:
 	@dotnet dev-certs https
 	@mkdir -p $(WWW_ROOT)/
 	@cp -r $(DATA_DIR)/* $(WWW_ROOT)/
-	@mkdir -p $(WWW_ROOT)/fonts
-	@cp -r ./node_modules/katex/dist/fonts/* $(WWW_ROOT)/fonts
 	@mkdir -p $(BUILD_DIR)
 
 .PHONY: clean

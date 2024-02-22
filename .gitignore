@@ -7,5 +7,6 @@ bin/
 build/
 js/
 wwwroot/
+data/fonts/
 *lock*
 *.ttf

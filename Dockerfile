@@ -11,7 +11,7 @@ RUN make release
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 COPY --from=compile /build/build /app
 
-ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_ENVIRONMENT=Development
 ENV IS_GOOGLE_CLOUD=true
 
 WORKDIR /app
