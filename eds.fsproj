@@ -20,5 +20,6 @@
     <PackageReference Include="falco" Version="4.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Npgsql.FSharp" Version="5.7.0" />
+    <PackageReference Include="FSharp.Data" Version="6.3.0" />
   </ItemGroup>
 </Project>

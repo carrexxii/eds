@@ -2,8 +2,11 @@ namespace EDS.Server
 
 open System.IO
 open Microsoft.AspNetCore.Http
+open FSharp.Data
+open FSharp.Data.CsvExtensions
 
 open EDS.Shared
+open EDS.Shared.Services
 open Database
 
 module Services =
@@ -60,15 +63,40 @@ module Services =
             }
 
     module Resource =
-        let [<Literal>] CSCFolder = "data/csc"
+        let [<Literal>] CSCDir   = "data/csc"
+        let [<Literal>] MathsDir = "data/maths"
 
         let Resource: HttpContext -> Services.IResource =
             fun (ctx: HttpContext) -> {
                 getProgram = fun name -> async {
                     return
-                        try File.ReadAllLines $"{CSCFolder}/test.asaasm" |> Some
+                        try File.ReadAllLines $"{CSCDir}/test.asaasm" |> Some
                         with exn ->
                             printfn $"getProgram error: '{exn}'"
                             None
+                }
+
+                // TODO: cache
+                getMathsData = fun name -> async {
+                    let name = name.Replace (' ', '-') |> _.ToLower()
+                    let path = $"{MathsDir}/{name}.csv"
+                    if not (File.Exists path) then
+                        printfn $"Requested file '{path}' does not exist"
+                        return None
+                    else
+                        let csv = File.ReadAllText path |> CsvFile.Parse
+                        return
+                            if csv.NumberOfColumns = 1 then
+                                csv.Rows
+                                |> Seq.map (fun row -> row[0].AsInteger ())
+                                |> Seq.sort
+                                |> List.ofSeq
+                                |> (SingleData >> Some)
+                            elif csv.NumberOfColumns = 2 then
+                                csv.Rows
+                                |> Seq.map (fun row -> row[0].AsInteger (), row[1].AsInteger ())
+                                |> List.ofSeq
+                                |> (PairData >> Some)
+                            else None
                 }
             }

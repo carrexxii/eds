@@ -30,8 +30,14 @@ module Services =
         Remoting.createApi ()
         |> Remoting.buildProxy<IUser>
 
+    type MathsData =
+        | SingleData of int list
+        | PairData   of (int * int) list
+        member this.single = match this with SingleData data -> data | _ -> failwith "Not single data set"
+        member this.pair   = match this with PairData   data -> data | _ -> failwith "Not pair data set"
     type IResource = {
-        getProgram: string -> Async<string array option>
+        getProgram  : string -> Async<string array option>
+        getMathsData: string -> Async<MathsData option>
     }
     let resourceService =
         Remoting.createApi ()

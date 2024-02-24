@@ -1,6 +1,5 @@
 namespace EDS.Server
 
-// open System
 open Falco
 open Falco.Markup
 open Falco.Markup.Templates
@@ -10,8 +9,6 @@ open Falco.Markup.Text
 open Falco.Security
 
 module Pages =
-    // let env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-
     let master inner =
         fun token ->
             html5 "en" [
