@@ -31,7 +31,10 @@ module Pages =
                 ]
 
                 header [ class' "top-0 w-full h-16 border-b-2 bg-slate-100" ]
-                    [ a [ href "/" ] [ raw "~~~ Header ~~~" ] ]
+                    [ a [ class' "flex flex-row h-full prose prose-zinc items-center"; href "/" ] [
+                        img [ class' "m-0 p-2 h-full"; src "icons/android-chrome-192x192.png" ]
+                        h1 [ class' "pl-4" ] [ raw "AXIL" ]
+                    ] ]
                 div [ id "layout"; class' "flex" ] [
                     // Elem.form [ method "POST"; action "/logout" ] [
                     //     input [ type' "submit"; value "Submit" ]
@@ -42,8 +45,6 @@ module Pages =
                     div [ id "root"; class' "flex flex-col grow bg-gray-50" ]
                         [ inner ]
                 ]
-                footer [ id "footer"; class' "left-0 w-full h-16 p-4 border-t-2 text-center" ]
-                    [ raw "~~~ Footer ~~~" ]
             ]
         |> Response.ofHtmlCsrf
 
