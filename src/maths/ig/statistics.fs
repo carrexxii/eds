@@ -367,9 +367,7 @@ module Statistics =
           "Bar Charts and Histograms"   , BarCharts ()
           "Pie Charts"                  , PieCharts ()
           "Scatter Plots"               , ScatterPlots ()
-          "Cumulative Frequency"        , CumulativeFrequency ()
-          "Correlation"                 , Correlation ()
-          "Lines of Best Fit"           , LinesofBestFit () ]
+          "Cumulative Frequency"        , CumulativeFrequency () ]
 
     let view tab =
         Tabbed tab tabs

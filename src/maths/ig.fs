@@ -42,9 +42,8 @@ module IG =
                     Link "Numbers"  (Router.format ("ig", "numbers"))
                     LinkList (Numbers.tabs |> List.map (fun tab -> fst tab, subUrl "numbers" (fst tab)))
 
-                    Link "Algebra and Graphs" (Router.format ("ig", "algebra"))
-                    LinkList
-                        [  ]
+                    // Link "Algebra and Graphs" (Router.format ("ig", "algebra"))
+                    // LinkList []
 
                     Link "Geometry"  (Router.format ("ig", "geometry"))
                     LinkList (Geometry.tabs |> List.map (fun tab -> fst tab, subUrl "geometry" (fst tab)))
@@ -58,8 +57,8 @@ module IG =
                     Link "Vectors and Transformations"  (Router.format ("ig", "transforms"))
                     LinkList (Transforms.tabs |> List.map (fun tab -> fst tab, subUrl "transforms" (fst tab)))
 
-                    Link "Probability"  (Router.format ("ig", "probability"))
-                    LinkList (Probability.tabs |> List.map (fun tab -> fst tab, subUrl "probability" (fst tab)))
+                    // Link "Probability"  (Router.format ("ig", "probability"))
+                    // LinkList (Probability.tabs |> List.map (fun tab -> fst tab, subUrl "probability" (fst tab)))
 
                     Link "Statistics"  (Router.format ("ig", "statistics"))
                     LinkList (Statistics.tabs |> List.map (fun tab -> fst tab, subUrl "statistics" (fst tab)))

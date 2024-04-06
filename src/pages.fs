@@ -33,7 +33,7 @@ module Pages =
                 header [ class' "top-0 w-full h-16 border-b-2 bg-slate-100" ]
                     [ a [ class' "flex flex-row h-full prose prose-zinc items-center"; href "/" ] [
                         img [ class' "m-0 p-2 h-full"; src "icons/android-chrome-192x192.png" ]
-                        h1 [ class' "pl-4" ] [ raw "AXIL" ]
+                        h1 [ class' "pl-4" ] [ raw "" ]
                     ] ]
                 div [ id "layout"; class' "flex" ] [
                     // Elem.form [ method "POST"; action "/logout" ] [
@@ -49,7 +49,25 @@ module Pages =
         |> Response.ofHtmlCsrf
 
     let index: HttpHandler =
-        master (raw "Index")
+        master (div [ class' "prose prose-zinc ml-4" ] [
+            h2 [ class' "text-center test-3xl m-2" ] [ raw "Current Examples" ]
+            h6 [ class' "text-center test-xl" ] [
+                raw """This is still a work in progress. Most examples also have no written examples and
+                       are only the interactive program. Some of the main examples are listed here."""
+            ]
+            ul [ class' "ml-8" ] [
+                li [] [
+                    a [ href "maths#/ig" ] [ raw "IGCSE Maths" ]
+                    ul [] [
+                        li [] [ a [ href "maths#/ig/geometry?tab=Constructions"     ] [ raw "Constructions" ] ]
+                        li [] [ a [ href "maths#/ig/transforms?tab=Vectors"         ] [ raw "Vectors" ] ]
+                        li [] [ a [ href "maths#/ig/transforms?tab=Transforms"      ] [ raw "Transforms" ] ]
+                        li [] [ a [ href "maths#/ig/statistics?tab=Scatter%20Plots" ] [ raw "Graphs" ] ]
+                    ]
+                ]
+                li [] [ a [ href "csc#/asa/asm?tab=Emulator" ] [ raw "AS/A Assembly Emulator" ] ]
+            ]
+        ])
 
     let user: HttpHandler =
         master (script [ type' "module"; src "user.js" ] [])

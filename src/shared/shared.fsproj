@@ -9,7 +9,7 @@
     <Compile Include="services.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../../mafs/Feliz.Mafs/Feliz.Mafs.fsproj" />
+    <ProjectReference Include="../../../mafs/Feliz.Mafs.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Elmish" Version="4.1.0" />
