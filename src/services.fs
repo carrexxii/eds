@@ -4,6 +4,8 @@ open System.IO
 open Microsoft.AspNetCore.Http
 open FSharp.Data
 open FSharp.Data.CsvExtensions
+open Option
+open Fumble
 
 open EDS.Shared
 open EDS.Shared.Services
@@ -11,56 +13,49 @@ open Database
 
 module Services =
     module User =
-        let [<Literal>] table = "testing"
-
-        let private readModel (read: RowReader): Services.User =
-            { id       = read.int   "id"
-              username = read.string "username"
-              email    = read.string "email"
-              password = read.string "password" }
+        let [<Literal>] table = "Users"
 
         let User: HttpContext -> Services.IUser =
             fun (ctx: HttpContext) -> {
-                get = fun () -> async {
-                    return
-                        query $"SELECT * FROM {table}
-                                WHERE id = 2"
-                        readModel
-                        |> List.tryHead
-                }
-
-                getMany = fun (first, last) -> async {
-                    return
-                        query $"SELECT * FROM {table}
-                                WHERE BETWEEN {first} AND {last}"
-                        readModel
-                        |> Array.ofList
-                        |> Some
+                get = fun userQuery -> async {
+                    let req = $"""{if isSome userQuery.id       then $"id       = '{userQuery.id}'"       else ""}""" +
+                              $"""{if isSome userQuery.username then $"username = '{userQuery.username}'" else ""}""" +
+                              $"""{if isSome userQuery.email    then $"email    = '{userQuery.email}'"    else ""}"""
+                    let req = if req = "" then "id = '0'" else req // TODO: fetch logged-in user
+                    printfn $"Getting... {userQuery} -> \"{req}\""
+                    return (query
+                        $"SELECT * FROM users
+                          WHERE {req};"
+                        (fun read ->
+                            { id       = read.int    "id"
+                              username = read.string "username"
+                              email    = read.string "email"
+                              password = read.string "password" }))
+                    |> (function
+                        | Error err -> printfn $"Error getting users with userQuery = {userQuery}:\n{err}\n\"{req}\""
+                                       []
+                        | Ok users  -> users)
                 }
 
                 set = fun user -> async {
-                    return
-                        exec $"UPDATE {table}
-                               SET username = '{user.username}',
-                                   email    = '{user.email}',
-                                   password = '{user.password}'
-                               WHERE id = {user.id}"
-                        |> function
-                           | 1 -> Ok ()
-                           | _ -> Error $"User {user.id} is not in '{table}' for update: {user}"
+                    printfn $"Setting... {user}"
+                    return Ok ()
                 }
 
                 add = fun user -> async {
-                    if user.id <> -1 then
-                        return () // (Error $"User id should be set to -1 for adding a new record ({user})")
-                    else
-                        exec $"INSERT INTO {table}
-                               (username, email, password) VALUES
-                               ('{user.username}', '{user.email}', '{user.password}')"
-                        |> ignore
-                    return Ok ()
+                    printfn $"Adding... {user} (userCount = {userCount})"
+                    userCount <- userCount + 1
+                    return query
+                        $"INSERT INTO {table} (id, username, email, password)
+                          VALUES ('{userCount}', '{user.username}', '{user.email}', '{user.password}');"
+                        (fun reader -> Ok ())
+                        |> (function
+                            | Error err -> Error $"Error inserting user: {err}"
+                            | Ok user   -> Ok ())
                 }
             }
+
+    ///////////////////////////////////////////////////////////////////////////
 
     module Resource =
         let [<Literal>] CSCDir   = "data/csc"

@@ -23,7 +23,7 @@ module Main =
     type Message =
         | SetUrl   of string list
         | GetUser
-        | RecvUser of Services.User option
+        | RecvUser of Services.User list
         | ErrorMsg of string
         | ErrorExn of exn
         | ClearError
@@ -37,9 +37,18 @@ module Main =
 
     let update msg state =
         match msg with
-        | SetUrl url -> { state with url = url }, Cmd.ofMsg GetUser
-        | GetUser -> state, Cmd.OfAsync.perform Services.userService.get () RecvUser
-        | RecvUser user -> { state with user = Option.get user }, Cmd.none
+        | SetUrl url -> { state with url = url }, Cmd.none
+        | GetUser -> state, Cmd.OfAsync.perform Services.userService.get Services.UserQuery.Default RecvUser
+        | RecvUser user ->
+            match user with
+            | [user] -> { state with user = user }, Cmd.none
+            | users -> printfn $"Error requesting user data, got: {users}"
+                       state, Cmd.none
+        | DashMsg msg ->
+            match msg with
+            | Dashboard.Message.Completed -> state, Cmd.none
+            | _ -> let dash, msg = Dashboard.update msg state.dash
+                   { state with dash = dash }, Cmd.map DashMsg msg
 
     let view state dispatch =
         let sidebar =
@@ -52,7 +61,7 @@ module Main =
         let page =
             match state.url with
             | [] -> concat (sidebar "/") (Html.p $"Profile page ~> /")
-            | "dashboard"::url -> concat (sidebar "/dashboard") (Dashboard.view url state.dash (DashMsg >> dispatch))
+            | "dashboard"::url -> concat (sidebar "/dashboard") (Dashboard.view state.dash (DashMsg >> dispatch))
             | "settings" ::url -> concat (sidebar "/settings" ) (Html.p $"Settings page ~> {url}")
             | "about"    ::url -> concat (sidebar "/about"    ) (Html.p $"About page ~> {url}")
             | "help"     ::url -> concat (sidebar "/help"     ) (Html.p $"Help page ~> {url}")

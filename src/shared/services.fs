@@ -13,17 +13,23 @@ module Services =
               username = ""
               email    = ""
               password = "" }
-
         member this.toStringArray () =
             [| this.id.ToString ()
                this.username
                this.email |]
+    and UserQuery =
+        { id      : int option
+          username: string option
+          email   : string option }
+        static member Default =
+            { id       = None
+              username = None
+              email    = None }
 
     type IUser = {
-            get    : unit -> Async<User option>
-            getMany: int * int -> Async<User array option>
-            set    : User -> Async<Result<unit, string>>
-            add    : User -> Async<Result<unit, string>>
+            get: UserQuery -> Async<User list>
+            set: User      -> Async<Result<unit, string>>
+            add: User      -> Async<Result<unit, string>>
         }
         with member this.ctx: Microsoft.AspNetCore.Http.HttpContext = null
     let userService =

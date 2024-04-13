@@ -15,11 +15,11 @@
     <ProjectReference Include="./src/shared/shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fable.Remoting.AspNetCore" Version="2.38.0" />
-    <PackageReference Include="Fable.Remoting.Server" Version="5.37.0" />
-    <PackageReference Include="falco" Version="4.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
-    <PackageReference Include="Npgsql.FSharp" Version="5.7.0" />
-    <PackageReference Include="FSharp.Data" Version="6.3.0" />
+    <PackageReference Include="Fable.Remoting.AspNetCore" Version="2.*" />
+    <PackageReference Include="Fable.Remoting.Server" Version="5.*" />
+    <PackageReference Include="Falco" Version="4.*" />
+    <PackageReference Include="Fumble" Version="1.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+    <PackageReference Include="FSharp.Data" Version="6.*" />
   </ItemGroup>
 </Project>
